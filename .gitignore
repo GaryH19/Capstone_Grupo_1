@@ -1,0 +1,14 @@
+# Directorios de entornos virtuales
+venv/
+env/
+
+# Archivos de Python
+*.pyc
+__pycache__/
+
+# Archivos de Django/Base de Datos
+db.sqlite3
+
+
+# Archivos de configuración de Django sensibles (si los tienes)
+local_settings.py
