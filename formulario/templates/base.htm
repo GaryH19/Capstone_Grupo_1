@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Mi Sitio Web Django{% endblock title %}</title>
+    </head>
+<body>
+
+    <header style="background-color: #333; color: white; padding: 10px;">
+        <nav>
+            <a href="/">Inicio</a> |
+            {% if user.is_authenticated %}
+                <span>Bienvenido, {{ user.username }}</span> |
+                <a href="{% url 'login' %}?next=/logout/">Cerrar Sesión</a> 
+                {% else %}
+                <a href="{% url 'login' %}">Iniciar Sesión</a> |
+                <a href="{% url 'registro' %}">Registrarse</a>
+            {% endif %}
+        </nav>
+    </header>
+    
+    <main style="padding: 20px;">
+        {% block content %}
+            {% endblock content %}
+    </main>
+    
+    <footer style="text-align: center; margin-top: 50px; padding: 10px; border-top: 1px solid #ccc;">
+        &copy; 2025 Mi Proyecto DocuFlow
+    </footer>
+
+</body>
+</html>

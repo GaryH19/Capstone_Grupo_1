@@ -8,13 +8,15 @@ from django.contrib.auth.decorators import login_required
 
 @login_required
 def admin_dashboard(request):
-    return render(request, 'admin_dashboard.html')
+    return render(request, 'formulario/admin_dashboard.html')
 @login_required
 def colaborador_dashboard(request):
-    return render(request, 'colaborador_dashboard.html')
+    return render(request, 'formulario/colaborador_dashboard.html')
+@login_required
+def base (request):
+    return render(request, 'base')
 
-def formulario (request):
-    
+def formulario (request):    
     return render(request, 'login.html',{
         'form': UserChangeForm,
     })
@@ -38,8 +40,9 @@ def login_view(request):
             login(request, usuario)
             if usuario.tipo_usuario == 'admin':
                 return redirect('admin_dashboard')
-            else:
-                return redirect('colaborador_dashboard')
+            elif usuario.tipo_usuario == 'colaborador':
+                # ¡CORRECTO! Usa el nombre de la ruta que definiste en urls.py
+                return redirect('formulario/admin_dashboard.html') 
         else:
             return render(request, 'login.html', {'error': 'Credenciales inválidas'})
     return render(request, 'login.html')

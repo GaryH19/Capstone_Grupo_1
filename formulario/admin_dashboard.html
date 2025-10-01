@@ -1,0 +1,9 @@
+{% extends "base.html" %} 
+
+{% block title %}Panel de Administrador{% endblock title %}
+
+{% block content %}
+    <h1>Panel de Administración (ADMIN)</h1>
+    <p>Tienes permisos de superusuario.</p>
+    <p><a href="{% url 'admin:index' %}">Gestionar Usuarios y Datos</a></p>
+{% endblock content %}
