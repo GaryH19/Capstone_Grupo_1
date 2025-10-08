@@ -1,8 +1,18 @@
-/* formulario/static/formulario/style.css */
+:root {
+    --primary-blue: #007bff;
+    --dark-blue: #0056b3; 
+    --background-color: #f4f7f9; 
+    --container-bg: #ffffff; 
+    --text-color: #333333; 
+    --icon-color: #6c757d; 
+}
+
+
+/* 1. Fondo de Página */
 
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f9;
+    background-color: var(--background-color);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -10,32 +20,104 @@ body {
     margin: 0;
 }
 
-.login-container {
-    background-color: white;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    width: 350px;
-}
 
-h2 {
+/* 2. Contenedor Principal (Formulario) */
+
+.login-page {
+    background-color: var(--container-bg);
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); 
+    width: 360px;
     text-align: center;
-    color: #333;
-    margin-bottom: 20px;
 }
 
-button[type="submit"] {
+.login-title {
+    color: var(--primary-blue);
+    text-align: center;
+    margin-bottom: 30px;
+    font-weight: 300; 
+}
+
+
+/* 3. Campos de Entrada (Input Group) */
+
+.input-group {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    background-color: #fff;
+}
+
+.input-group .icon {
+    color: var(--icon-color);
+    font-size: 16px;
+    width: 40px;
+    text-align: center;
+    padding: 10px 0;
+    border-right: 1px solid #ced4da;
+}
+
+.input-group input {
+    flex-grow: 1;
+    background: none;
+    border: none;
+    padding: 10px 15px;
+    font-size: 15px;
+    color: var(--text-color);
+    outline: none;
+}
+
+.input-group input::placeholder {
+    color: #adb5bd;
+}
+
+
+/* 4. Opciones (Recordarme / Olvidó) */
+
+.options-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    margin-bottom: 25px;
+    color: var(--text-color);
+}
+
+.remember-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.options-group input[type="checkbox"] {
+    margin-right: 5px;
+    accent-color: var(--primary-blue); 
+}
+
+.forgot-password {
+    color: var(--primary-blue);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.forgot-password:hover {
+    color: var(--dark-blue);
+}
+
+/* 5. Botón de LOGIN */
+
+.login-button {
     width: 100%;
-    padding: 10px;
-    background-color: #007bff;
+    padding: 12px;
+    background-color: var(--primary-blue); 
     color: white;
     border: none;
-    border-radius: 5px;
+    border-radius: 4px;
     cursor: pointer;
     font-size: 16px;
-    margin-top: 15px;
-}
-
-button[type="submit"]:hover {
-    background-color: #0056b3;
+    font-weight: 600;
+    letter-spacing: 0.5px;
 }
