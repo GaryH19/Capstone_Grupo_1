@@ -1,2 +1,177 @@
-<h2>Bienvenido Colaborador</h2>
-<p>Solo tienes acceso de lectura a ciertas secciones.</p>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DocuFlow - Proyectos Activos</title>
+    <!-- Enlace al archivo CSS (asegúrate de que la ruta sea correcta en tu entorno Django) -->
+    <link rel="stylesheet" href="/static/style.css">
+    <!-- Carga de Font Awesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!--
+        NOTA IMPORTANTE: El body NO lleva la clase "login-body", 
+        lo que activa los estilos de dashboard definidos en style.css.
+    -->
+
+    <!-- 1. Header Fijo (DocuFlow, Barra de Búsqueda y Notificaciones) -->
+    <header class="dashboard-header">
+        <div class="logo-text">DocuFlow</div>
+        
+        <div class="header-center">
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Buscar documentos...">
+            </div>
+        </div>
+        
+        <div class="header-right">
+            <button class="icon-button"><i class="fas fa-bell notification-button"></i></button>
+            <button class="icon-button"><i class="fas fa-user-circle"></i></button>
+        </div>
+    </header>
+
+    <!-- 2. Wrapper Principal (Sidebar + Contenido) -->
+    <div class="dashboard-wrapper">
+        
+        <!-- Sidebar (Menú de Navegación Izquierdo) -->
+        <aside class="sidebar">
+            <nav class="sidebar-nav">
+                <!-- Ítem activo: Proyectos -->
+                <a href="#" class="nav-item active">
+                    <i class="fas fa-sitemap"></i>
+                    Proyectos
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-file-alt"></i>
+                    Documentos
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-users"></i>
+                    Equipo
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-cog"></i>
+                    Configuración
+                </a>
+                
+                <!-- Separador visual y botón de Cerrar Sesión (MANDATORIO) -->
+                <div style="flex-grow: 1;"></div> 
+                <a href="/login/" class="nav-item logout-item">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Cerrar Sesión
+                </a>
+            </nav>
+
+            <div class="new-project-button-container" style="padding: 20px;">
+                <button class="login-button" style="width: 100%;"><i class="fas fa-plus"></i> Nuevo Proyecto</button>
+            </div>
+        </aside>
+
+        <!-- Área de Contenido Principal -->
+        <main class="main-content-area">
+            <h1>Proyectos</h1>
+            
+            <!-- Sección de Proyectos Activos (Tabla) -->
+            <section class="card active-projects-section" style="padding: 30px; margin-bottom: 30px;">
+                <h2 style="font-size: 20px; font-weight: 600; margin-top: 0; margin-bottom: 20px;">Proyectos Activos</h2>
+                
+                <table class="projects-table" style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="border-bottom: 1px solid #e0e0e0;">
+                            <th style="text-align: left; padding: 10px 0; color: var(--light-text); font-weight: 500;">Proyecto</th>
+                            <th style="text-align: left; padding: 10px 0; color: var(--light-text); font-weight: 500;">Progreso Documentación</th>
+                            <th style="text-align: left; padding: 10px 0; color: var(--light-text); font-weight: 500;">Última Actualización</th>
+                            <th style="text-align: center; padding: 10px 0; color: var(--light-text); font-weight: 500;"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Fila 1 -->
+                        <tr>
+                            <td style="padding: 15px 0;"><strong>Project Alpha</strong></td>
+                            <td style="padding: 15px 0;">
+                                <div style="height: 6px; background-color: #e0e0e0; border-radius: 3px;">
+                                    <div style="width: 75%; height: 100%; background-color: var(--primary-blue); border-radius: 3px;"></div>
+                                </div>
+                                <span style="font-size: 12px; color: var(--light-text); margin-top: 5px; display: block;">75%</span>
+                            </td>
+                            <td style="padding: 15px 0;">2023-11-15</td>
+                            <td style="padding: 15px 0; text-align: center;"><i class="fas fa-ellipsis-v icon-button"></i></td>
+                        </tr>
+                        <!-- Fila 2 -->
+                        <tr style="border-top: 1px dashed #eee;">
+                            <td style="padding: 15px 0;"><strong>Project Beta</strong></td>
+                            <td style="padding: 15px 0;">
+                                <div style="height: 6px; background-color: #e0e0e0; border-radius: 3px;">
+                                    <div style="width: 30%; height: 100%; background-color: var(--primary-blue); border-radius: 3px;"></div>
+                                </div>
+                                <span style="font-size: 12px; color: var(--light-text); margin-top: 5px; display: block;">30%</span>
+                            </td>
+                            <td style="padding: 15px 0;">2023-11-10</td>
+                            <td style="padding: 15px 0; text-align: center;"><i class="fas fa-ellipsis-v icon-button"></i></td>
+                        </tr>
+                        <!-- Más filas según sea necesario... -->
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- Sección de Documentos Actualizados Recientemente -->
+            <section class="recently-updated-section">
+                <h2 style="font-size: 20px; font-weight: 600; margin-bottom: 20px;">Documentos Actualizados Recientemente</h2>
+                
+                <div class="document-list" style="display: flex; flex-direction: column; gap: 15px;">
+                    
+                    <!-- Documento 1 -->
+                    <div class="document-item card" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 20px;">
+                        <div class="document-info" style="display: flex; align-items: center;">
+                            <i class="fas fa-file-alt" style="font-size: 20px; color: var(--primary-blue); margin-right: 15px;"></i>
+                            <div>
+                                <div style="font-weight: 600;">API Documentation</div>
+                                <div style="font-size: 14px; color: var(--light-text);">Project Alpha</div>
+                            </div>
+                        </div>
+                        <a href="#" style="color: var(--primary-blue); text-decoration: none; font-weight: 500;">Ver <i class="fas fa-angle-right"></i></a>
+                    </div>
+                    
+                    <!-- Documento 2 -->
+                    <div class="document-item card" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 20px;">
+                        <div class="document-info" style="display: flex; align-items: center;">
+                            <i class="fas fa-file-alt" style="font-size: 20px; color: var(--primary-blue); margin-right: 15px;"></i>
+                            <div>
+                                <div style="font-weight: 600;">User Guide</div>
+                                <div style="font-size: 14px; color: var(--light-text);">Project Beta</div>
+                            </div>
+                        </div>
+                        <a href="#" style="color: var(--primary-blue); text-decoration: none; font-weight: 500;">Ver <i class="fas fa-angle-right"></i></a>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+    </div> <!-- Fin de dashboard-wrapper -->
+
+    <script>
+        // Aquí iría el JavaScript si fuera necesario (e.g., lógica de menú colapsable, etc.)
+        document.addEventListener('DOMContentLoaded', () => {
+            const logoutButton = document.querySelector('.logout-item');
+            if (logoutButton) {
+                logoutButton.addEventListener('click', (e) => {
+                    // Previene la navegación inmediata si necesitas lógica de cierre de sesión en JS
+                    e.preventDefault(); 
+                    
+                    // Lógica para cerrar sesión (ejemplo conceptual):
+                    console.log('Cerrando sesión...');
+                    // fetch('/logout/', { method: 'POST' }) 
+                    // .then(() => {
+                    //     window.location.href = '/login/'; // Redirige al login
+                    // });
+                    
+                    // Por ahora, solo redirigimos para simular el cierre
+                    window.location.href = e.currentTarget.href; 
+                });
+            }
+        });
+    </script>
+</body>
+</html>

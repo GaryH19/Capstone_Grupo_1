@@ -4,44 +4,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iniciar Sesión</title>
+    <title>Iniciar Sesión - DocuFlow</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="{% static 'style.css' %}">
 </head>
 <body>
-    <div class="login-page">
-        <div class="user-avatar">
-            <i class="fa-solid fa-user"></i>
+    <!-- Encabezado con el logo -->
+    <header class="main-header">
+        <div class="logo-container">
+            <i class="fa-solid fa-cloud" style="color: #007bff;"></i>
+            <span>DocuFlow</span>
         </div>
+    </header>
+
+    <div class="login-container">
+        <!-- Títulos -->
+        <h1 class="welcome-title">Bienvenido de Nuevo</h1>
+        <p class="subtitle">Inicia sesión para acceder a tus proyectos y documentación.</p>
 
         <form class="login-form" method="post">
             {% csrf_token %}
             
+            <!-- Campo de Usuario -->
             <div class="input-group">
-                <i class="fa-solid fa-user icon"></i>
-                <input type="text" name="username" placeholder="USERNAME" required>
+                <input type="text" name="username" placeholder="Nombre de Usuario" required>
             </div>
 
+            <!-- Campo de Contraseña -->
             <div class="input-group">
-                <i class="fa-solid fa-lock icon"></i>
-                <input type="password" name="password" placeholder="PASSWORD" required>
+                <input type="password" name="password" placeholder="Contraseña" required>
             </div>
             
-            <div class="options-group">
-                <label>
-                    <input type="checkbox" name="remember"> Recordarme
-                </label>
-                <a href="#" class="forgot-password">¿Olvidó su contraseña?</a>
+            <!-- Grupo de opciones (Solo "¿Olvidó su contraseña?") -->
+            <div class="options-group right-align">
+                <a href="#" class="forgot-password">¿Olvidó su Contraseña?</a>
             </div>
 
-            <button type="submit" class="login-button">INGRESAR</button>
+            <!-- Botón de LOGIN -->
+            <button type="submit" class="login-button">Iniciar Sesión</button>
         </form>
 
         {% if error %}
             <p class="error-message">{{ error }}</p>
         {% endif %}
-        
-        <div class="separator-line"></div>
     </div>
 </body>
 </html>
