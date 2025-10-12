@@ -63,10 +63,20 @@ WSGI_APPLICATION = 'DocuFlow.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
+'''DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}'''
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'mi_base_datos',  # E.g., 'capstone_db'
+        'USER': 'admin',          # E.g., 'postgres'
+        'PASSWORD': 'password123',  # La contraseña que definiste
+        'HOST': 'localhost',                   # O la IP de tu servidor
+        'PORT': '5432',                        # El puerto por defecto
     }
 }
 
