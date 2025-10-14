@@ -19,7 +19,7 @@
 
     <div class="login-container">
         <!-- Títulos -->
-        <h1 class="welcome-title">Bienvenido de Nuevo</h1>
+        <h1 class="welcome-title">Bienvenido</h1>
         <p class="subtitle">Inicia sesión para acceder a tus proyectos y documentación.</p>
 
         <form class="login-form" method="post">
@@ -43,6 +43,11 @@
             <!-- Botón de LOGIN -->
             <button type="submit" class="login-button">Iniciar Sesión</button>
         </form>
+
+        <!-- NUEVO: Enlace a la página de registro -->
+        <p class="register-link-container">
+            ¿No tienes cuenta? <a href="{% url 'registro' %}" class="register-link">Crear Usuario</a>
+        </p>
 
         {% if error %}
             <p class="error-message">{{ error }}</p>

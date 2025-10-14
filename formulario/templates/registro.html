@@ -1,6 +1,75 @@
-<h2>Registro de Usuario</h2>
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Registrarse</button>
-</form>
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Usuario - DocuFlow</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<body>
+    <!-- Encabezado con el logo -->
+    <header class="main-header">
+        <div class="logo-container">
+            <i class="fa-solid fa-cloud" style="color: #007bff;"></i>
+            <span>DocuFlow</span>
+        </div>
+    </header>
+
+    <div class="login-container">
+        <!-- Títulos actualizados para el registro -->
+        <h1 class="welcome-title">Crea tu Cuenta</h1>
+        <p class="subtitle">Ingresa tus datos para empezar a usar DocuFlow.</p>
+
+        <!-- Formulario de Registro -->
+        <form class="login-form" method="post">
+            {% csrf_token %}
+            
+            {% for field in form %}
+                <!-- Manejo de errores de campo -->
+                {% if field.errors %}
+                    {% for error in field.errors %}
+                        <p class="error-message">{{ error }}</p>
+                    {% endfor %}
+                {% endif %}
+
+                <!-- Aplicamos la clase de estilo al campo -->
+                <div class="input-group">
+                    {% if field.field.widget.input_type == 'select' %}
+                        <!-- Campo select (para tipo_usuario) -->
+                        {{ field.label_tag }}
+                        {{ field }} 
+                        <span class="error-message-field">{{ field.help_text }}</span>
+                    {% else %}
+                        <!-- Campos input (texto, email, contraseña, rut) -->
+                        <input 
+                            type="{{ field.field.widget.input_type }}" 
+                            name="{{ field.name }}" 
+                            placeholder="{{ field.label }}" 
+                            {% if field.value %}value="{{ field.value }}"{% endif %}
+                            required
+                            class="{% if field.field.widget.input_type == 'select' %}select-field{% endif %}"
+                        >
+                    {% endif %}
+                </div>
+            {% endfor %}
+            
+            <!-- Botón de REGISTRO -->
+            <button type="submit" class="login-button" style="margin-top: 25px;">Crear Cuenta</button>
+        </form>
+        
+        <!-- Mensajes de error globales del formulario (no ligados a un campo específico) -->
+        {% if form.non_field_errors %}
+            {% for error in form.non_field_errors %}
+                <p class="error-message">{{ error }}</p>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Enlace para volver al login -->
+        <p class="register-link-container">
+            ¿Ya tienes cuenta? <a href="{% url 'login' %}" class="register-link">Iniciar Sesión</a>
+        </p>
+    </div>
+</body>
+</html>

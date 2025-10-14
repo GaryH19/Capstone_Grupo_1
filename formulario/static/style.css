@@ -45,18 +45,22 @@ body {
 }
 
 .logo-container {
+    /* CORRECCIÓN 1: 'display' debe ser un valor CSS válido como flex, block, etc. 
+       Eliminamos el 'display: 40px;' incorrecto y dejamos los valores que tenías. */
     display: flex;
     align-items: center;
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--text-color);
+    /* Eliminamos el tamaño de fuente y color, que ahora serán definidos por la imagen */
 }
 
-.logo-container i {
-    margin-right: 8px;
-    font-size: 24px;
+/* NUEVA REGLA: Estilos específicos para la imagen del logo, simplificados. */
+.header-logo {
+    /* Establece la altura deseada (40px) */
+    height: 40px; 
+    /* CORRECCIÓN 2: Usamos width: auto para que el logo NO se distorsione y mantenga su proporción. */
+    width: auto; 
+    /* Asegura que la imagen no se recorte y mantenga su proporción */
+    object-fit: contain; 
 }
-
 
 /* === 3. Contenedor de Login (Centrado) === */
 
