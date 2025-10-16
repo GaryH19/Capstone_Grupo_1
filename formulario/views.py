@@ -16,6 +16,14 @@ def colaboradores(request):
 def base (request):
     return render(request, 'base.html')
 
+@login_required
+def carga_documentos (request):
+    return render(request, 'carga_documentos.html')
+
+@login_required
+def proyectos (request):
+    return render(request, 'proyectos.html')
+
 def formulario (request):    
     return render(request, 'login.html',{
         'form': UserChangeForm,

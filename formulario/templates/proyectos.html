@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DocuFlow - Proyectos Activos</title>
+    <link rel="stylesheet" href="#">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <header class="dashboard-header">
+        <div class="logo-text">DocuFlow</div>
+        <div class="header-center">
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Buscar documentos...">
+            </div>
+        </div>
+        <div class="header-right">
+            <button class="icon-button"><i class="fas fa-bell notification-button"></i></button>
+            <button class="icon-button"><i class="fas fa-user-circle"></i></button>
+        </div>
+    </header>
+
+    <div class="dashboard-wrapper">
+        
+        <aside class="sidebar">
+            <nav class="sidebar-nav">
+                <a href="/colaboradores/" class="nav-item"> 
+                    <i class="fas fa-th-large"></i> Inicio
+                </a>
+                <a href="#" class="nav-item active">
+                    <i class="fas fa-sitemap"></i>
+                    Proyectos
+                </a>
+                <a href="/carga_documentos/" class="nav-item">
+                    <i class="fas fa-file-alt"></i>
+                    Cargar Documentos
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-users"></i>
+                    Equipo
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-cog"></i>
+                    Configuración
+                </a>
+                
+                <div style="flex-grow: 1;"></div> 
+                <a href="/login/" class="nav-item logout-item">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Cerrar Sesión
+                </a>
+            </nav>
+
+            <div class="new-project-button-container" style="padding: 20px;">
+                <a href="/proyectos/list/" class="login-button"><i class="fas fa-plus"></i> Nuevo Proyecto</a>
+            </div>
+        </aside>
+
+        <main class="main-content-area">
+            <h1>Panel Principal</h1>
+            
+            <section class="card active-projects-section" style="padding: 30px; margin-bottom: 30px;">
+                <h2 style="font-size: 20px; font-weight: 600; margin-top: 0; margin-bottom: 20px;">Resumen de Proyectos Activos</h2>
+                
+                <table class="projects-table">
+                    <thead>
+                        <tr>
+                            <th>Proyecto</th>
+                            <th>Progreso Documentación</th>
+                            <th>Última Actualización</th>
+                            <th style="text-align: center;"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Project Alpha</strong></td>
+                            <td>
+                                <div class="progress-bar-container">
+                                    <div class="progress-bar" style="width: 75%;"></div>
+                                </div>
+                                <span style="font-size: 12px; color: var(--light-text); display: block;">75%</span>
+                            </td>
+                            <td>2023-11-15</td>
+                            <td style="text-align: center;"><i class="fas fa-ellipsis-v icon-button"></i></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Project Beta</strong></td>
+                            <td>
+                                <div class="progress-bar-container">
+                                    <div class="progress-bar" style="width: 30%;"></div>
+                                </div>
+                                <span style="font-size: 12px; color: var(--light-text); display: block;">30%</span>
+                            </td>
+                            <td>2023-11-10</td>
+                            <td style="text-align: center;"><i class="fas fa-ellipsis-v icon-button"></i></td>
+                        </tr>
+                        </tbody>
+                </table>
+            </section>
+
+            <section class="recently-updated-section">
+                <h2 style="font-size: 20px; font-weight: 600; margin-bottom: 20px;">Documentos Actualizados Recientemente</h2>
+                
+                <div class="document-list">
+                    
+                    <div class="document-item card">
+                        <div class="document-info">
+                            <i class="fas fa-file-alt"></i>
+                            <div>
+                                <div style="font-weight: 600;">API Documentation</div>
+                                <div style="font-size: 14px; color: var(--light-text);">Project Alpha</div>
+                            </div>
+                        </div>
+                        <a href="#" style="font-weight: 500;">Ver <i class="fas fa-angle-right"></i></a>
+                    </div>
+                    
+                    <div class="document-item card">
+                        <div class="document-info">
+                            <i class="fas fa-file-alt"></i>
+                            <div>
+                                <div style="font-weight: 600;">User Guide</div>
+                                <div style="font-size: 14px; color: var(--light-text);">Project Beta</div>
+                            </div>
+                        </div>
+                        <a href="#" style="font-weight: 500;">Ver <i class="fas fa-angle-right"></i></a>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div> </body>
+</html>

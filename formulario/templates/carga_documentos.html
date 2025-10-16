@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DocuFlow - Cargar Documentos</title>
+    <!--<link rel="stylesheet" href="/static/style.css">--> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    
+    <header class="dashboard-header">
+        <div class="logo-text">DocuFlow</div>
+        <div class="header-center">
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Search documents...">
+            </div>
+        </div>
+        <div class="header-right">
+            <button class="icon-button"><i class="fas fa-bell notification-button"></i></button>
+            <button class="icon-button"><i class="fas fa-user-circle"></i></button>
+        </div>
+    </header>
+
+    <div class="dashboard-wrapper">
+        
+        <aside class="sidebar">
+            <nav class="sidebar-nav">
+                <a href="/colaboradores/" class="nav-item"> 
+                    <i class="fas fa-th-large"></i> Inicio
+                </a>
+                <a href="#" class="nav-item active">
+                    <i class="fas fa-file-alt"></i> Carga Documentos
+                </a>
+                <a href="{% url 'proyectos' %}" class="nav-item active">
+                    <i class="fas fa-sitemap"></i>
+                    Proyectos
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-users"></i> Equipo
+                </a>
+                <div style="flex-grow: 1;"></div> 
+                <a href="/login/" class="nav-item logout-item">
+                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                </a>
+            </nav>
+            <div class="new-project-button-container" style="padding: 20px;">
+                <a href="/#/" class="login-button"><i class="fas fa-plus"></i> Nuevo Proyecto</a>
+            </div>
+        </aside>
+
+        <main class="main-content-area">
+            
+            <div class="upload-main-form">
+                
+                <section class="card upload-form-section" style="padding: 30px;">
+                    <h1 style="margin-top: 0; font-size: 24px;">Upload New Document</h1>
+                    
+                    <form action="/upload/handler/" method="POST" enctype="multipart/form-data">
+                        
+                        <div style="display: flex; gap: 20px; margin-top: 20px;">
+                            <div class="form-group" style="flex: 1;">
+                                <label for="document_title">Titulo de Documento</label>
+                                <input type="text" id="document_title" placeholder="e.g., API Documentation V2" name="document_title" required>
+                            </div>
+                            <div class="form-group" style="flex: 1;">
+                                <label for="project_select">Project Association</label>
+                                <select id="project_select" name="project_id" required>
+                                    <option value="">Seleccione un proyecto</option>
+                                    <option value="1">Projecto Alpha</option>
+                                    <option value="2">Projecto Beta</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="document_type">Tipo Documento</label>
+                            <select id="document_type" name="document_type" required>
+                                <option value="">Select a document type</option>
+                                <option value="doc">Documentation</option>
+                                <option value="guide">User Guide</option>
+                            </select>
+                        </div>
