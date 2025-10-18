@@ -1,25 +1,26 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DocuFlow - Proyectos Activos</title>
-    <link rel="stylesheet" href="#">
+    
+    <link rel="stylesheet" href="{% static 'css_proyesto.css' %}">
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <header class="dashboard-header">
-        <div class="logo-text">DocuFlow</div>
+        <!--<div class="logo-text">DocuFlow</div>-->
+        <img src="{% static 'logo_capstone_2.png' %}" alt="DocuFlow Logo" class="logo-image" width="200" height="150">
         <div class="header-center">
             <div class="search-bar">
                 <i class="fas fa-search"></i>
                 <input type="text" placeholder="Buscar documentos...">
             </div>
         </div>
-        <div class="header-right">
-            <button class="icon-button"><i class="fas fa-bell notification-button"></i></button>
-            <button class="icon-button"><i class="fas fa-user-circle"></i></button>
-        </div>
+        
         <div class="header-right">
             {% if request.user.is_authenticated %}
                 <span class="user-display" style="margin-right: 15px; font-weight: 600;">
@@ -28,8 +29,8 @@
             {% endif %}
             <button class="icon-button"><i class="fas fa-bell notification-button"></i></button>
             <button class="icon-button"><i class="fas fa-user-circle"></i></button>
-        </div
-    </header>
+        </div>
+        </header>
 
     <div class="dashboard-wrapper">
         
@@ -141,6 +142,7 @@
                 <p>No hay documentos subidos aún.</p>
                 {% endif %}
             </section>
+            
             <section class="recently-updated-section">
                 <h2 style="font-size: 20px; font-weight: 600; margin-bottom: 20px;">Documentos Actualizados Recientemente (Mock Data)</h2>
                 
