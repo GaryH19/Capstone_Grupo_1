@@ -24,6 +24,16 @@
                 <i class="fas fa-search"></i>
                 <input type="text" placeholder="Buscar documentos...">
             </div>
+
+        <div class="header-right">
+            {% if request.user.is_authenticated %}
+                <span class="user-display" style="margin-right: 15px; font-weight: 600;">
+                    Hola, {{ request.user.first_name|default:request.user.username }} 👋
+                </span>
+            {% endif %}
+            <button class="icon-button"><i class="fas fa-bell notification-button"></i></button>
+            <button class="icon-button"><i class="fas fa-user-circle"></i></button>
+        </div
         </div>
         
         <div class="header-right">

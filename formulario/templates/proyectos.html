@@ -20,6 +20,15 @@
             <button class="icon-button"><i class="fas fa-bell notification-button"></i></button>
             <button class="icon-button"><i class="fas fa-user-circle"></i></button>
         </div>
+        <div class="header-right">
+            {% if request.user.is_authenticated %}
+                <span class="user-display" style="margin-right: 15px; font-weight: 600;">
+                    Hola, {{ request.user.first_name|default:request.user.username }} 👋
+                </span>
+            {% endif %}
+            <button class="icon-button"><i class="fas fa-bell notification-button"></i></button>
+            <button class="icon-button"><i class="fas fa-user-circle"></i></button>
+        </div
     </header>
 
     <div class="dashboard-wrapper">
@@ -29,11 +38,11 @@
                 <a href="/colaboradores/" class="nav-item"> 
                     <i class="fas fa-th-large"></i> Inicio
                 </a>
-                <a href="#" class="nav-item active">
+                <a href="{% url 'proyectos' %}" class="nav-item active">
                     <i class="fas fa-sitemap"></i>
                     Proyectos
                 </a>
-                <a href="/carga_documentos/" class="nav-item">
+                <a href="{% url 'carga_documentos' %}" class="nav-item">
                     <i class="fas fa-file-alt"></i>
                     Cargar Documentos
                 </a>
@@ -47,8 +56,7 @@
                 </a>
                 
                 <div style="flex-grow: 1;"></div> 
-                <a href="/login/" class="nav-item logout-item">
-                    <i class="fas fa-sign-out-alt"></i>
+                <a href="{% url 'login' %}" class="nav-item logout-item"> <i class="fas fa-sign-out-alt"></i>
                     Cerrar Sesión
                 </a>
             </nav>
@@ -57,7 +65,6 @@
                 <a href="/proyectos/list/" class="login-button"><i class="fas fa-plus"></i> Nuevo Proyecto</a>
             </div>
         </aside>
-
         <main class="main-content-area">
             <h1>Panel Principal</h1>
             
@@ -96,15 +103,48 @@
                             <td>2023-11-10</td>
                             <td style="text-align: center;"><i class="fas fa-ellipsis-v icon-button"></i></td>
                         </tr>
-                        </tbody>
+                    </tbody>
                 </table>
             </section>
-
+            
+            <section class="card documents-section" style="padding: 30px; margin-top: 30px;">
+                <h2 style="font-size: 20px; font-weight: 600; margin-top: 0; margin-bottom: 20px;"><i class="fas fa-file-pdf"></i> Documentos Subidos</h2>
+                
+                {% if documentos_subidos %}
+                <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+                    <thead>
+                        <tr style="background-color: #f0f0f0;">
+                            <th style="padding: 10px; text-align: left;">Título</th>
+                            <th style="padding: 10px; text-align: left;">Autor</th>
+                            <th style="padding: 10px; text-align: left;">Proyecto</th>
+                            <th style="padding: 10px; text-align: left;">Fecha</th>
+                            <th style="padding: 10px; text-align: center;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for doc in documentos_subidos %}
+                        <tr style="border-bottom: 1px solid #eee;">
+                            <td style="padding: 10px;">{{ doc.titulo }}</td>
+                            <td style="padding: 10px;">
+                                {{ doc.autor.first_name }} {{ doc.autor.last_name }} ({{ doc.autor.username }})
+                            </td>
+                            <td style="padding: 10px;">{{ doc.proyecto_asociado }}</td>
+                            <td style="padding: 10px;">{{ doc.fecha_subida|date:"Y-m-d H:i" }}</td>
+                            <td style="padding: 10px; text-align: center;">
+                                <a href="{{ doc.archivo.url }}" target="_blank" title="Ver Documento"><i class="fas fa-eye"></i></a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p>No hay documentos subidos aún.</p>
+                {% endif %}
+            </section>
             <section class="recently-updated-section">
-                <h2 style="font-size: 20px; font-weight: 600; margin-bottom: 20px;">Documentos Actualizados Recientemente</h2>
+                <h2 style="font-size: 20px; font-weight: 600; margin-bottom: 20px;">Documentos Actualizados Recientemente (Mock Data)</h2>
                 
                 <div class="document-list">
-                    
                     <div class="document-item card">
                         <div class="document-info">
                             <i class="fas fa-file-alt"></i>
