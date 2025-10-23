@@ -1,16 +1,8 @@
 from django.contrib import admin
-# formulario/admin.py
+from .models import TipoUsuario, Proyecto, Fase, ItemDocumento, DocumentoGuia # <-- Añadir DocumentoGuia
 
-from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin
-from .models import TipoUsuario 
-
-
-class TipoUsuarioAdmin(UserAdmin):
-    list_display = ('username', 'email', 'tipo_usuario', 'is_staff') 
-    fieldsets = UserAdmin.fieldsets + (
-        (None, {'fields': ('tipo_usuario',)}),
-    )
-
-
-admin.site.register(TipoUsuario, TipoUsuarioAdmin)
+admin.site.register(TipoUsuario) 
+admin.site.register(Proyecto)
+admin.site.register(Fase)
+admin.site.register(ItemDocumento)
+admin.site.register(DocumentoGuia) # <-- Añadir esta línea

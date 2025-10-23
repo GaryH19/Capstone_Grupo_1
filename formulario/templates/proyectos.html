@@ -1,175 +1,167 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DocuFlow - Proyectos Activos</title>
-    
-    <link rel="stylesheet" href="{% static 'css_proyesto.css' %}">
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
-<body>
-    <header class="dashboard-header">
-        <!--<div class="logo-text">DocuFlow</div>-->
-        <img src="{% static 'logo_capstone_2.png' %}" alt="DocuFlow Logo" class="logo-image" width="200" height="150">
-        <div class="header-center">
-            <div class="search-bar">
-                <i class="fas fa-search"></i>
-                <input type="text" placeholder="Buscar documentos...">
-            </div>
-        </div>
-        
-        <div class="header-right">
-            {% if request.user.is_authenticated %}
-                <span class="user-display" style="margin-right: 15px; font-weight: 600;">
-                    Hola, {{ request.user.first_name|default:request.user.username }} 👋
-                </span>
+
+{% block title %}Gestionar Proyectos{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">Proyectos</h2>
+    {% if request.user.tipo_usuario == 'admin' %}
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#crearProyectoModal">
+        <i class="fas fa-plus me-1"></i> Crear Nuevo Proyecto
+    </button>
+    {% endif %}
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="card-header bg-white py-3">
+        <h5 class="mb-0">
+            {% if request.user.tipo_usuario == 'admin' %} 
+            Todos los Proyectos 
+            {% else %} Mis Proyectos Asignados 
             {% endif %}
-            <button class="icon-button"><i class="fas fa-bell notification-button"></i></button>
-            <button class="icon-button"><i class="fas fa-user-circle"></i></button>
-        </div>
-        </header>
-
-    <div class="dashboard-wrapper">
-        
-        <aside class="sidebar">
-            <nav class="sidebar-nav">
-                <a href="/colaboradores/" class="nav-item"> 
-                    <i class="fas fa-th-large"></i> Inicio
-                </a>
-                <a href="{% url 'proyectos' %}" class="nav-item active">
-                    <i class="fas fa-sitemap"></i>
-                    Proyectos
-                </a>
-                <a href="{% url 'carga_documentos' %}" class="nav-item">
-                    <i class="fas fa-file-alt"></i>
-                    Cargar Documentos
-                </a>
-                <a href="#" class="nav-item">
-                    <i class="fas fa-users"></i>
-                    Equipo
-                </a>
-                <a href="#" class="nav-item">
-                    <i class="fas fa-cog"></i>
-                    Configuración
-                </a>
-                
-                <div style="flex-grow: 1;"></div> 
-                <a href="{% url 'login' %}" class="nav-item logout-item"> <i class="fas fa-sign-out-alt"></i>
-                    Cerrar Sesión
-                </a>
-            </nav>
-
-            <div class="new-project-button-container" style="padding: 20px;">
-                <a href="/proyectos/list/" class="login-button"><i class="fas fa-plus"></i> Nuevo Proyecto</a>
-            </div>
-        </aside>
-        <main class="main-content-area">
-            <h1>Panel Principal</h1>
-            
-            <section class="card active-projects-section" style="padding: 30px; margin-bottom: 30px;">
-                <h2 style="font-size: 20px; font-weight: 600; margin-top: 0; margin-bottom: 20px;">Resumen de Proyectos Activos</h2>
-                
-                <table class="projects-table">
-                    <thead>
-                        <tr>
-                            <th>Proyecto</th>
-                            <th>Progreso Documentación</th>
-                            <th>Última Actualización</th>
-                            <th style="text-align: center;"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>Project Alpha</strong></td>
-                            <td>
-                                <div class="progress-bar-container">
-                                    <div class="progress-bar" style="width: 75%;"></div>
-                                </div>
-                                <span style="font-size: 12px; color: var(--light-text); display: block;">75%</span>
-                            </td>
-                            <td>2023-11-15</td>
-                            <td style="text-align: center;"><i class="fas fa-ellipsis-v icon-button"></i></td>
-                        </tr>
-                        <tr>
-                            <td><strong>Project Beta</strong></td>
-                            <td>
-                                <div class="progress-bar-container">
-                                    <div class="progress-bar" style="width: 30%;"></div>
-                                </div>
-                                <span style="font-size: 12px; color: var(--light-text); display: block;">30%</span>
-                            </td>
-                            <td>2023-11-10</td>
-                            <td style="text-align: center;"><i class="fas fa-ellipsis-v icon-button"></i></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </section>
-            
-            <section class="card documents-section" style="padding: 30px; margin-top: 30px;">
-                <h2 style="font-size: 20px; font-weight: 600; margin-top: 0; margin-bottom: 20px;"><i class="fas fa-file-pdf"></i> Documentos Subidos</h2>
-                
-                {% if documentos_subidos %}
-                <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
-                    <thead>
-                        <tr style="background-color: #f0f0f0;">
-                            <th style="padding: 10px; text-align: left;">Título</th>
-                            <th style="padding: 10px; text-align: left;">Autor</th>
-                            <th style="padding: 10px; text-align: left;">Proyecto</th>
-                            <th style="padding: 10px; text-align: left;">Fecha</th>
-                            <th style="padding: 10px; text-align: center;">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for doc in documentos_subidos %}
-                        <tr style="border-bottom: 1px solid #eee;">
-                            <td style="padding: 10px;">{{ doc.titulo }}</td>
-                            <td style="padding: 10px;">
-                                {{ doc.autor.first_name }} {{ doc.autor.last_name }} ({{ doc.autor.username }})
-                            </td>
-                            <td style="padding: 10px;">{{ doc.proyecto_asociado }}</td>
-                            <td style="padding: 10px;">{{ doc.fecha_subida|date:"Y-m-d H:i" }}</td>
-                            <td style="padding: 10px; text-align: center;">
-                                <a href="{{ doc.archivo.url }}" target="_blank" title="Ver Documento"><i class="fas fa-eye"></i></a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-                {% else %}
-                <p>No hay documentos subidos aún.</p>
-                {% endif %}
-            </section>
-            
-            <section class="recently-updated-section">
-                <h2 style="font-size: 20px; font-weight: 600; margin-bottom: 20px;">Documentos Actualizados Recientemente (Mock Data)</h2>
-                
-                <div class="document-list">
-                    <div class="document-item card">
-                        <div class="document-info">
-                            <i class="fas fa-file-alt"></i>
-                            <div>
-                                <div style="font-weight: 600;">API Documentation</div>
-                                <div style="font-size: 14px; color: var(--light-text);">Project Alpha</div>
-                            </div>
-                        </div>
-                        <a href="#" style="font-weight: 500;">Ver <i class="fas fa-angle-right"></i></a>
-                    </div>
-                    
-                    <div class="document-item card">
-                        <div class="document-info">
-                            <i class="fas fa-file-alt"></i>
-                            <div>
-                                <div style="font-weight: 600;">User Guide</div>
-                                <div style="font-size: 14px; color: var(--light-text);">Project Beta</div>
-                            </div>
-                        </div>
-                        <a href="#" style="font-weight: 500;">Ver <i class="fas fa-angle-right"></i></a>
-                    </div>
+        </h5>
+    </div>
+    <div class="card-body">
+        {% for proyecto in proyectos_lista %}
+        <div class="proyecto-item mb-3 p-3 border rounded">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="h6 mb-0">{{ proyecto.nombre }}</h5>
+                    <small class="text-muted">Creado: {{ proyecto.fecha_creacion|date:"d M Y" }}</Ssmall>
                 </div>
-            </section>
-        </main>
-    </div> </body>
-</html>
+                <div>
+                    {% if request.user.tipo_usuario == 'colaborador' %}
+                    <a href="#" class="btn btn-sm btn-success">
+                        <i class="fas fa-upload me-1"></i> Subir Documentos
+                    </a>
+                    {% endif %}
+
+                    {% if request.user.tipo_usuario == 'admin' %}
+                    <a href="{% url 'proyecto_editar' proyecto.pk %}" class="btn btn-sm btn-outline-secondary">
+                        <i class="fas fa-edit me-1"></i> Editar
+                    </a>
+
+                    <form method="POST" action="{% url 'proyecto_eliminar' proyecto.pk %}" style="display: inline;"
+                        onsubmit="return confirm('¿Estás seguro de que quieres eliminar este proyecto? Esta acción no se puede deshacer.');">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                            <i class="fas fa-trash me-1"></i> Eliminar
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-muted">No hay proyectos para mostrar.</p>
+        {% endfor %}
+    </div>
+</div>
+
+{% if request.user.tipo_usuario == 'admin' %}
+<div class="modal fade" id="crearProyectoModal" tabindex="-1" aria-labelledby="crearProyectoModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form method="POST" action="{% url 'proyectos_lista_crear' %}" id="form-crear-proyecto">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title" id="crearProyectoModalLabel">Crear Nuevo Proyecto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="{{ form.nombre.id_for_label }}" class="form-label">{{ form.nombre.label }}</label>
+                        {{ form.nombre }}
+                    </div>
+                    <div class="mb-3">
+                        <label for="{{ form.descripcion.id_for_label }}" class="form-label">{{ form.descripcion.label}}</label>
+                        {{ form.descripcion }}
+                    </div>
+
+                    <hr>
+
+                    <div class="row">
+                        <div class="col-5">
+                            <label for="colab-disponibles" class="form-label">Usuarios Disponibles</label>
+                            <select id="colab-disponibles" multiple class="form-control" size="10"></select>
+                        </div>
+
+                        <div class="col-2 d-flex flex-column justify-content-center align-items-center">
+                            <button type="button" id="add-colab" class="btn btn-sm btn-success mb-2">&gt;&gt;</button>
+                            <button type="button" id="remove-colab" class="btn btn-sm btn-danger">&lt;&lt;</button>
+                        </div>
+
+                        <div class="col-5">
+                            <label for="{{ form.colaboradores.id_for_label }}" class="form-label">{{form.colaboradores.label }}</label>
+                            {{ form.colaboradores }}
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Crear Proyecto</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+
+{% block extra_js %}
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        // Solo ejecuta este script si el modal existe
+        if ($('#crearProyectoModal').length) {
+
+            // 1. Identifica las dos cajas
+            var availableBox = $('#colab-disponibles');
+            var chosenBox = $('#id_colaboradores'); // Django le da este ID al campo 'colaboradores'
+
+            // 2. Mueve los usuarios que NO están seleccionados a la caja "Disponibles"
+            chosenBox.find('option').each(function () {
+                if (!$(this).is(':selected')) {
+                    // clona el item y muévelo
+                    $(this).clone().appendTo(availableBox);
+                    $(this).remove(); // quita el original de la caja "elegidos"
+                }
+            });
+
+            // 3. Botón AÑADIR (Disponibles -> Agregados)
+            $('#add-colab').click(function () {
+                availableBox.find('option:selected').each(function () {
+                    // clona, muévelo y quita el original
+                    $(this).clone().appendTo(chosenBox);
+                    $(this).remove();
+                });
+            });
+
+            // 4. Botón QUITAR (Agregados -> Disponibles)
+            $('#remove-colab').click(function () {
+                chosenBox.find('option:selected').each(function () {
+                    // clona, muévelo y quita el original
+                    $(this).clone().appendTo(availableBox);
+                    $(this).remove();
+                });
+            });
+
+            // 5. ANTES DE ENVIAR EL FORMULARIO:
+            // Debemos seleccionar TODOS los items en la caja "Agregados"
+            // para que el formulario los envíe al servidor.
+            $('#form-crear-proyecto').submit(function () {
+                chosenBox.find('option').prop('selected', true);
+            });
+        }
+    });
+</script>
+
+{% endblock %}

@@ -33,15 +33,16 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 15px 30px;
+    padding: 0px 30px;
+    height: 70px;
     background-color: var(--card-background);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .logo-text {
-    font-size: 24px;
-    font-weight: 700;
-    color: var(--primary-dark);
+    height: 100%;
+    display: flex;
+    align-items: center;
 }
 
 .header-center {
@@ -49,7 +50,10 @@ body {
     display: flex;
     justify-content: center;
 }
-
+.logo-text img {
+    height: 200px; 
+    width: auto; 
+}
 .search-bar {
     display: flex;
     align-items: center;

@@ -69,18 +69,6 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-'''
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'mi_proyecto_db',  # E.g., 'capstone_db'
-        'USER': 'admin',          # E.g., 'postgres'
-        'PASSWORD': 'admin123',  # La contraseña que definiste
-        'HOST': 'postgres-db',                   # O la IP de tu servidor
-        'PORT': '5432',                        # El puerto por defecto
-    }
-}
-'''
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
@@ -134,3 +122,5 @@ LOGIN_URL = 'login'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
+
+LOGOUT_REDIRECT_URL = 'login'
