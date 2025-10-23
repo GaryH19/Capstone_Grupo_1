@@ -7,7 +7,7 @@ env/
 __pycache__/
 
 # Archivos de Django/Base de Datos
-db.sqlite3
+#db.sqlite3
 
 
 # Archivos de configuración de Django sensibles (si los tienes)
