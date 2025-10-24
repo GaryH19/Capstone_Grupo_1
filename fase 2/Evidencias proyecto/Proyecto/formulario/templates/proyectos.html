@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Gestionar Proyectos{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">Proyectos</h2>
+    {% if request.user.tipo_usuario == 'admin' %}
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#crearProyectoModal">
+        <i class="fas fa-plus me-1"></i> Crear Nuevo Proyecto
+    </button>
+    {% endif %}
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="card-header bg-white py-3">
+        <h5 class="mb-0">
+            {% if request.user.tipo_usuario == 'admin' %} 
+            Todos los Proyectos 
+            {% else %} Mis Proyectos Asignados 
+            {% endif %}
+        </h5>
+    </div>
+    <div class="card-body">
+        {% for proyecto in proyectos_lista %}
+        <div class="proyecto-item mb-3 p-3 border rounded">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="h6 mb-0">{{ proyecto.nombre }}</h5>
+                    <small class="text-muted">Creado: {{ proyecto.fecha_creacion|date:"d M Y" }}</Ssmall>
+                </div>
+                <div>
+                    {% if request.user.tipo_usuario == 'colaborador' %}
+                    <a href="#" class="btn btn-sm btn-success">
+                        <i class="fas fa-upload me-1"></i> Subir Documentos
+                    </a>
+                    {% endif %}
+
+                    {% if request.user.tipo_usuario == 'admin' %}
+                    <a href="{% url 'proyecto_editar' proyecto.pk %}" class="btn btn-sm btn-outline-secondary">
+                        <i class="fas fa-edit me-1"></i> Editar
+                    </a>
+
+                    <form method="POST" action="{% url 'proyecto_eliminar' proyecto.pk %}" style="display: inline;"
+                        onsubmit="return confirm('¿Estás seguro de que quieres eliminar este proyecto? Esta acción no se puede deshacer.');">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                            <i class="fas fa-trash me-1"></i> Eliminar
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-muted">No hay proyectos para mostrar.</p>
+        {% endfor %}
+    </div>
+</div>
+
+{% if request.user.tipo_usuario == 'admin' %}
+<div class="modal fade" id="crearProyectoModal" tabindex="-1" aria-labelledby="crearProyectoModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form method="POST" action="{% url 'proyectos_lista_crear' %}" id="form-crear-proyecto">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title" id="crearProyectoModalLabel">Crear Nuevo Proyecto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="{{ form.nombre.id_for_label }}" class="form-label">{{ form.nombre.label }}</label>
+                        {{ form.nombre }}
+                    </div>
+                    <div class="mb-3">
+                        <label for="{{ form.descripcion.id_for_label }}" class="form-label">{{ form.descripcion.label}}</label>
+                        {{ form.descripcion }}
+                    </div>
+
+                    <hr>
+
+                    <div class="row">
+                        <div class="col-5">
+                            <label for="colab-disponibles" class="form-label">Usuarios Disponibles</label>
+                            <select id="colab-disponibles" multiple class="form-control" size="10"></select>
+                        </div>
+
+                        <div class="col-2 d-flex flex-column justify-content-center align-items-center">
+                            <button type="button" id="add-colab" class="btn btn-sm btn-success mb-2">&gt;&gt;</button>
+                            <button type="button" id="remove-colab" class="btn btn-sm btn-danger">&lt;&lt;</button>
+                        </div>
+
+                        <div class="col-5">
+                            <label for="{{ form.colaboradores.id_for_label }}" class="form-label">{{form.colaboradores.label }}</label>
+                            {{ form.colaboradores }}
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Crear Proyecto</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+
+{% block extra_js %}
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        // Solo ejecuta este script si el modal existe
+        if ($('#crearProyectoModal').length) {
+
+            // 1. Identifica las dos cajas
+            var availableBox = $('#colab-disponibles');
+            var chosenBox = $('#id_colaboradores'); // Django le da este ID al campo 'colaboradores'
+
+            // 2. Mueve los usuarios que NO están seleccionados a la caja "Disponibles"
+            chosenBox.find('option').each(function () {
+                if (!$(this).is(':selected')) {
+                    // clona el item y muévelo
+                    $(this).clone().appendTo(availableBox);
+                    $(this).remove(); // quita el original de la caja "elegidos"
+                }
+            });
+
+            // 3. Botón AÑADIR (Disponibles -> Agregados)
+            $('#add-colab').click(function () {
+                availableBox.find('option:selected').each(function () {
+                    // clona, muévelo y quita el original
+                    $(this).clone().appendTo(chosenBox);
+                    $(this).remove();
+                });
+            });
+
+            // 4. Botón QUITAR (Agregados -> Disponibles)
+            $('#remove-colab').click(function () {
+                chosenBox.find('option:selected').each(function () {
+                    // clona, muévelo y quita el original
+                    $(this).clone().appendTo(availableBox);
+                    $(this).remove();
+                });
+            });
+
+            // 5. ANTES DE ENVIAR EL FORMULARIO:
+            // Debemos seleccionar TODOS los items en la caja "Agregados"
+            // para que el formulario los envíe al servidor.
+            $('#form-crear-proyecto').submit(function () {
+                chosenBox.find('option').prop('selected', true);
+            });
+        }
+    });
+</script>
+
+{% endblock %}
