@@ -56,108 +56,114 @@
                                         <br>
                                         <hr>
                                         <h5>Fases del proyecto</h5>
-                                        <div  style="border: 1px solid black; padding: 30px; border-radius: 20px;">
-                                            <h6>Fase 1</h6>
-                                            <div>
-                                                <div class="fieldWrapper">
-                                                    <label class="my-1 me-2" for="nombre_fase_1">Ingrese Nombre para la fase:</label>
-                                                    <input type="text" class="form-control" name="nombre_fase_1" id="nombre_fase_1">
-                                                </div>
-                                                <div class="fieldWrapper">
-                                                    <label class="my-1 me-2" for="descripcion_fase_1">Ingrese Descripción para la fase:</label>
-                                                    <input type="text" class="form-control" name="descripcion_fase_1" id="descripcion_fase_1">
-                                                </div>
-                                                <div class="d-flex mt-3">
-                                                    <div class="fieldWrapper col-6">
-                                                        <label class="my-1 me-2" for="fecha_inicio_fase_1">Fecha inicio:</label>
-                                                        <input type="date" class="form-control" name="fecha_inicio_fase_1" id="fecha_inicio_fase_1">
+                                        <div id="contenedor_fases">
+                                            <div  style="border: 1px solid black; padding: 30px; border-radius: 20px;">
+                                                <h6>Fase 1</h6>
+                                                <div>
+                                                    <div class="fieldWrapper">
+                                                        <label class="my-1 me-2" for="nombre_fase_1">Ingrese Nombre para la fase:</label>
+                                                        <input type="text" class="form-control" name="nombre_fase_1" id="nombre_fase_1">
                                                     </div>
-                                                    <div class="fieldWrapper col-6">
-                                                        <label class="my-1 me-2" for="fecha_termino_fase_1">Fecha termino:</label>
-                                                        <input type="date" class="form-control" name="fecha_termino_fase_1" id="fecha_termino_fase_1">
+                                                    <div class="fieldWrapper">
+                                                        <label class="my-1 me-2" for="descripcion_fase_1">Ingrese Descripción para la fase:</label>
+                                                        <input type="text" class="form-control" name="descripcion_fase_1" id="descripcion_fase_1">
                                                     </div>
-                                                </div>
-                                                <div class=" mt-3">
-                                                    <label class="my-1 me-2" for="fecha_termino_fase_1">Seleccione documentos para esta fase:</label>
-                                                    <select name="documentos_fase_1[]" id="documentos_fase_1" class="js-example-placeholder-multiple col-sm-12" multiple="multiple" data-placeholder="Seleccione Opciones">
-                                                        {% for doc in documentos %}
-                                                            <option value="{{doc.TD_NID}}">{{doc.TD_NOMBRE}}</option>
-                                                        {% endfor %}
-                                                    </select>
+                                                    <div class="d-flex mt-3">
+                                                        <div class="fieldWrapper col-6">
+                                                            <label class="my-1 me-2" for="fecha_inicio_fase_1">Fecha inicio:</label>
+                                                            <input type="date" class="form-control" name="fecha_inicio_fase_1" id="fecha_inicio_fase_1">
+                                                        </div>
+                                                        <div class="fieldWrapper col-6">
+                                                            <label class="my-1 me-2" for="fecha_termino_fase_1">Fecha termino:</label>
+                                                            <input type="date" class="form-control" name="fecha_termino_fase_1" id="fecha_termino_fase_1">
+                                                        </div>
+                                                    </div>
+                                                    <div class=" mt-3">
+                                                        <label class="my-1 me-2" for="fecha_termino_fase_1">Seleccione documentos para esta fase:</label>
+                                                        <select name="documentos_fase_1[]" id="documentos_fase_1" class="js-example-placeholder-multiple col-sm-12" multiple="multiple" data-placeholder="Seleccione Opciones">
+                                                            {% for doc in documentos %}
+                                                                <option value="{{doc.TD_NID}}">{{doc.TD_NOMBRE}}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div  style="border: 1px solid black; padding: 30px; border-radius: 20px; margin-top: 10px;">
-                                            <h6>Fase 2</h6>
-                                            <div>
-                                                <div class="fieldWrapper">
-                                                    <label class="my-1 me-2" for="nombre_fase_2">Ingrese Nombre para la fase:</label>
-                                                    <input type="text" class="form-control" name="nombre_fase_2">
-                                                </div>
-                                                <div class="fieldWrapper">
-                                                    <label class="my-1 me-2" for="descripcion_fase_2">Ingrese Descripción para la fase:</label>
-                                                    <input type="text" class="form-control" name="descripcion_fase_2">
-                                                </div>
-                                                <div class="d-flex mt-3">
-                                                    <div class="fieldWrapper col-6">
-                                                        <label class="my-1 me-2" for="fecha_inicio_fase_2">Fecha inicio:</label>
-                                                        <input type="date" class="form-control" name="fecha_inicio_fase_2">
+                                            <div  style="border: 1px solid black; padding: 30px; border-radius: 20px; margin-top: 10px;">
+                                                <h6>Fase 2</h6>
+                                                <div>
+                                                    <div class="fieldWrapper">
+                                                        <label class="my-1 me-2" for="nombre_fase_2">Ingrese Nombre para la fase:</label>
+                                                        <input type="text" class="form-control" name="nombre_fase_2">
                                                     </div>
-                                                    <div class="fieldWrapper col-6">
-                                                        <label class="my-1 me-2" for="fecha_termino_fase_2">Fecha termino:</label>
-                                                        <input type="date" class="form-control" name="fecha_termino_fase_2">
+                                                    <div class="fieldWrapper">
+                                                        <label class="my-1 me-2" for="descripcion_fase_2">Ingrese Descripción para la fase:</label>
+                                                        <input type="text" class="form-control" name="descripcion_fase_2">
                                                     </div>
-                                                </div>
-                                                <div class=" mt-3">
-                                                    <label class="my-1 me-2" for="fecha_termino_fase_2">Seleccione documentos para esta fase:</label>
-                                                    <select name="documentos_fase_2[]" id="documentos_fase_2" class="js-example-placeholder-multiple col-sm-12" multiple="multiple" data-placeholder="Seleccione Opciones">
-                                                        {% for doc in documentos %}
-                                                            <option value="{{doc.TD_NID}}">{{doc.TD_NOMBRE}}</option>
-                                                        {% endfor %}
-                                                    </select>
-                                                </div>
+                                                    <div class="d-flex mt-3">
+                                                        <div class="fieldWrapper col-6">
+                                                            <label class="my-1 me-2" for="fecha_inicio_fase_2">Fecha inicio:</label>
+                                                            <input type="date" class="form-control" name="fecha_inicio_fase_2">
+                                                        </div>
+                                                        <div class="fieldWrapper col-6">
+                                                            <label class="my-1 me-2" for="fecha_termino_fase_2">Fecha termino:</label>
+                                                            <input type="date" class="form-control" name="fecha_termino_fase_2">
+                                                        </div>
+                                                    </div>
+                                                    <div class=" mt-3">
+                                                        <label class="my-1 me-2" for="fecha_termino_fase_2">Seleccione documentos para esta fase:</label>
+                                                        <select name="documentos_fase_2[]" id="documentos_fase_2" class="js-example-placeholder-multiple col-sm-12" multiple="multiple" data-placeholder="Seleccione Opciones">
+                                                            {% for doc in documentos %}
+                                                                <option value="{{doc.TD_NID}}">{{doc.TD_NOMBRE}}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    </div>
 
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div  style="border: 1px solid black; padding: 30px; border-radius: 20px; margin-top: 10px;">
-                                            <h6>Fase 3</h6>
-                                            <div>
-                                                <div class="fieldWrapper">
-                                                    <label class="my-1 me-2" for="nombre_fase_3">Ingrese Nombre para la fase:</label>
-                                                    <input type="text" class="form-control" name="nombre_fase_3">
-                                                </div>
-                                                <div class="fieldWrapper">
-                                                    <label class="my-1 me-2" for="descripcion_fase_3">Ingrese Descripción para la fase:</label>
-                                                    <input type="text" class="form-control" name="descripcion_fase_3">
-                                                </div>
-                                                <div class="d-flex mt-3">
-                                                    <div class="fieldWrapper col-6">
-                                                        <label class="my-1 me-2" for="fecha_inicio_fase_3">Fecha inicio:</label>
-                                                        <input type="date" class="form-control" name="fecha_inicio_fase_3">
+                                            <div  style="border: 1px solid black; padding: 30px; border-radius: 20px; margin-top: 10px;">
+                                                <h6>Fase 3</h6>
+                                                <div>
+                                                    <div class="fieldWrapper">
+                                                        <label class="my-1 me-2" for="nombre_fase_3">Ingrese Nombre para la fase:</label>
+                                                        <input type="text" class="form-control" name="nombre_fase_3">
                                                     </div>
-                                                    <div class="fieldWrapper col-6">
-                                                        <label class="my-1 me-2" for="fecha_termino_fase_3">Fecha termino:</label>
-                                                        <input type="date" class="form-control" name="fecha_termino_fase_3">
+                                                    <div class="fieldWrapper">
+                                                        <label class="my-1 me-2" for="descripcion_fase_3">Ingrese Descripción para la fase:</label>
+                                                        <input type="text" class="form-control" name="descripcion_fase_3">
                                                     </div>
-                                                </div>
-                                                <div class=" mt-3">
-                                                    <label class="my-1 me-2" for="fecha_termino_fase_3">Seleccione documentos para esta fase:</label>
-                                                    <select name="documentos_fase_3[]" id="documentos_fase_3" class="js-example-placeholder-multiple col-sm-12" multiple data-placeholder="Seleccione Opciones">
-                                                        {% for doc in documentos %}
-                                                            <option value="{{doc.TD_NID}}">{{doc.TD_NOMBRE}}</option>
-                                                        {% endfor %}
-                                                    </select>
-                                                </div>
+                                                    <div class="d-flex mt-3">
+                                                        <div class="fieldWrapper col-6">
+                                                            <label class="my-1 me-2" for="fecha_inicio_fase_3">Fecha inicio:</label>
+                                                            <input type="date" class="form-control" name="fecha_inicio_fase_3">
+                                                        </div>
+                                                        <div class="fieldWrapper col-6">
+                                                            <label class="my-1 me-2" for="fecha_termino_fase_3">Fecha termino:</label>
+                                                            <input type="date" class="form-control" name="fecha_termino_fase_3">
+                                                        </div>
+                                                    </div>
+                                                    <div class=" mt-3">
+                                                        <label class="my-1 me-2" for="fecha_termino_fase_3">Seleccione documentos para esta fase:</label>
+                                                        <select name="documentos_fase_3[]" id="documentos_fase_3" class="js-example-placeholder-multiple col-sm-12" multiple data-placeholder="Seleccione Opciones">
+                                                            {% for doc in documentos %}
+                                                                <option value="{{doc.TD_NID}}">{{doc.TD_NOMBRE}}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    </div>
 
+                                                </div>
                                             </div>
                                         </div>
                                         <input type="number" id="cant_fases" name="cant_fases" value="3" hidden>
                                         <div id="nuevas_fases">
                                             
                                         </div>
-                                        <div class="mt-3 mb-3 text-center">
-                                            <button class="btn btn-info" type="button" onclick="add_fase()">Agregar nueva fase</button>
+
+                                        <div class="mt-3 mb-4 text-center">
+                                                <button class="btn btn-info " type="button" onclick="add_fase()">Agregar nueva fase</button>
+
+                                                <button class="btn btn-danger " type="button" onclick="delete_fase()">Eliminar fase</button>
                                         </div>
+
                                         <div class="form-group nav justify-content-end mt-5">
                                             <button class="btn btn-success mr-4" type="submit">Guardar</button>
                                             <a class="btn btn-danger mr-1" onclick="window.history.go(-1); return false;">Volver</a>
@@ -214,12 +220,34 @@
 
                     </div>
                 </div> `
-            $('#nuevas_fases').append(nueva_fase);
+            $('#contenedor_fases').append(nueva_fase);
             $(`#documentos_fase_${nueva_cantidad}`).select2()
             cant_fases.value = nueva_cantidad
 
         }
-    
+        
+        
+        function delete_fase() {
+            let cant_fases_element = document.getElementById('cant_fases');
+            let current_count = parseInt(cant_fases_element.value);
+
+
+            const contenedor_fases = document.getElementById('contenedor_fases');
+            const bloques_fases = contenedor_fases.querySelectorAll(':scope > div[style*="border: 1px solid black"]');
+
+            if (bloques_fases.length > 0) {
+                const ultimo_bloque = bloques_fases[bloques_fases.length - 1];
+                ultimo_bloque.remove();
+
+                if (current_count > 0) {
+                    cant_fases_element.value = current_count - 1;
+                }
+
+            } else {
+                alert("No hay fases para eliminar.");
+            }
+        }
+
         
     
     </script>

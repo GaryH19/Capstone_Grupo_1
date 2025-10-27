@@ -68,7 +68,7 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
-'''
+
 #Base de datos sqlite3 (activar cuando no este en produccion o con psotgresql conectado)
 DATABASES = {
     'default': {
@@ -87,6 +87,7 @@ DATABASES = {
         'PORT': '5433',                # ⬅️ Valor por defecto
     }
 }
+'''
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
 
