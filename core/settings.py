@@ -68,14 +68,25 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
-
+'''
+#Base de datos sqlite3 (activar cuando no este en produccion o con psotgresql conectado)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': 'db.sqlite3',
     }
 }
-
+'''
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'docuflow',            # ⬅️ Confirmado por la imagen
+        'USER': 'postgres',            # ⬅️ Muy probable (se ve en el título de PgAdmin)
+        'PASSWORD': 'admin1234',       # ⬅️ Contraseña que recordaste
+        'HOST': 'localhost',           # ⬅️ Valor por defecto
+        'PORT': '5433',                # ⬅️ Valor por defecto
+    }
+}
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
 
