@@ -11,18 +11,18 @@
 
 					<div class="card-body">
 
-						<img src="/static/assets/images/logo-dark.png" alt="" class="img-fluid mb-4">
+						<img src="/static/assets/images/logo_capstone_2-login.png" alt="" class="img-fluid mb-3" >
 						<h4 class="mb-3 f-w-400">
-							<a target="_blank" 
-							   href="https://appseed.us/admin-dashboards/django-dashboard-gradient-pro">Django PRO</a> - Sign IN
+							<a target="_blank">Bienvenido</a>
 						</h4>
-						<span class="mb-0 text-muted">
+						<p class="subtitle">Inicia sesión para acceder a tus proyectos y documentación.</p>
+						<!--<span class="mb-0 text-muted">
 							{% if msg %}
 								{{ msg | safe }}
 							{% else %}
 								Add your credentials
 							{% endif %} 
-						</span>
+						</span>-->
 						<!-- dummy spacer -->
 						<p> <br /> </p>						
 						<form role="form" method="post" action="">
@@ -44,18 +44,17 @@
 							<div class="form-group text-left mt-2">
 								<div class="checkbox checkbox-primary d-inline">
 									<input type="checkbox" name="checkbox-fill-1" id="checkbox-fill-a1" checked="">
-									<label for="checkbox-fill-a1" class="cr"> Save credentials</label>
+									<label for="checkbox-fill-a1" class="cr"> Recordar</label>
 								</div>
 							</div>
-							<button type="submit" name="login" class="btn btn-block btn-primary mb-4">Signin</button>
+							<button type="submit" name="login" class="btn btn-block btn-primary mb-4">Iniciar Sesión</button>
 						
 						</form>
 
-						<p class="mb-0 text-muted">Don’t have an account? <a href="{% url 'register' %}" class="f-w-400">Sign UP</a></p>
+						<p class="mb-0 text-muted">No Tienes una Cuenta? <a href="{% url 'register' %}" class="f-w-400">Registrate</a></p>
 						<p class="mb-2 text-muted">
 							<br />
-							&copy; <a target="_blank" rel="noopener" href="https://bit.ly/37fF9RT" class="f-w-400">CodedThemes</a>
-							- coded by <a target="_blank" rel="noopener" href="https://appseed.us" class="f-w-400">AppSeed</a>
+							&copy; Derechos reservados por DocuFlow
 						</p>
 					</div>
 

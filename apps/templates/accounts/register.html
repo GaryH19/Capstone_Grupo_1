@@ -10,18 +10,19 @@
 				<div class="col-md-12">
 
 					<div class="card-body">
-						<img src="/static/assets/images/logo-dark.png" alt="" class="img-fluid mb-4">
+
+						<img src="/static/assets/images/logo_capstone_2-login.png" alt="" class="img-fluid mb-3" >
 						<h4 class="mb-3 f-w-400">
-							<a target="_blank" 
-							   href="https://appseed.us/admin-dashboards/django-dashboard-gradient-pro">Django PRO</a> - Sign UP
+							<a target="_blank">Crea tu Cuenta</a>
 						</h4>
-						<span class="mb-0 text-muted">
+						<p class="subtitle">Ingresa tus datos para empezar a usar DocuFlow.</p>
+						<!--<span class="mb-0 text-muted">
 							{% if msg %}
 								{{ msg | safe }}
 							{% else %}
 								Add your credentials
 							{% endif %} 
-						</span>
+						</span>-->
 						<!-- dummy spacer -->
 						<p> <br /> </p>		
 						
@@ -66,20 +67,19 @@
 								<div class="form-group text-left mt-2">
 									<div class="checkbox checkbox-primary d-inline">
 										<input type="checkbox" name="checkbox-fill-2" id="checkbox-fill-2">
-										<label for="checkbox-fill-2" class="cr">I agree with <a href="#">terms</a>.</label>
+										<label for="checkbox-fill-2" class="cr">Aceptar <a href="{% url 'login' %}"><u> Terminos y Condiciones</u></a>.</label>
 									</div>
 								</div>
-								<button type="submit" name="register" class="btn btn-primary btn-block mb-4">Sign up</button>
+								<button type="submit" name="register" class="btn btn-primary btn-block mb-4">Registrarse</button>
 							
 							</form>
 
-							<p class="mb-0 text-muted">Have an account? <a href="{% url 'login' %}" class="f-w-400">Login</a></p>
+							<p class="mb-0 text-muted">Ya Tienes una Cuenta? <a href="{% url 'login' %}" class="f-w-400">Inicia Sesión</a></p>
 						{% endif %}
 
 						<p class="mb-2 text-muted">
 							<br />
-							&copy; <a target="_blank" rel="noopener" href="https://bit.ly/37fF9RT" class="f-w-400">CodedThemes</a>
-							- coded by <a target="_blank" rel="noopener" href="https://appseed.us" class="f-w-400">AppSeed</a>
+							&copy; Derechos reservados por DocuFlow
 						</p>
 
 					</div>

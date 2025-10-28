@@ -45,7 +45,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'core.urls'
 LOGIN_REDIRECT_URL = "home"  # Route defined in home/urls.py
-LOGOUT_REDIRECT_URL = "home"  # Route defined in home/urls.py
+LOGOUT_REDIRECT_URL = "login"  # Route defined in home/urls.py
 TEMPLATE_DIR = os.path.join(CORE_DIR, "apps/templates")  # ROOT dir for templates
 
 TEMPLATES = [
@@ -77,14 +77,15 @@ DATABASES = {
     }
 }
 '''
+#Base de datos de Postgresql (activar cuando se este con la base de datos local)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'docuflow',            # ⬅️ Confirmado por la imagen
-        'USER': 'postgres',            # ⬅️ Muy probable (se ve en el título de PgAdmin)
-        'PASSWORD': 'admin1234',       # ⬅️ Contraseña que recordaste
-        'HOST': 'localhost',           # ⬅️ Valor por defecto
-        'PORT': '5433',                # ⬅️ Valor por defecto
+        'NAME': 'docuflow',
+        'USER': 'postgres',
+        'PASSWORD': 'admin1234',
+        'HOST': 'localhost',
+        'PORT': '5433',
     }
 }
 '''
@@ -111,7 +112,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Santiago'
 
 USE_I18N = True
 

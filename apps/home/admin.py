@@ -8,6 +8,7 @@ from .models import (REGION, COMUNA, EMPRESA, TIPO_DOCUMENTO, PROYECTO,
                      FASE_PROYECTO, FASE_TIPO_DOCUMENTO, DOCUMENTO, 
                      FASE_DOCUMENTO)
 
+
 # Register your models here.
 admin.site.register(REGION)
 admin.site.register(COMUNA)
