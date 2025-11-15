@@ -1,0 +1,183 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Dashboard de Proyectos {% endblock %} 
+
+{% block stylesheets %}
+<style>
+    /* Estilos para las tarjetas de proyecto */
+    .project-card {
+        transition: all 0.3s ease;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        background: #fff;
+        margin-bottom: 30px;
+        border-top: 4px solid #007bff; /* Un toque de color primario */
+    }
+    .project-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+    }
+    .project-card a {
+        text-decoration: none;
+        color: inherit;
+        display: block;
+        padding: 24px;
+    }
+    .project-card .card-title {
+        font-size: 1.15rem;
+        font-weight: 600;
+        color: #333;
+        /* Limita el texto a 2 líneas */
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        min-height: 44px; /* (font-size * line-height * 2) */
+    }
+    .project-card .card-meta {
+        font-size: 0.85rem;
+        color: #777;
+        margin-top: 8px;
+        display: -webkit-box;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    .progress-wrapper {
+        margin-top: 16px;
+    }
+    .progress-info {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.8rem;
+        margin-bottom: 5px;
+        font-weight: 600;
+        color: #555;
+    }
+    .progress {
+        height: 6px;
+        background-color: #e9ecef;
+        border-radius: 20px;
+        overflow: hidden;
+    }
+    .progress-bar {
+        background-color: #007bff; /* Azul */
+        transition: width 0.5s ease;
+    }
+    .progress-bar.completed {
+        background-color: #2dce89; /* Verde */
+    }
+</style>
+{% endblock stylesheets %}
+
+{% block content %} 
+    
+    <section class="pcoded-main-container">
+        <div class="pcoded-content">
+            <div class="page-header">
+                <div class="page-block">
+                    <div class="row align-items-center">
+                        <div class="col-md-12">
+                            <div class="page-header-title">
+                                <h5 class="m-b-10">Mi Dashboard</h5>
+                            </div>
+                            <ul class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="/"><i class="feather icon-home"></i></a></li>
+                                <li class="breadcrumb-item"><a href="#!">Mis Proyectos</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                
+                <div class="col-12">
+                    <div class="card" style="background: linear-gradient(to right, #007bff, #0056b3);">
+                        <div class="card-body">
+                            <h4 class="text-white">¡Bienvenido, {{ request.user.first_name|default:request.user.username }}!</h4>
+                            <p class="text-white mb-0">Aquí están tus proyectos actuales. Haz clic en uno para ver sus fases.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-xl-3">
+                    <div class="card bg-c-blue order-card">
+                        <div class="card-body">
+                            <h6 class="text-white">Proyectos Activos</h6>
+                            <h2 class="text-right text-white"><i class="feather icon-folder float-left"></i><span>{{ total_proyectos }}</span></h2>
+                            <p class="m-b-0">Total de proyectos asignados</p>
+                        </div>
+                    </div>
+                </div>
+                
+                {% if is_profesor %}
+                <div class="col-md-6 col-xl-3">
+                    <a href="{% url 'create_pro' %}" style="text-decoration: none;">
+                        <div class="card bg-c-green order-card">
+                            <div class="card-body">
+                                <h6 class="text-white">Gestión</h6>
+                                <h2 class="text-right text-white"><i class="feather icon-plus-circle float-left"></i><span>Nuevo</span></h2>
+                                <p class="m-b-0">Crear un nuevo proyecto</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <hr>
+                    <h5 class="mb-3">Tus Proyectos</h5>
+                </div>
+
+                {% for proyecto in proyectos %}
+                    <div class="col-md-4">
+                        <div class="project-card">
+                            <a href="{% url 'pro_listone' proyecto.0 %}">
+                                <div class="card-title">{{ proyecto.1 }}</div>
+                                <div class="card-meta">
+                                    <i class="feather icon-briefcase"></i> {{ proyecto.2 }}
+                                </div>
+                                <div class="card-meta">
+                                    <i class="feather icon-calendar"></i> {{ proyecto.3|date:"d M, Y" }}
+                                </div>
+
+                                <div class="progress-wrapper">
+                                    <div class="progress-info">
+                                        <span>Progreso (Aprobado)</span>
+                                        <span>{{ proyecto.4 }}%</span>
+                                    </div>
+                                    <div class="progress">
+                                        <div class="progress-bar {% if proyecto.4 == 100 %}completed{% endif %}" role="progressbar" style="width: {{ proyecto.4 }}%;" aria-valuenow="{{ proyecto.4 }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body text-center" style="padding: 50px;">
+                                <i class="feather icon-folder-minus" style="font-size: 4rem; color: #aaa;"></i>
+                                <h4 class="text-muted mt-3">No tienes proyectos asignados.</h4>
+                                {% if is_profesor %}
+                                    <p class="text-muted">¡Crea tu primer proyecto para comenzar!</p>
+                                    <a href="{% url 'create_pro' %}" class="btn btn-primary mt-2">
+                                        <i class="fas fa-plus"></i> Crear Proyecto
+                                    </a>
+                                {% else %}
+                                    <p class="text-muted">Espera a que un profesor te asigne a un proyecto.</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+
+            </div>
+            </div>
+    </section>
+    {% endblock content %}
+
+{% block javascripts %}{% endblock javascripts %}

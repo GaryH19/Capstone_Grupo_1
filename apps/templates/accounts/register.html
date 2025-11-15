@@ -1,0 +1,99 @@
+{% extends "layouts/base-fullscreen.html" %}
+
+{% block title %} Login {% endblock %}
+
+{% block content %} 
+
+	<div class="auth-content">
+		<div class="card">
+			<div class="row align-items-center text-center">
+				<div class="col-md-12">
+
+					<div class="card-body">
+
+						<img src="/static/assets/images/logo_capstone_2-login.png" alt="" class="img-fluid mb-3" >
+						<h4 class="mb-3 f-w-400">
+							<a target="_blank">Crea tu Cuenta</a>
+						</h4>
+						<p class="subtitle">Ingresa tus datos para empezar a usar DocuFlow.</p>
+						<!--<span class="mb-0 text-muted">
+							{% if msg %}
+								{{ msg | safe }}
+							{% else %}
+								Add your credentials
+							{% endif %} 
+						</span>-->
+						<!-- dummy spacer -->
+						<p> <br /> </p>		
+						
+						<!-- Hide the form on success -->
+						{% if not success %}
+							<form role="form" method="post" action="">
+
+								{% csrf_token %}  
+														
+								<div class="input-group mb-3">
+									<div class="input-group-prepend">
+										<span class="input-group-text"><i class="feather icon-user"></i></span>
+									</div>
+									{{ form.username }}
+								</div>	
+								<span class="text-error">{{ form.username.errors }}</span>
+
+								<div class="input-group mb-3">
+									<div class="input-group-prepend">
+										<span class="input-group-text"><i class="feather icon-mail"></i></span>
+									</div>
+									{{ form.email }}
+								</div>
+								<span class="text-error">{{ form.email.errors }}</span>
+
+								<div class="input-group mb-4">
+									<div class="input-group-prepend">
+										<span class="input-group-text"><i class="feather icon-lock"></i></span>
+									</div>
+									{{ form.password1 }}
+								</div>
+								<span class="text-error">{{ form.password1.errors }}</span>
+
+								<div class="input-group mb-4">
+									<div class="input-group-prepend">
+										<span class="input-group-text"><i class="feather icon-lock"></i></span>
+									</div>
+									{{ form.password2 }}
+								</div>
+								<span class="text-error">{{ form.password2.errors }}</span>
+
+								<div class="form-group text-left mt-2">
+									<div class="checkbox checkbox-primary d-inline">
+										<input type="checkbox" name="checkbox-fill-2" id="checkbox-fill-2">
+										<label for="checkbox-fill-2" class="cr">Aceptar <a href="{% url 'login' %}"><u> Terminos y Condiciones</u></a>.</label>
+									</div>
+								</div>
+								<button type="submit" name="register" class="btn btn-primary btn-block mb-4">Registrarse</button>
+							
+							</form>
+
+							<p class="mb-0 text-muted">Ya Tienes una Cuenta? <a href="{% url 'login' %}" class="f-w-400">Inicia Sesión</a></p>
+						{% endif %}
+
+						<p class="mb-2 text-muted">
+							<br />
+							&copy; Derechos reservados por DocuFlow
+						</p>
+
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+	<script src="/static/assets/js/waves.min.js"></script>
+
+{% endblock javascripts %} 
