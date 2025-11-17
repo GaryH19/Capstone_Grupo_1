@@ -5,9 +5,7 @@ class NoCacheMiddleware:
 
     def __call__(self, request):
         response = self.get_response(request)
-        
-        # Solo aplicamos esto si el usuario estaba logueado, 
-        # o puedes quitar el 'if' para aplicarlo a todo el sitio por seguridad.
+
         if request.user.is_authenticated:
             response['Cache-Control'] = "no-cache, no-store, must-revalidate, max-age=0"
             response['Pragma'] = "no-cache"
