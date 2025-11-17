@@ -88,7 +88,7 @@ class FASE_PROYECTO(models.Model):
     FA_CDESCRICPCION =models.CharField(("Descripcion"),max_length=1028)
     PRO_FFECHAINCIO = models.DateTimeField()
     PRO_FFECHATERMINO = models.DateTimeField()
-    PRO_NID = models.ForeignKey(PROYECTO,verbose_name="Id Proyecto",on_delete=models.PROTECT)
+    PRO_NID = models.ForeignKey(PROYECTO,verbose_name="Id Proyecto",on_delete=models.CASCADE)
     FA_COMPLETADO = models.BooleanField(default=False)
 
     class Meta:
@@ -100,7 +100,7 @@ class FASE_PROYECTO(models.Model):
 #ESTAS TABLA SERA PARA SABER CUALES SON LOS DOCUMENTOS SOLICITADOS POR CADA FASE
 class FASE_TIPO_DOCUMENTO(models.Model):
     FTD_NID = models.BigAutoField(("ID"), primary_key=True)
-    FA_NID = models.ForeignKey(FASE_PROYECTO,verbose_name="Id Fase proyecto",on_delete=models.PROTECT)
+    FA_NID = models.ForeignKey(FASE_PROYECTO,verbose_name="Id Fase proyecto",on_delete=models.CASCADE)
     TD_NID = models.ForeignKey(TIPO_DOCUMENTO,verbose_name="Id Tipo Documento",on_delete=models.PROTECT)
 
     class Meta:
@@ -128,7 +128,7 @@ class DOCUMENTO(models.Model):
 #ESTAS TABLA SERA PARA CONECTAR LOS DOCUMENTOS CON LAS FASES
 class FASE_DOCUMENTO(models.Model):
     FTD_NID = models.BigAutoField(("ID"), primary_key=True)
-    FA_NID = models.ForeignKey(FASE_PROYECTO,verbose_name="Id Fase proyecto",on_delete=models.PROTECT)
+    FA_NID = models.ForeignKey(FASE_PROYECTO,verbose_name="Id Fase proyecto",on_delete=models.CASCADE)
     DOC_NID = models.ForeignKey(DOCUMENTO,verbose_name="Documento",on_delete=models.PROTECT)
 
     class Meta:

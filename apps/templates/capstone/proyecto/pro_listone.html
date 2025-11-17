@@ -35,6 +35,7 @@
 
             </div>
             <!-- [ breadcrumb ] end -->
+            
             <!-- [ Main Content ] start -->
             <div class="row">
                 <!-- HTML5 Export Buttons table start -->
@@ -50,7 +51,7 @@
                                 <table id="basic-btn" class="table table-striped table-bordered nowrap">
                                     <thead>
                                         <tr>
-                                            <th>ID FASE</th>
+                                            <!-- <th>ID FASE</th> -->
                                             <th>NOMBRE</th>
                                             <th>NÚMERO DE FASE</th>
                                             <th>FECHA INICIO</th>
@@ -63,7 +64,7 @@
                                     <tbody>
                                         {% for objeto in fases %}
                                             <tr>
-                                                <td class="col-1"><span class="fw-normal">{{ objeto.0 }}</span></td>
+                                                <!-- <td class="col-1"><span class="fw-normal">{{ objeto.0 }}</span></td> -->
                                                 <td><span class="fw-normal">{{ objeto.1 }}</span></td>
                                                 <td><span class="fw-normal">{{ objeto.2 }}</span></td>
                                                 <td class="col-2"><span class="fw-normal">{{ objeto.3|date:"d-m-Y" }}</span></td>

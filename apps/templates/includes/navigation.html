@@ -1,14 +1,13 @@
-
-
 	<!-- [ Header ] start -->
 	<header class="navbar pcoded-header navbar-expand-lg navbar-light headerpos-fixed header-blue">
 			
         <div class="m-header">
             <a class="mobile-menu" id="mobile-collapse" href="#!"><span></span></a>
-            <a href="#!" class="b-brand">
+            <a href="/" class="b-brand">
                 <!-- ========   change your logo hear   ============ -->
                 <img src="/static/assets/images/DOCUFLOW.png" alt="" class="logo" style="width: 170px; height: 160px; margin-top: 10px;">
                 <img src="/static/assets/images/logo-icon.png" alt="" class="logo-thumb">
+                
             </a>
             <a href="#!" class="mob-toggler">
                 <i class="feather icon-more-vertical"></i>
@@ -30,9 +29,24 @@
                 </li>
             </ul>
             <ul class="navbar-nav ml-auto">
-                <li>
-                    <!-- Topbar user links -->
-                    {% include 'includes/component-dropdown-user.html' %}
+                <li class="nav-item d-flex align-items-center">
+        
+                    <span class="text-white font-weight-bold mr-3" style="font-size: 14px;">
+                        <i class="feather icon-user"></i> 
+                        {% if request.user.first_name %}
+                            {{ request.user.first_name }} {{ request.user.last_name }}
+                        {% else %}
+                            {{ request.user.username }}
+                        {% endif %}
+                    </span>
+
+                    <form method="post" action="{% url 'logout' %}" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-light btn-sm m-0" title="Cerrar Sesión" style="border: none;">
+                            <i class="feather icon-log-out"></i> Salir
+                        </button>
+                    </form>
+
                 </li>
             </ul>
         </div>
