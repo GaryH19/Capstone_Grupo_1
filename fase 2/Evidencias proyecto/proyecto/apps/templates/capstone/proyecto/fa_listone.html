@@ -1,0 +1,279 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Fase {% endblock %} 
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="/static/assets/css/plugins/dataTables.bootstrap4.min.css">
+    
+    <style>
+        .card-image-container {
+            position: relative;
+            height: 250px; 
+            background-color: #f8f9fa;
+        }
+        
+        .service_hover {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+            z-index: 10;
+        }
+
+        .card-image-container:hover .service_hover {
+            opacity: 1;
+        }
+        
+        .hover_content {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .hover_content_inner {
+            text-align: center;
+            color: white;
+        }
+        .hover_content_inner h4 {
+            color: white;
+            font-weight: bold;
+        }
+    </style>
+{% endblock stylesheets %}
+
+{% block content %} 
+    <section class="pcoded-main-container">
+        <div class="pcoded-content">
+            <div class="page-header">
+                <div class="page-block">
+                    <div class="row align-items-center">
+                        <div class="col-md-12">
+                            <div class="page-header-title">
+                                <h1 class="m-b-10 text-center">Fase Nº{{fase.FA_NNUMERO_FASE}}: {{fase.FA_CNOMBRE}}</h1>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-around" >
+                                <div><p class="font-weight-bold">Fecha inicio</p><p>{{fase.PRO_FFECHAINCIO|date:"d-m-Y"}}</p></div>
+                                <div><i class="fas fa-chevron-right"></i></div>
+                                <div><p class="font-weight-bold">Fecha Termino</p><p>{{fase.PRO_FFECHATERMINO|date:"d-m-Y"}}</p></div>
+                            </div>
+                            <hr>
+                            <div class="col-md-12">
+                                <div id="pie" style="width:100%; height:300px; text-align: center;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-11">
+                    <div class="card pt-5 pb-5">
+                        <h4 class="text-center"> Documentos </h4>
+                        <hr>
+                        <div class="card-group justify-content-center">
+                            
+                            {% for objeto in lst_data %}
+                                <div class="col-md-5 col-xl-5">
+                                    <div class="card mb-3 shadow-sm">
+                                        
+                                        <div class="card-image-container">
+                                            
+                                            {% if not objeto.1 %}  
+                                                <img class="img-fluid" src="/static/assets/images/No_Cargado_fondo_blanco.png" alt="No Cargado" style="border-bottom: 1px solid #eee; height: 100%; width: 100%; object-fit: contain;">
+                                            {% else %} 
+                                                <img class="img-fluid" src="/static/assets/images/Cargado_fondo_blanco.png" alt="Cargado" style="border-bottom: 1px solid #eee; height: 100%; width: 100%; object-fit: contain;">
+                                            {% endif %}
+                                            
+                                            <div class="single_service ">
+                                                <div class="service_hover">
+                                                    {% if not objeto.1 %}
+                                                        <div class="hover_content" style="background: linear-gradient(to bottom, #b9432975, #ff00008a);">
+                                                            <div class="hover_content_inner">
+                                                                <h4>Documento NO cargado</h4>
+                                                                <button class="btn btn-primary text-center mt-5" type="button" onclick="agregar_documento('{{objeto.4}}')">Cargar Documento</button>
+                                                            </div>
+                                                        </div>
+                                                    {% else %}
+                                                        <div class="hover_content" style="background: linear-gradient(to bottom, #297fb984, #2c3e5079);">
+                                                            <div class="hover_content_inner">
+                                                                <h4 class="mb-5">Documento cargado</h4>
+                                                                
+                                                                <a class="btn btn-primary text-center" href="{{objeto.1.url}}" download>Descargar</a>
+                                                            </div>
+                                                        </div>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div> <div class="card-body">
+                                            <h5 class="card-title">{{objeto.0}}</h5>
+                                            
+                                            <p class="card-text" style="font-size: 1rem;">
+                                                <strong>Estado:</strong>
+                                                {% if not objeto.1 %}  
+                                                    <span class="badge badge-secondary">Pendiente</span>
+                                                {% else %} 
+                                                    {% if objeto.3 == 1 %} <span class="badge badge-success">Aprobado</span>
+                                                    {% elif objeto.3 == 0 %} <span class="badge badge-danger">Rechazado</span>
+                                                    {% else %} <span class="badge badge-warning text-white">En Revisión</span>
+                                                    {% endif %}
+                                                {% endif %}
+                                            </p>
+
+                                            {% if objeto.3 == 0 and not is_profesor %}
+                                                <div class="alert alert-danger mt-2 p-2 text-left small">
+                                                    <strong>Motivo del Rechazo:</strong><br>
+                                                    {{ objeto.6|default:"Sin comentarios." }}
+                                                </div>
+                                                <button class="btn btn-outline-danger btn-sm btn-block mt-2" onclick="agregar_documento('{{objeto.4}}')">
+                                                    <i class="fas fa-redo"></i> Subir Corrección
+                                                </button>
+                                            {% endif %}
+                                            
+                                            {% if objeto.3 == 1 %}
+                                                 <p class="small text-success mt-2 mb-0">{{ objeto.6|default:"¡Aprobado!" }}</p>
+                                            {% endif %}
+
+                                            {% if is_profesor and objeto.1 and objeto.3 != 1 %}
+                                                <hr class="my-2">
+                                                <div class="d-flex justify-content-between">
+                                                    <form action="{% url 'aprobar_documento' objeto.5 %}" method="POST" class="w-50 mr-1">
+                                                        {% csrf_token %}
+                                                        <button type="submit" class="btn btn-success btn-sm btn-block" title="Aprobar">
+                                                            <i class="fas fa-check"></i> Aprobar
+                                                        </button>
+                                                    </form>
+                                                    <button type="button" class="btn btn-danger btn-sm btn-block w-50 ml-1" onclick="abrirRechazo('{{objeto.5}}')">
+                                                        <i class="fas fa-times"></i> Rechazar
+                                                    </button>
+                                                </div>
+                                            {% endif %}
+                                            
+                                            <p class="card-text mt-3"><small class="text-muted">
+                                                {% if objeto.2 %} Últ. modif: {{objeto.2|date:"d M, H:i"}} 
+                                                {% else %} Documento no cargado. 
+                                                {% endif %}
+                                            </small></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+    </section>
+    <div class="modal fade" id="ModalAgregarDoc" role="dialog" aria-labelledby="ModalAgregarDocLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered ">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ModalAgregarDocTitle">Cargar Documento</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" id="form_tipo_doc" action="{% url 'create_doc' %}?next={{request.path}}"  enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="number" id="tipo_doc_id" name="TD_NID" hidden>
+                    <input type="number" id="fase_proyecto_id" name="FA_NID" value="{{fase.FA_NID}}" hidden>
+                    <div class="fieldWrapper">
+                        <label class="my-1 me-2" >Nombre de documento:</label>
+                        <input type="text" class="form-control" id="nombre_id" name="DOC_NOMBRE" required>
+                    </div>
+                    <div class="fieldWrapper">
+                        <label class="my-1 me-2" >Archivo:</label>
+                        <input type="file" name="DOC_CONTENIDO" id="contenido_id" class="form-control" required>
+                    </div>
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" class="m-2 btn btn-success" id="addpedido">Guardar</button>
+                        <button type="button" class="m-2 btn btn-danger" data-dismiss="modal">Cerrar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+    
+<div class="modal fade" id="ModalRechazo" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-danger">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">Rechazar Documento</h5>
+                <button type="button" class="close text-white" data-dismiss="modal"><span>&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <form id="formRechazo" method="POST" action="">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label>Motivo del rechazo:</label>
+                        <textarea class="form-control" name="comentario_rechazo" rows="4" required placeholder="Ej: Falta la firma, el formato es incorrecto..."></textarea>
+                    </div>
+                    <div class="text-right">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-danger">Confirmar Rechazo</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block javascripts %}
+
+    <script src="/static/assets/js/plugins/jquery.dataTables.min.js"></script>
+    <script src="/static/assets/js/plugins/dataTables.bootstrap4.min.js"></script>
+    <script src="/static/assets/js/pages/data-export-custom.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.1.2/dist/echarts.min.js"></script>
+    
+    <script>
+        // --- GRÁFICO PIE (Sin cambios) ---
+        var chartDom = document.getElementById('pie');
+        var myChart = echarts.init(chartDom);
+        var option;
+        var colorPalette = ['#f5365c', '#adb5bd', '#2dce89','#fb6340'] 
+        option = {
+            title: { text: 'Porcentajes de la carga de documentación', left: 'center' },
+            tooltip: { trigger: 'item' },
+            legend: { orient: 'horizontal', left: 'center', top: 'bottom' },
+            series: [{
+                name: 'Documentos', type: 'pie', radius: '65%',
+                data: [
+                    { value: {{cant_no_aprobados}}, name: 'Rechazados' },
+                    { value: {{cant_doc_faltantes}}, name: 'Pendientes' },
+                    { value: {{cant_doc_aprobados}}, name: 'Aprobados' },
+                    { value: {{cant_espera}}, name: 'En Revisión' },
+                ],
+                color: colorPalette,
+                emphasis: { itemStyle: { shadowBlur: 10, shadowOffsetX: 0, shadowColor: 'rgba(0, 0, 0, 0.5)' } }
+            }]
+        };
+        option && myChart.setOption(option);
+    </script>
+
+    <script>
+        // --- MODAL DE CARGA (Sin cambios) ---
+        function agregar_documento(tipo_doc){
+            tipo_input = document.getElementById('tipo_doc_id')
+            tipo_input.value = tipo_doc
+            $('#ModalAgregarDoc').modal('show')
+        }
+
+        // --- MODAL DE RECHAZO (Sin cambios) ---
+        function abrirRechazo(docId) {
+            var url = "{% url 'rechazar_documento' 0 %}".replace('0', docId);
+            document.getElementById('formRechazo').action = url;
+            $('#ModalRechazo').modal('show');
+        }
+
+        // ============================================== -->
+        </script>
+{% endblock javascripts %}
