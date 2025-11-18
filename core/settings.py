@@ -13,7 +13,11 @@ SECRET_KEY = config('SECRET_KEY', default='S#perS3crEt_1122')
 DEBUG = config('DEBUG', default=True, cast=bool)
 
 # load production server from .env
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', config('SERVER', default='127.0.0.1')]
+ALLOWED_HOSTS = ['unmustered-pseudostalagmitic-ashlea.ngrok-free.dev',
+                 'localhost', '127.0.0.1', config('SERVER', default='127.0.0.1')
+                ]
+# Nota: Aquí SÍ es necesario poner https://
+CSRF_TRUSTED_ORIGINS = ['https://unmustered-pseudostalagmitic-ashlea.ngrok-free.dev']
 
 # Application definition
 

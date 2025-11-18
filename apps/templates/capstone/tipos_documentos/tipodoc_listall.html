@@ -56,7 +56,7 @@
                                 <table id="basic-btn" class="table table-striped table-bordered nowrap">
                                     <thead>
                                         <tr>
-                                            <th>ID TIPO DOCUMENTO</th>
+                                            <!-- <th>ID TIPO DOCUMENTO</th> -->
                                             <th>NOMBRE</th>
                                             <th>ESTADO</th>
                                             <th>ACCIONES</th>
@@ -65,7 +65,7 @@
                                     <tbody>
                                         {% for objeto in tipos %}
                                             <tr>
-                                                <td class="col-1"><span class="fw-normal">{{ objeto.TD_NID }}</span></td>
+                                                <!-- <td class="col-1"><span class="fw-normal">{{ objeto.TD_NID }}</span></td> -->
                                                 <td><span class="fw-normal">{{ objeto.TD_NOMBRE }}</span></td>
                                                 {% if objeto.TD_ESTADO %}
                                                     <td><i class="fas fa-check" style="color: #63E6BE;"></i></td>

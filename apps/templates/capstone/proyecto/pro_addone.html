@@ -72,31 +72,31 @@
                                         <br>
 
                                         <hr>
-<h5>2. Asignar Alumnos</h5>
-<div class="fieldWrapper">
-    <label class="my-1 me-2" for="{{ form.alumnos.id_for_label }}">Seleccione los alumnos que participarán:</label>
-    
-    {{ form.alumnos }}
-    
-    <small class="form-text text-muted">
-        {% if form.instance.pk %}
-            Haga clic en la barra para añadir. Haga clic en la "x" del nombre para quitar.
-        {% else %}
-            Puede seleccionar múltiples alumnos.
-        {% endif %}
-    </small>
-    {{ form.alumnos.errors }}
-</div>
-<br>
+                                        <h5>2. Asignar Alumnos</h5>
+                                        <div class="fieldWrapper">
+                                            <label class="my-1 me-2" for="{{ form.alumnos.id_for_label }}">Seleccione los alumnos que participarán:</label>
+                                            
+                                            {{ form.alumnos }}
+                                            
+                                            <small class="form-text text-muted">
+                                                {% if form.instance.pk %}
+                                                    Haga clic en la barra para añadir. Haga clic en la "x" del nombre para quitar.
+                                                {% else %}
+                                                    Puede seleccionar múltiples alumnos.
+                                                {% endif %}
+                                            </small>
+                                            {{ form.alumnos.errors }}
+                                        </div>
+                                        <br>
 
                                         {% if not form.instance.pk %}
                                             <hr>
-                                            <h5>3. Fases del proyecto (Creación)</h5>
+                                            <h5>3. Fases del proyecto</h5>
                                             
                                             <div id="contenedor_fases">
                                                 
                                                 <div style="border: 1px solid black; padding: 30px; border-radius: 20px;">
-                                                    <h6>Fase 1 (Inicial)</h6>
+                                                    <h6>Fase 1</h6>
                                                     <div>
                                                         <div class="fieldWrapper">
                                                             <label class="my-1 me-2" for="nombre_fase_1">Ingrese Nombre para la fase:</label>

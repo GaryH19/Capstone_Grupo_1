@@ -10,7 +10,7 @@ from .forms import *
 from django.contrib import messages
 from functools import wraps
 
-# --- FUNCIÓN DE SEGURIDAD (Sin cambios) ---
+# --- FUNCIÓN DE SEGURIDAD  ---
 def group_required(*group_names):
     def decorator(view_func):
         @wraps(view_func)
@@ -19,7 +19,7 @@ def group_required(*group_names):
                 return redirect('/login/')
             if request.user.is_superuser or request.user.groups.filter(name__in=group_names).exists():
                 return view_func(request, *args, **kwargs)
-            messages.error(request, '⛔ No tienes permisos de Profesor para realizar esta acción.')
+            messages.error(request, 'No tienes permisos de Profesor para realizar esta acción.')
             return redirect('pro_listall')
         return _wrapped_view
     return decorator
@@ -29,7 +29,7 @@ def group_required(*group_names):
 def index(request):
     try:
         listado_proyectos = []
-        proyectos = PROYECTO.objects.none() # Inicia vacío
+        proyectos = PROYECTO.objects.none() 
         
         # Obtenemos los roles
         is_profesor = request.user.groups.filter(name__iexact='profesor').exists() or request.user.is_superuser
@@ -43,7 +43,6 @@ def index(request):
         
         proyectos = proyectos.filter(PRO_ESTADO=True).order_by('-PRO_FFECHACREACION')
 
-        # Calculamos el progreso (lógica de pro_listall)
         for pro in proyectos:
             fases_proyecto = FASE_PROYECTO.objects.filter(PRO_NID=pro)
             total_listo_x_fase = 0
