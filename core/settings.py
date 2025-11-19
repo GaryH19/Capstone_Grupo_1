@@ -1,8 +1,16 @@
 import os
 from decouple import config
 from unipath import Path
+import sys
+import oracledb
 
+try:
+    oracledb.init_oracle_client(lib_dir=None)
+except Exception:
+    pass
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+
+
 BASE_DIR = Path(__file__).parent
 CORE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -13,8 +21,12 @@ SECRET_KEY = config('SECRET_KEY', default='S#perS3crEt_1122')
 DEBUG = config('DEBUG', default=True, cast=bool)
 
 # load production server from .env
-ALLOWED_HOSTS = ['unmustered-pseudostalagmitic-ashlea.ngrok-free.dev',
-                 'localhost', '127.0.0.1', config('SERVER', default='127.0.0.1')
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', config('SERVER', default='127.0.0.1'),
+                 'boilerplate-code-django-dashboard.appseed.us',
+                 '.ngrok-free.dev', 
+                 '.ngrok-free.app', 
+                 '.ngrok.io',
+                 '*' 
                 ]
 # Nota: Aquí SÍ es necesario poner https://
 CSRF_TRUSTED_ORIGINS = ['https://unmustered-pseudostalagmitic-ashlea.ngrok-free.dev']
@@ -69,12 +81,22 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'db.sqlite3',
+if config('ORACLE_DSN', default=None):
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.oracle',
+            'NAME': config('ORACLE_DSN'),
+            'USER': config('ORACLE_USER', default='ADMIN'),
+            'PASSWORD': config('ORACLE_PASSWORD'),
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': 'db.sqlite3',
+        }
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
@@ -134,9 +156,13 @@ STATICFILES_DIRS = (
 AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY')
 AWS_STORAGE_BUCKET_NAME = config('AWS_STORAGE_BUCKET_NAME')
+
+# Esta línea es vital para Oracle Cloud
+AWS_S3_ENDPOINT_URL = config('AWS_S3_ENDPOINT_URL', default=None)
+
 AWS_S3_REGION_NAME = config('AWS_S3_REGION_NAME')
 AWS_S3_SIGNATURE_VERSION = 's3v4'
 AWS_S3_FILE_OVERWRITE = False
-AWS_DEFAULT_ACL = None
+AWS_DEFAULT_ACL = 'public-read' # Recomendado para archivos estáticos públicos
 AWS_S3_VERIFY = True
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
