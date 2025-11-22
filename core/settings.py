@@ -1,16 +1,18 @@
 import os
+import sys
 from decouple import config
 from unipath import Path
-import sys
 import oracledb
+from boto3.s3.transfer import TransferConfig
 
+# --- 1. INICIALIZACIÓN DEL CLIENTE ORACLE (MODO THIN) ---
+# Esto permite que Django se conecte a Oracle sin instalar drivers pesados del sistema.
 try:
     oracledb.init_oracle_client(lib_dir=None)
 except Exception:
     pass
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-
-
 BASE_DIR = Path(__file__).parent
 CORE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -20,19 +22,25 @@ SECRET_KEY = config('SECRET_KEY', default='S#perS3crEt_1122')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=True, cast=bool)
 
-# load production server from .env
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', config('SERVER', default='127.0.0.1'),
-                 'boilerplate-code-django-dashboard.appseed.us',
-                 '.ngrok-free.dev', 
-                 '.ngrok-free.app', 
-                 '.ngrok.io',
-                 '*' 
-                ]
-# Nota: Aquí SÍ es necesario poner https://
-CSRF_TRUSTED_ORIGINS = ['https://unmustered-pseudostalagmitic-ashlea.ngrok-free.dev']
+# --- 2. HOSTS PERMITIDOS ---
+ALLOWED_HOSTS = [
+    'localhost', 
+    '127.0.0.1', 
+    config('SERVER', default='*'), # Acepta la IP del servidor
+    'boilerplate-code-django-dashboard.appseed.us',
+    '.ngrok-free.dev', 
+    '.ngrok-free.app', 
+    '.ngrok.io',
+    '*' # Comodín para evitar errores de conexión iniciales
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://unmustered-pseudostalagmitic-ashlea.ngrok-free.dev',
+    f"http://{config('SERVER', default='127.0.0.1')}",
+    f"https://{config('SERVER', default='127.0.0.1')}"
+]
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -40,12 +48,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'apps.home'  # Enable the inner home (home)
+    'apps.home'  # Tu aplicación principal
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware', # <--- VITAL PARA ESTILOS EN PRODUCCIÓN
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -56,9 +64,9 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'core.urls'
-LOGIN_REDIRECT_URL = "home"  # Route defined in home/urls.py
-LOGOUT_REDIRECT_URL = "home"  # Route defined in home/urls.py
-TEMPLATE_DIR = os.path.join(CORE_DIR, "apps/templates")  # ROOT dir for templates
+LOGIN_REDIRECT_URL = "home"
+LOGOUT_REDIRECT_URL = "home"
+TEMPLATE_DIR = os.path.join(CORE_DIR, "apps/templates")
 
 TEMPLATES = [
     {
@@ -78,9 +86,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'core.wsgi.application'
 
-# Database
-# https://docs.djangoproject.com/en/3.0/ref/settings/#databases
-
+# --- 3. BASE DE DATOS INTELIGENTE (HÍBRIDA) ---
+# Si hay credenciales de Oracle en el .env, usa Oracle. Si no, usa SQLite.
 if config('ORACLE_DSN', default=None):
     DATABASES = {
         'default': {
@@ -94,39 +101,23 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+            'NAME': 'db.sqlite3',
         }
     }
 
 # Password validation
-# https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
 # Internationalization
-# https://docs.djangoproject.com/en/3.0/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
 
 #############################################################
@@ -146,37 +137,12 @@ STATICFILES_DIRS = (
 
 #############################################################
 #############################################################
-
-
-
-#############################################################
-# --- CONFIGURACIÓN OCI ---
-
-STATICFILES_DIRS = (os.path.join(CORE_DIR, 'apps/static'),)
-
-AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID', default=None)
-AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY', default=None)
-AWS_STORAGE_BUCKET_NAME = config('AWS_STORAGE_BUCKET_NAME', default=None)
-AWS_S3_ENDPOINT_URL = config('AWS_S3_ENDPOINT_URL', default=None)
-AWS_S3_REGION_NAME = config('AWS_S3_REGION_NAME', default=None)
-
-if AWS_ACCESS_KEY_ID and AWS_S3_ENDPOINT_URL:
-    
-    AWS_S3_SIGNATURE_VERSION = 's3v4'
-    AWS_S3_FILE_OVERWRITE = False
-    AWS_DEFAULT_ACL = 'public-read'
-    AWS_S3_VERIFY = True
-    
-    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-    MEDIA_URL = f'{AWS_S3_ENDPOINT_URL}/{AWS_STORAGE_BUCKET_NAME}/'
-    
-    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-    STATIC_URL = '/static/'
-    STATIC_ROOT = os.path.join(CORE_DIR, 'staticfiles')
-    
-else:
-    
-    STATIC_URL = '/static/'
-    STATIC_ROOT = os.path.join(CORE_DIR, 'staticfiles')
-    MEDIA_URL = '/media/'
-    MEDIA_ROOT = os.path.join(CORE_DIR, 'media')
+AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY')
+AWS_STORAGE_BUCKET_NAME = config('AWS_STORAGE_BUCKET_NAME')
+AWS_S3_REGION_NAME = config('AWS_S3_REGION_NAME')
+AWS_S3_SIGNATURE_NAME = 's3v4'
+AWS_S3_FILE_OVERWRITE = False
+AWS_DEFAULT_ACL = None
+AWS_S3_VERIFY = True 
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'

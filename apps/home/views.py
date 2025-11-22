@@ -775,52 +775,63 @@ def create_doc_guia(request):
 def create_doc(request):
     try:
         if request.method == "POST":
-            redirect_to = request.POST.get('next', '')
+            # 1. Obtener datos clave del formulario (Ocultos en el HTML)
             id_fase = request.POST.get('FA_NID')
             id_tipo_doc = request.POST.get('TD_NID')
-            
-            if not id_fase or not id_tipo_doc:
-                messages.error(request, 'Error: Faltan datos.')
-                return redirect(redirect_to or '/')
-                
-            fase = get_object_or_404(FASE_PROYECTO, FA_NID=id_fase)
-            proyecto = fase.PRO_NID
-            
-            # --- CORRECCIÓN DE PERMISOS ---
-            # Verificamos si es alumno ASIGNADO o el PROFESOR DUEÑO
-            es_alumno_asignado = proyecto.alumnos.filter(id=request.user.id).exists()
-            es_profesor_guia = (proyecto.profesor == request.user)
+            redirect_to = request.POST.get('next', '')
 
-            # Si NO es alumno asignado Y NO es el profe guía Y NO es superuser -> FUERA
-            if not es_alumno_asignado and not es_profesor_guia and not request.user.is_superuser:
-                messages.error(request, 'No tienes permiso para subir documentos aquí.')
+            # Validación
+            if not id_fase or not id_tipo_doc:
+                messages.error(request, 'Error: Faltan datos de Fase o Tipo.')
                 return redirect(redirect_to or 'pro_listall')
-            # ------------------------------
-            
-            # (El resto de tu lógica de subida/re-subida se mantiene igual...)
-            # ... [Copia tu lógica de link_existente aquí] ...
-            # Para ahorrar espacio, asumo que mantienes tu lógica de guardado
-            
-            # --- VERSIÓN RESUMIDA DEL GUARDADO (Pega tu lógica completa aquí) ---
-            tipo_doc = get_object_or_404(TIPO_DOCUMENTO, TD_NID=id_tipo_doc)
-            link_existente = FASE_DOCUMENTO.objects.filter(FA_NID=fase, DOC_NID__TD_NID=tipo_doc).first()
-            
-            form = formDOCUMENTO(request.POST, request.FILES)
-            # ... (tu lógica de guardado original) ...
-            if form.is_valid():
-                # ...
-                messages.success(request,'Documento procesado correctamente.')
-            # ...
-            
+
+            fase = get_object_or_404(FASE_PROYECTO, FA_NID=id_fase)
+            tipo = get_object_or_404(TIPO_DOCUMENTO, TD_NID=id_tipo_doc)
+
+            # 2. Buscar si YA EXISTE un documento de este tipo en esta fase (Para reemplazarlo)
+            link_existente = FASE_DOCUMENTO.objects.filter(FA_NID=fase, DOC_NID__TD_NID=tipo).first()
+
+            if link_existente:
+                # --- CASO A: RE-SUBIR (Actualizar existente) ---
+                doc = link_existente.DOC_NID
+                form = formDOCUMENTO(request.POST, request.FILES, instance=doc)
+                if form.is_valid():
+                    d = form.save(commit=False)
+                    d.DOC_APROBADO = None # ¡IMPORTANTE! Resetea a "En Revisión" (Gris)
+                    d.DOC_COMENTARIO = "" # Limpia comentarios de rechazo viejos
+                    d.save()
+                    messages.success(request, 'Documento actualizado y enviado a revisión.')
+                else:
+                    messages.error(request, f'Error al actualizar: {form.errors}')
+
+            else:
+                # --- CASO B: NUEVO (Crear de cero) ---
+                form = formDOCUMENTO(request.POST, request.FILES)
+                if form.is_valid():
+                    # Guardar documento
+                    d = form.save(commit=False)
+                    d.TD_NID = tipo # Asignar el tipo
+                    d.DOC_APROBADO = None # Estado "En Revisión"
+                    d.save()
+
+                    # ¡VITAL! Crear el vínculo con la fase
+                    FASE_DOCUMENTO.objects.create(FA_NID=fase, DOC_NID=d)
+                    
+                    messages.success(request, 'Documento cargado exitosamente.')
+                else:
+                    messages.error(request, f'Error al cargar: {form.errors}')
+
+            # Redirección inteligente (vuelve a la misma fase)
             if redirect_to:
                 return HttpResponseRedirect(redirect_to)
-            return redirect('pro_listall')
-            
+            return redirect('fase_listone', FA_NID=id_fase)
+
         else:
-            messages.error(request, 'Acceso no válido')
-            return redirect('/') 
+            return redirect('/')
+            
     except Exception as e:
-        print(e)
+        print(f"Error en create_doc: {e}")
+        messages.error(request, 'Error interno del servidor.')
         return redirect('/')
 
 @group_required('Profesor') 

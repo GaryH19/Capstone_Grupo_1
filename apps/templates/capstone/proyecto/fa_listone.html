@@ -60,9 +60,15 @@
                             </div>
                             <hr>
                             <div class="d-flex justify-content-around" >
-                                <div><p class="font-weight-bold">Fecha inicio</p><p>{{fase.PRO_FFECHAINCIO|date:"d-m-Y"}}</p></div>
+                                <div>
+                                    <p class="font-weight-bold">Fecha inicio</p>
+                                    <p>{{fase.PRO_FFECHAINCIO|date:"d-m-Y"}}</p>
+                                </div>
                                 <div><i class="fas fa-chevron-right"></i></div>
-                                <div><p class="font-weight-bold">Fecha Termino</p><p>{{fase.PRO_FFECHATERMINO|date:"d-m-Y"}}</p></div>
+                                <div>
+                                    <p class="font-weight-bold">Fecha Termino</p>
+                                    <p>{{fase.PRO_FFECHATERMINO|date:"d-m-Y"}}</p>
+                                </div>
                             </div>
                             <hr>
                             <div class="col-md-12">
@@ -84,7 +90,6 @@
                                     <div class="card mb-3 shadow-sm">
                                         
                                         <div class="card-image-container">
-                                            
                                             {% if not objeto.1 %}  
                                                 <img class="img-fluid" src="/static/assets/images/No_Cargado_fondo_blanco.png" alt="No Cargado" style="border-bottom: 1px solid #eee; height: 100%; width: 100%; object-fit: contain;">
                                             {% else %} 
@@ -104,14 +109,15 @@
                                                         <div class="hover_content" style="background: linear-gradient(to bottom, #297fb984, #2c3e5079);">
                                                             <div class="hover_content_inner">
                                                                 <h4 class="mb-5">Documento cargado</h4>
-                                                                
                                                                 <a class="btn btn-primary text-center" href="{{objeto.1.url}}" download>Descargar</a>
                                                             </div>
                                                         </div>
                                                     {% endif %}
                                                 </div>
                                             </div>
-                                        </div> <div class="card-body">
+                                        </div>
+
+                                        <div class="card-body">
                                             <h5 class="card-title">{{objeto.0}}</h5>
                                             
                                             <p class="card-text" style="font-size: 1rem;">
@@ -132,7 +138,7 @@
                                                     {{ objeto.6|default:"Sin comentarios." }}
                                                 </div>
                                                 <button class="btn btn-outline-danger btn-sm btn-block mt-2" onclick="agregar_documento('{{objeto.4}}')">
-                                                    <i class="fas fa-redo"></i> Subir Corrección
+                                                    <i class="fas fa-redo"></i> Corregir y Re-subir
                                                 </button>
                                             {% endif %}
                                             
@@ -168,9 +174,10 @@
                     </div>
                 </div>
             </div>
-            </div>
+        </div>
     </section>
-    <div class="modal fade" id="ModalAgregarDoc" role="dialog" aria-labelledby="ModalAgregarDocLabel" aria-hidden="true">
+
+<div class="modal fade" id="ModalAgregarDoc" role="dialog" aria-labelledby="ModalAgregarDocLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered ">
         <div class="modal-content">
             <div class="modal-header">
@@ -201,7 +208,7 @@
         </div>
     </div>
 </div>
-    
+
 <div class="modal fade" id="ModalRechazo" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-danger">
@@ -228,14 +235,13 @@
 {% endblock content %}
 
 {% block javascripts %}
-
     <script src="/static/assets/js/plugins/jquery.dataTables.min.js"></script>
     <script src="/static/assets/js/plugins/dataTables.bootstrap4.min.js"></script>
     <script src="/static/assets/js/pages/data-export-custom.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/echarts@5.1.2/dist/echarts.min.js"></script>
     
     <script>
-        // --- GRÁFICO PIE (Sin cambios) ---
+        // --- GRÁFICO PIE ---
         var chartDom = document.getElementById('pie');
         var myChart = echarts.init(chartDom);
         var option;
@@ -257,23 +263,18 @@
             }]
         };
         option && myChart.setOption(option);
-    </script>
 
-    <script>
-        // --- MODAL DE CARGA (Sin cambios) ---
+        // --- MODAL DE CARGA ---
         function agregar_documento(tipo_doc){
-            tipo_input = document.getElementById('tipo_doc_id')
-            tipo_input.value = tipo_doc
-            $('#ModalAgregarDoc').modal('show')
+            document.getElementById('tipo_doc_id').value = tipo_doc;
+            $('#ModalAgregarDoc').modal('show');
         }
 
-        // --- MODAL DE RECHAZO (Sin cambios) ---
+        // --- MODAL DE RECHAZO ---
         function abrirRechazo(docId) {
             var url = "{% url 'rechazar_documento' 0 %}".replace('0', docId);
             document.getElementById('formRechazo').action = url;
             $('#ModalRechazo').modal('show');
         }
-
-        // ============================================== -->
-        </script>
+    </script>
 {% endblock javascripts %}

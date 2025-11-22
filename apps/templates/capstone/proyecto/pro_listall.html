@@ -48,7 +48,6 @@
                                 <table id="basic-btn" class="table table-striped table-bordered nowrap">
                                     <thead>
                                         <tr>
-                                            <!--<th>ID</th>-->
                                             <th>NOMBRE PROYECTO</th>
                                             <th>EMPRESA</th>
                                             <th>FECHA CREACIÓN</th>
@@ -59,7 +58,6 @@
                                     <tbody> 
                                         {% for objeto in proyectos %}
                                             <tr>
-                                                <!--<td class="col-1"><span class="fw-normal">{{ objeto.0 }}</span></td>-->
                                                 <td><span class="fw-normal">{{ objeto.1 }}</span></td>
                                                 <td><span class="fw-normal">{{ objeto.2 }}</span></td>
                                                 <td class="col-2"><span class="fw-normal">{{ objeto.3|date:"d-m-Y" }}</span></td>
