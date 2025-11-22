@@ -88,6 +88,7 @@ class FASE_PROYECTO(models.Model):
     FA_CDESCRICPCION =models.CharField(("Descripcion"),max_length=1028)
     PRO_FFECHAINCIO = models.DateTimeField()
     PRO_FFECHATERMINO = models.DateTimeField()
+    # Usar CASCADE aquí es útil para que al borrar el proyecto, se borren las fases
     PRO_NID = models.ForeignKey(PROYECTO,verbose_name="Id Proyecto",on_delete=models.CASCADE)
     FA_COMPLETADO = models.BooleanField(default=False)
 
@@ -100,6 +101,7 @@ class FASE_PROYECTO(models.Model):
 #ESTAS TABLA SERA PARA SABER CUALES SON LOS DOCUMENTOS SOLICITADOS POR CADA FASE
 class FASE_TIPO_DOCUMENTO(models.Model):
     FTD_NID = models.BigAutoField(("ID"), primary_key=True)
+    # Usar CASCADE aquí es útil para que al borrar la fase, se borren los requerimientos
     FA_NID = models.ForeignKey(FASE_PROYECTO,verbose_name="Id Fase proyecto",on_delete=models.CASCADE)
     TD_NID = models.ForeignKey(TIPO_DOCUMENTO,verbose_name="Id Tipo Documento",on_delete=models.PROTECT)
 
@@ -118,6 +120,7 @@ class DOCUMENTO(models.Model):
     DOC_COMENTARIO = models.TextField(("Comentario de Revisión"), blank=True, null=True)
     DOC_FFECHACREACION = models.DateTimeField(auto_now_add=True)
     DOC_FECHA_MODIFICACION = models.DateTimeField(auto_now=True)
+    DOC_ES_GUIA = models.BooleanField(default=False)
     
     class Meta:
         db_table = "DOCUMENTO"
@@ -128,6 +131,7 @@ class DOCUMENTO(models.Model):
 #ESTAS TABLA SERA PARA CONECTAR LOS DOCUMENTOS CON LAS FASES
 class FASE_DOCUMENTO(models.Model):
     FTD_NID = models.BigAutoField(("ID"), primary_key=True)
+    # Usar CASCADE aquí es útil para que al borrar la fase, se borren los links a documentos
     FA_NID = models.ForeignKey(FASE_PROYECTO,verbose_name="Id Fase proyecto",on_delete=models.CASCADE)
     DOC_NID = models.ForeignKey(DOCUMENTO,verbose_name="Documento",on_delete=models.PROTECT)
 

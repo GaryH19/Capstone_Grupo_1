@@ -1,0 +1,71 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Editar Fase {% endblock %}
+
+{% block content %}
+<div class="pcoded-main-container">
+    <div class="pcoded-content">
+        <div class="page-header">
+            <div class="page-block">
+                <div class="row align-items-center">
+                    <div class="col-md-12">
+                        <div class="page-header-title">
+                            <h5 class="m-b-10">Editar Fase</h5>
+                        </div>
+                        <ul class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="/"><i class="feather icon-home"></i></a></li>
+                            <li class="breadcrumb-item"><a href="{% url 'pro_listone' fase.PRO_NID.PRO_NID %}">Volver al Proyecto</a></li>
+                            <li class="breadcrumb-item"><a href="#!">Editar Fase</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Editar: {{ fase.FA_CNOMBRE }}</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST">
+                            {% csrf_token %}
+                            
+                            <div class="form-group">
+                                <label>Nombre de la Fase</label>
+                                <input type="text" class="form-control" name="nombre_fase" value="{{ fase.FA_CNOMBRE }}" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Descripción</label>
+                                <textarea class="form-control" name="desc_fase" rows="3">{{ fase.FA_CDESCRICPCION }}</textarea>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Fecha Inicio</label>
+                                        <input type="date" class="form-control" name="fecha_inicio" value="{{ fase.PRO_FFECHAINCIO|date:'Y-m-d' }}" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Fecha Término</label>
+                                        <input type="date" class="form-control" name="fecha_termino" value="{{ fase.PRO_FFECHATERMINO|date:'Y-m-d' }}" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="text-right">
+                                <a href="{% url 'pro_listone' fase.PRO_NID.PRO_NID %}" class="btn btn-danger">Cancelar</a>
+                                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

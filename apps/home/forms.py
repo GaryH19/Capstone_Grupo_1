@@ -1,9 +1,7 @@
-# En apps/home/forms.py
-
 from faulthandler import disable
 from pydoc import text
 from random import choices
-from tkinter import Widget
+
 from django import forms
 from django.contrib.auth.models import *
 from apps.home.models import *
