@@ -59,8 +59,10 @@
                                             <th>NOMBRE</th>
                                             <th>RUT</th>
                                             <th>COMUNA</th>
-                                            <th>ESTADO</th>
-                                            <th>ACCIONES</th>
+                                            <!-- <th>ESTADO</th> -->
+                                            {% if user.is_superuser %}
+                                                <th>ACCIONES</th>
+                                            {% endif %}
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -70,16 +72,21 @@
                                                 <td><span class="fw-normal">{{ objeto.EM_CNOMBRE }}</span></td>
                                                 <td><span class="fw-normal">{{ objeto.EM_RUT }}</span></td>
                                                 <td><span class="fw-normal">{{ objeto.COM_NID }}</span></td>
-                                                {% if objeto.EMP_ESTADO %}
+                                                <!-- {% if objeto.EMP_ESTADO %}
                                                     <td class="col-1"><i class="fas fa-check" style="color: #63E6BE;"></i></td>
                                                 {% else %}
                                                     <td class="col-1"><i class="fas fa-times" style="color: #fa0000;"></i></td>
+                                                {% endif %} -->
+                                                {% if user.is_superuser %}
+                                                    <td>
+                                                        <a href="{% url 'emp_update' objeto.EMP_NID %}" class="btn btn-sm btn-primary p-1" title="Editar Empresa">
+                                                            <i class="fas fa-edit"></i>
+                                                        </a>
+                                                        <a href="#" class="btn btn-sm btn-danger p-1" title="Eliminar Documento">
+                                                            <i class="fas fa-trash"></i>
+                                                        </a>
+                                                    </td>
                                                 {% endif %}
-                                                <td>
-                                                    <a href="{% url 'emp_update' objeto.EMP_NID %}"><i class="fas fa-edit" style="color: #0e58d8;"></i></a>
-                                                    <a href="{% url 'emp_deactivate' objeto.EMP_NID %}"><i class="fas fa-ban" style="color: #fa0000;"></i></a>
-                                                    
-                                                </td>
                                             </tr>
                                         {% endfor %}
                                     </tbody>

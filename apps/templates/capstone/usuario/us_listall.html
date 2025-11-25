@@ -22,7 +22,7 @@
                     <div class="row align-items-center">
                         <div class="col-md-12">
                             <div class="page-header-title">
-                                <h5 class="m-b-10">Lista de Usuarios</h5>
+                                <h5 class="m-b-10">Usuarios</h5>
                             </div>
                             <ul class="breadcrumb">
                                 <li class="breadcrumb-item"><a href="/"><i class="feather icon-home"></i></a></li>
@@ -43,7 +43,7 @@
                     <div class="card">
                         <div class="d-flex justify-content-between">
                             <div class="card-header table-card-header">
-                                <h5>Opciones de exportación</h5>
+                                <h5>Lista Usuarios</h5>
                             </div>
                             <div class=" mb-2 mb-md-0" style="margin-right: 50px;margin-top: 20px;">
                                 <a href="{% url 'create_user' %}" class="btn  btn-primary d-inline-flex align-items-center"><i class="fas fa-user-plus"></i>
@@ -63,7 +63,7 @@
                                             <th>CORREO</th>
                                             <th>RUT</th>
                                             <th>TELEFONO</th>
-                                            <th>ESTADO</th>
+                                            <!-- <th>ESTADO</th> -->
                                             <th>ACCIONES</th>
                                         </tr>
                                     </thead>
@@ -77,15 +77,28 @@
                                                 <td><span class="fw-normal">{{ objeto.email }}</span></td>
                                                 <td><span class="fw-normal">{{ objeto.rut }}</span></td>
                                                 <td><span class="fw-normal">{{ objeto.telefono }}</span></td>
-                                                {% if objeto.is_active %}
+                                                <!-- {% if objeto.is_active %}
                                                     <td><i class="fas fa-check" style="color: #63E6BE;"></i></td>
                                                 {% else %}
                                                     <td><i class="fas fa-times" style="color: #fa0000;"></i></td>
-                                                {% endif %}
+                                                {% endif %} -->
                                                 <td>
                                                     <!-- <a href="{% url 'emp_update' objeto.id %}"><i class="fas fa-edit" style="color: #0e58d8;"></i></a>
-                                                    <a href="{% url 'emp_deactivate' objeto.id %}"><i class="fas fa-ban" style="color: #fa0000;"></i></a>
-                                                     -->
+                                                    <a href="{% url 'emp_deactivate' objeto.id %}"><i class="fas fa-ban" style="color: #fa0000;"></i></a> -->
+                                                    <a href="#" class="btn btn-sm btn-info p-1" title="Ver Fases">
+                                                        <i class="far fa-eye"></i>
+                                                    </a>
+                                                    
+                                                    
+                                                    <a href="#" class="btn btn-sm btn-primary p-1" title="Editar / Asignar Alumnos">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                    {% if user.is_superuser %}
+                                                        <a href="#" class="btn btn-sm btn-danger p-1" title="Eliminar Proyecto">
+                                                            <i class="fas fa-trash"></i>
+                                                        </a>
+                                                    {% endif %}
+                                                    
                                                 </td>
                                             </tr>
                                         {% endfor %}

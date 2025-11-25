@@ -39,6 +39,7 @@ urlpatterns = [
     path('documento/crear', login_required(views.create_doc), name='create_doc'),
     path('documento/editar/<int:DOC_NID>/', login_required(views.doc_update), name='doc_update'),
     path('documento/eliminar/<int:DOC_NID>/', login_required(views.doc_delete), name='doc_delete'),
+    path('documento/descargar/<int:DOC_NID>/', views.descargar_archivo, name='doc_download'),
     
     ## USUARIOS ##
     path('usuarios/', login_required(views.user_listall), name='user_listall'),

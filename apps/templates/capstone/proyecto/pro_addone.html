@@ -244,14 +244,22 @@
                 let inputId = ultimoBloque.querySelector('input[name^="fase_id_"]');
                 let idBD = inputId.value;
                 let indice = idBloque.split('_')[2];
-                borrarFaseExistente(indice, idBD); // Usamos la lógica de borrado seguro
+                borrarFaseExistente(indice, idBD); 
             } else {
-                // Si es nueva, la borramos del DOM
+                
                 ultimoBloque.remove();
-                // No bajamos el contador total para evitar conflictos de IDs
+                
             }
         } else {
-            alert("Debe quedar al menos una fase.");
+            Swal.fire({
+                icon: 'error',
+                title: '¡Alto ahí!',
+                text: 'Debe quedar al menos una fase en el proyecto. No puedes iniciar un proyecto sin fases.',
+                confirmButtonColor: '#d33',
+                confirmButtonText: 'Entendido',
+                backdrop: true, 
+                allowOutsideClick: false 
+            });
         }
     }
 

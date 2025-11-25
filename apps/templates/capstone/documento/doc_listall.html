@@ -3,6 +3,7 @@
 {% block title %} Lista de Documentos {% endblock %} 
 
 {% block stylesheets %}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="/static/assets/css/plugins/dataTables.bootstrap4.min.css">
 {% endblock stylesheets %}
 
@@ -25,16 +26,12 @@
                 <div class="col-sm-12">
                     <div class="card">
                         <div class="card-header">
-                            <h5>Documentos del Proyecto</h5>
+                            <h5>Plantillas de Documentos</h5>
                             
                             {% if is_profesor %}
                             <div class="card-header-right">
                                 <a href="{% url 'create_doc_guia' %}" class="btn btn-sm btn-success">
                                     <i class="fas fa-plus"></i> Nuevo Documento
-                                </a>
-                                
-                                <a href="{% url 'pro_listall' %}" class="btn btn-sm btn-primary ml-2">
-                                    <i class="fas fa-folder-open"></i> Ver Proyectos
                                 </a>
                             </div>
                             {% endif %}
@@ -44,12 +41,10 @@
                                 <table id="basic-btn" class="table table-striped table-bordered nowrap">
                                     <thead>
                                         <tr>
-                                            <!-- <th>ID</th> -->
                                             <th>Nombre</th>
-                                            <th>Tipo</th>
-                                            <th>Fecha</th>
-                                            <!-- <th>Estado</th> -->
-                                            <th>Archivo</th>
+                                            <!-- <th>Tipo</th> -->
+                                            <th>Fecha Carga</th>
+                                            <th>Descargar Archivo</th>
                                             {% if is_profesor %}
                                             <th>Acciones</th>
                                             {% endif %}
@@ -58,23 +53,13 @@
                                     <tbody> 
                                         {% for doc in docs %}
                                             <tr>
-                                                <!-- <td>{{ doc.DOC_NID }}</td> -->
                                                 <td>{{ doc.DOC_NOMBRE }}</td>
-                                                <td>{{ doc.TD_NID.TD_NOMBRE }}</td>
+                                                <!-- <td>{{ doc.TD_NID.TD_NOMBRE }}</td> -->
                                                 <td>{{ doc.DOC_FFECHACREACION|date:"d/m/Y" }}</td>
-                                                <!-- <td>
-                                                    {% if doc.DOC_APROBADO == True %}
-                                                        <span class="badge badge-success">Aprobado</span>
-                                                    {% elif doc.DOC_APROBADO == False %}
-                                                        <span class="badge badge-danger">Rechazado</span>
-                                                    {% else %}
-                                                        <span class="badge badge-warning text-white">Pendiente</span>
-                                                    {% endif %}
-                                                </td> -->
                                                 <td>
                                                     {% if doc.DOC_CONTENIDO %}
-                                                        <a href="{{ doc.DOC_CONTENIDO.url }}" class="btn btn-sm btn-info" download>
-                                                            <i class="fas fa-download"></i> Descargar
+                                                       <a href="{% url 'doc_download' doc.DOC_NID %}">
+                                                            <i class="bi bi-cloud-arrow-down"></i> Descargar
                                                         </a>
                                                     {% else %}
                                                         -
@@ -86,7 +71,8 @@
                                                     <a href="{% url 'doc_update' doc.DOC_NID %}" class="btn btn-icon btn-sm btn-primary" title="Editar">
                                                         <i class="fas fa-edit"></i>
                                                     </a>
-                                                    <a href="{% url 'doc_delete' doc.DOC_NID %}" class="btn btn-icon btn-sm btn-danger" title="Eliminar" onclick="return confirm('¿Estás seguro?');">
+                                                    
+                                                    <a href="#" onclick="confirmarEliminacion('{% url 'doc_delete' doc.DOC_NID %}')" class="btn btn-icon btn-sm btn-danger" title="Eliminar">
                                                         <i class="fas fa-trash"></i>
                                                     </a>
                                                 </td>
@@ -108,4 +94,26 @@
     <script src="/static/assets/js/plugins/jquery.dataTables.min.js"></script>
     <script src="/static/assets/js/plugins/dataTables.bootstrap4.min.js"></script>
     <script src="/static/assets/js/pages/data-export-custom.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        function confirmarEliminacion(urlEliminar) {
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: "El documento será eliminado permanentemente. ¡Esta acción no se puede deshacer!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33', // Rojo para confirmar borrado
+                cancelButtonColor: '#3085d6', // Azul para cancelar
+                confirmButtonText: 'Sí, eliminarlo',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Si el usuario confirma, redirigimos a la URL de Django
+                    window.location.href = urlEliminar;
+                }
+            })
+        }
+    </script>
 {% endblock javascripts %}

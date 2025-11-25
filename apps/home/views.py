@@ -11,6 +11,15 @@ from .forms import *
 from django.contrib import messages
 from functools import wraps
 
+import mimetypes
+from django.http import FileResponse, Http404
+
+import os
+from django.utils.text import slugify
+
+from django.utils.encoding import escape_uri_path
+from .models import DOCUMENTO
+
 # --- FUNCIÓN DE SEGURIDAD ---
 def group_required(*group_names):
     def decorator(view_func):
@@ -835,50 +844,100 @@ def create_doc(request):
         return redirect('/')
 
 @group_required('Profesor') 
-def doc_update(request,DOC_NID):
+def doc_update(request, DOC_NID):
     try:
-        doc = get_object_or_404(DOCUMENTO, DOC_NID = DOC_NID)
+        doc = get_object_or_404(DOCUMENTO, DOC_NID=DOC_NID)
+        
+        # --- LÓGICA DE PERMISOS ---
         fase_doc = FASE_DOCUMENTO.objects.filter(DOC_NID=doc).first()
-        if not fase_doc or (fase_doc.FA_NID.PRO_NID.profesor != request.user and not request.user.is_superuser):
-            messages.error(request, 'No tienes permiso para modificar este documento.')
-            return redirect('pro_listall')
+        
+        # CASO 1: Es un documento de proyecto (alumno)
+        if fase_doc:
+            if fase_doc.FA_NID.PRO_NID.profesor != request.user and not request.user.is_superuser:
+                messages.error(request, 'No tienes permiso para modificar este documento de alumno.')
+                return redirect('pro_listall')
+            redirect_target = 'fase_listone'
+            redirect_args = {'FA_NID': fase_doc.FA_NID.FA_NID}
             
+        # CASO 2: Es un documento Guía / Plantilla (Sin fase)
+        elif doc.DOC_ES_GUIA:
+            # Como ya tienes el decorador @group_required('Profesor'), ya sabemos que puede editar
+            redirect_target = 'doc_listall'
+            redirect_args = {}
+            
+        else:
+            # Caso raro: documento huérfano que no es guía
+            messages.error(request, 'El documento no tiene contexto válido.')
+            return redirect('doc_listall')
+
+        # --- PROCESO DE GUARDADO ---
         if request.method == "POST":
             form = formDOCUMENTO(request.POST, request.FILES, instance=doc)
             if form.is_valid():
                 form.save()
-                messages.success(request, 'Documento actualizado por profesor.')
+                messages.success(request, 'Documento actualizado correctamente.')
+                
+                # Redirección dinámica según el tipo
+                return redirect(redirect_target, **redirect_args)
             else:
                 messages.error(request, 'Error al actualizar documento')
-            return redirect('fase_listone', FA_NID=fase_doc.FA_NID.FA_NID)
+                # Si falla, intentamos volver a donde corresponda
+                if fase_doc:
+                     return redirect('fase_listone', FA_NID=fase_doc.FA_NID.FA_NID)
+                return redirect('doc_listall')
+                
         else:
+            # GET: Cargar formulario
             form = formDOCUMENTO(instance=doc)
-            context = { 'form':form }
-            return render(request,'capstone/documento/doc_addone.html',context)
+            # Reutilizamos el template de agregar, pero le pasamos el contexto necesario
+            # Si usas selectores de tipos, asegúrate de pasarlos si el template lo exige
+            tipos = TIPO_DOCUMENTO.objects.all() 
+            context = { 'form': form, 'tipos': tipos } 
+            return render(request, 'capstone/documento/doc_addone.html', context)
+            
     except Exception as e:
-        print(e)
-        messages.error(request, 'Error al cargar formulario')
-        redirect('/')
+        print(f"Error en doc_update: {e}")
+        messages.error(request, 'Error interno al cargar formulario')
+        return redirect('doc_listall')
 
 @group_required('Profesor')
-def doc_delete(request,DOC_NID):
+def doc_delete(request, DOC_NID):
     try:
-        doc = get_object_or_404(DOCUMENTO, DOC_NID = DOC_NID)
+        doc = get_object_or_404(DOCUMENTO, DOC_NID=DOC_NID)
+        
+        # --- LÓGICA DE PERMISOS Y REDIRECCIÓN ---
         fase_doc = FASE_DOCUMENTO.objects.filter(DOC_NID=doc).first()
-        if not fase_doc or (fase_doc.FA_NID.PRO_NID.profesor != request.user and not request.user.is_superuser):
-            messages.error(request, 'No tienes permiso para eliminar este documento.')
-            return redirect('pro_listall')
         
-        fase_id = fase_doc.FA_NID.FA_NID
-        fase_doc.delete() 
-        doc.delete()
-        
-        messages.success(request,'Documento eliminado permanentemente.')
-        return redirect('fase_listone', FA_NID=fase_id)
+        # CASO 1: Es documento de Proyecto
+        if fase_doc:
+            if fase_doc.FA_NID.PRO_NID.profesor != request.user and not request.user.is_superuser:
+                messages.error(request, 'No tienes permiso para eliminar este documento.')
+                return redirect('pro_listall')
+            
+            fase_id = fase_doc.FA_NID.FA_NID
+            fase_doc.delete() # Borramos la relación primero
+            doc.delete()      # Borramos el archivo
+            
+            messages.success(request, 'Documento eliminado del proyecto.')
+            return redirect('fase_listone', FA_NID=fase_id)
+
+        # CASO 2: Es documento Guía / Plantilla
+        elif doc.DOC_ES_GUIA:
+            # El decorador ya validó que es Profesor
+            doc.delete()
+            messages.success(request, 'Plantilla eliminada correctamente.')
+            return redirect('doc_listall')
+            
+        else:
+            # Documento huérfano desconocido
+            doc.delete()
+            messages.warning(request, 'Documento eliminado (sin asociación encontrada).')
+            return redirect('doc_listall')
+
     except Exception as e:
-        print(e)
-        messages.error(request,'Error al eliminar documento')
-        return redirect('pro_listall')
+        print(f"Error en doc_delete: {e}")
+        messages.error(request, 'Error al eliminar documento')
+        return redirect('doc_listall')
     
 @group_required('Profesor')
 def pro_delete(request, PRO_NID):
@@ -976,4 +1035,39 @@ def create_doc_general(request):
     except Exception as e:
         print(f"Error en create_doc_general: {e}")
         messages.error(request, f"Error interno: {e}")
+        return redirect('doc_listall')
+    
+
+
+@login_required(login_url="/login/")
+def descargar_archivo(request, DOC_NID):
+    try:
+        doc = get_object_or_404(DOCUMENTO, DOC_NID=DOC_NID)
+        
+        if not doc.DOC_CONTENIDO:
+            raise Http404("El documento no tiene un archivo físico asociado.")
+
+        archivo_handle = doc.DOC_CONTENIDO.open('rb')
+
+        nombre_final = doc.DOC_NOMBRE
+        
+        nombre_fisico = doc.DOC_CONTENIDO.name
+        ext = os.path.splitext(nombre_fisico)[1]
+
+        if not nombre_final.lower().endswith(ext.lower()):
+            nombre_final += ext
+
+        content_type, _ = mimetypes.guess_type(nombre_fisico)
+        if not content_type:
+            content_type = 'application/octet-stream'
+
+        response = FileResponse(archivo_handle, content_type=content_type)
+        nombre_codificado = escape_uri_path(nombre_final)
+        response['Content-Disposition'] = f"attachment; filename*=UTF-8''{nombre_codificado}"
+        
+        return response
+
+    except Exception as e:
+        print(f"Error al descargar: {e}")
+        messages.error(request, 'Error al procesar la descarga.')
         return redirect('doc_listall')

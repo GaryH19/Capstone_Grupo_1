@@ -5,12 +5,14 @@ from unipath import Path
 import oracledb
 from boto3.s3.transfer import TransferConfig
 
-# --- 1. INICIALIZACIÓN DEL CLIENTE ORACLE (MODO THIN) ---
-# Esto permite que Django se conecte a Oracle sin instalar drivers pesados del sistema.
+
+# INICIALIZACIÓN DEL CLIENTE ORACLE
 try:
-    oracledb.init_oracle_client(lib_dir=None)
-except Exception:
-    pass
+    oracledb.version = "8.3.0"
+    sys.modules["cx_Oracle"] = oracledb
+    print("Oracle Client: Modo compatibilidad cx_Oracle activado.")
+except Exception as e:
+    print(f"Error activando compatibilidad Oracle: {e}")
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = Path(__file__).parent
@@ -26,18 +28,20 @@ DEBUG = config('DEBUG', default=True, cast=bool)
 ALLOWED_HOSTS = [
     'localhost', 
     '127.0.0.1', 
-    config('SERVER', default='*'), # Acepta la IP del servidor
+    config('SERVER', default='*'),
     'boilerplate-code-django-dashboard.appseed.us',
+    '144.22.46.224',
     '.ngrok-free.dev', 
     '.ngrok-free.app', 
     '.ngrok.io',
-    '*' # Comodín para evitar errores de conexión iniciales
+    '*' 
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://unmustered-pseudostalagmitic-ashlea.ngrok-free.dev',
     f"http://{config('SERVER', default='127.0.0.1')}",
-    f"https://{config('SERVER', default='127.0.0.1')}"
+    f"https://{config('SERVER', default='127.0.0.1')}",
+    'http://144.22.46.224', 
+    'https://144.22.46.224'
 ]
 
 # Application definition
@@ -48,12 +52,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'apps.home'  # Tu aplicación principal
+    'apps.home',
+    'storages', 
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware', # <--- VITAL PARA ESTILOS EN PRODUCCIÓN
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -86,24 +91,23 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'core.wsgi.application'
 
-# --- 3. BASE DE DATOS INTELIGENTE (HÍBRIDA) ---
-# Si hay credenciales de Oracle en el .env, usa Oracle. Si no, usa SQLite.
-if config('ORACLE_DSN', default=None):
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.oracle',
-            'NAME': config('ORACLE_DSN'),
-            'USER': config('ORACLE_USER', default='ADMIN'),
-            'PASSWORD': config('ORACLE_PASSWORD'),
-        }
+# Database OCI
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.oracle',
+        'NAME': '(description= (retry_count=20)(retry_delay=3)(address=(protocol=tcps)(port=1521)(host=adb.sa-santiago-1.oraclecloud.com))(connect_data=(service_name=g5a1da9fefb2b93_docuflow_medium.adb.oraclecloud.com))(security=(ssl_server_dn_match=yes)))',
+        'USER': 'ADMIN',
+        'PASSWORD': 'DocuFlow12345.',
     }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': 'db.sqlite3',
-        }
-    }
+}
+# Database local SQLite (descomentar para uso local)
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         # Usamos os.path.join en lugar de la barra '/'
+#         'NAME': os.path.join(BASE_DIR,'..', 'db.sqlite3'),
+#     }
+# }
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -114,8 +118,8 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # Internationalization
-LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
+LANGUAGE_CODE = 'es-cl'
+TIME_ZONE = 'America/Santiago'
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
@@ -127,16 +131,30 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 STATIC_ROOT = os.path.join(CORE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
-MEDIA_URLS ='/media/'
+MEDIA_URL ='/media/'
 MEDIA_ROOT = os.path.join(CORE_DIR, 'media')
 
 # Extra places for collectstatic to find static files.
-STATICFILES_DIRS = (
-    os.path.join(CORE_DIR, 'apps/static'),
-)
+STATICFILES_DIRS = (os.path.join(CORE_DIR, 'apps/static'),
+                    )
 
 #############################################################
 #############################################################
+
+#Credenciales AWS S3 para almacenamiento de medios
+# AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')
+# AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY')
+# AWS_STORAGE_BUCKET_NAME = config('AWS_STORAGE_BUCKET_NAME')
+# AWS_S3_REGION_NAME = config('AWS_S3_REGION_NAME')
+# AWS_S3_SIGNATURE_NAME = 's3v4'
+# AWS_S3_FILE_OVERWRITE = False
+# AWS_DEFAULT_ACL = None
+# AWS_S3_VERIFY = True 
+# DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+# settings.py
+
+# Credenciales de Oracle Cloud BUCKET para almacenamiento de medios
 AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY')
 AWS_STORAGE_BUCKET_NAME = config('AWS_STORAGE_BUCKET_NAME')

@@ -60,9 +60,21 @@
                                             
                                         </div>
                                         <div class="fieldWrapper mt-2">
-                                            <label class="my-1 me-2">Rut:</label>
-                                            <input class="form-control" type="text" id="rut_id" name="rut" placeholder="99999999-9">
-                                            <p id="rut_error" style="color: rgb(207, 52, 75); margin-top: 6px; margin-left: 10px; display: none;"><i class="fas fa-exclamation fa-rotate-180 mr-1"></i> El rut debe tener minimo 9 caracteres y debe ser sin puntos y con guion, .<i class="fas fa-exclamation ml-1"></i></p>
+                                            <label for="rut_id" class="form-label fw-bold">Rut:</label>
+                                            
+                                            <input class="form-control" 
+                                                type="text" 
+                                                id="rut_id" 
+                                                name="rut" 
+                                                placeholder="12.345.678-9"
+                                                maxlength="12"
+                                                oninput="formatearRut(this)">
+
+                                            <p id="rut_error" class="text-danger small mt-1" style="display: none;">
+                                                <i class="fas fa-exclamation-circle me-1"></i> 
+                                                El RUT es inválido o muy corto.
+                                            </p>
+
                                             <input id="rut_valid" type="number" style="display: none;">
                                         </div>
                                         <div class="fieldWrapper mt-2">
@@ -401,6 +413,32 @@
         }
     }
 
-    
+        function formatearRut(input) {
+ 
+        let rut = input.value.replace(/[^0-9kK]/g, '');
+
+        if (rut.length === 0) {
+            input.value = '';
+            return;
+        }
+
+        if (rut.length === 1) {
+            input.value = rut;
+            return;
+        }
+
+        let cuerpo = rut.slice(0, -1);
+        let dv = rut.slice(-1).toUpperCase(); 
+        
+        input.value = cuerpo.replace(/\B(?=(\d{3})+(?!\d))/g, ".") + "-" + dv;
+
+        //Validación de largo para mostrar tu error
+        const errorMsg = document.getElementById('rut_error');
+        if(rut.length < 8) {
+            errorMsg.style.display = 'block'; // Muestra el error si es muy corto
+        } else {
+            errorMsg.style.display = 'none';  // Oculta el error
+        }
+    }
     </script>
 {% endblock javascripts %}

@@ -109,7 +109,7 @@
                                                         <div class="hover_content" style="background: linear-gradient(to bottom, #297fb984, #2c3e5079);">
                                                             <div class="hover_content_inner">
                                                                 <h4 class="mb-5">Documento cargado</h4>
-                                                                <a class="btn btn-primary text-center" href="{{objeto.1.url}}" download>Descargar</a>
+                                                                <a class="btn btn-primary text-center" href="{% url 'doc_download' objeto.5 %}">Descargar</a>
                                                             </div>
                                                         </div>
                                                     {% endif %}
