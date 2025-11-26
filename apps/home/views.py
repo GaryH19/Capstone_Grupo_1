@@ -196,6 +196,84 @@ def create_user(request):
         messages.error(request, f'Error al cargar formulario: {e}')
         return redirect('user_listall')
     
+@login_required(login_url="/login/")
+def update_user(request, user_id):
+    try:
+        user_edit = get_object_or_404(User, pk=user_id)
+        
+        es_propietario = (request.user.id == user_edit.id)
+        es_superuser = request.user.is_superuser
+        
+        puede_editar = False
+        
+        if es_superuser or es_propietario:
+            puede_editar = True
+        elif request.user.groups.filter(name='Profesor').exists():
+            es_alumno = user_edit.groups.filter(name='Alumno').exists()
+            sin_rol = not user_edit.groups.exists()
+            if (es_alumno or sin_rol) and not user_edit.is_superuser:
+                puede_editar = True
+
+        if not puede_editar:
+            messages.error(request, 'No tienes permiso para editar este perfil.')
+            return redirect('user_listall')
+
+        perfiles = Group.objects.all() if es_superuser else None
+        
+        if request.method == "POST":
+            
+            user_edit.first_name = request.POST.get('nombre')
+            user_edit.last_name = request.POST.get('apellidos')
+            user_edit.email = request.POST.get('correo')
+            
+            if es_superuser or es_propietario:
+                user_edit.telefono = request.POST.get('telefono')
+            
+            if es_superuser:
+                user_edit.username = request.POST.get('username')
+                user_edit.rut = request.POST.get('rut')
+                
+                perfil_id = request.POST.get('perfil')
+                if perfil_id:
+                    user_edit.groups.clear()
+                    grupo = Group.objects.get(id=perfil_id)
+                    user_edit.groups.add(grupo)
+            
+            if es_superuser or es_propietario:
+                pass_new = request.POST.get('contraseña')
+                if pass_new: 
+                    user_edit.password = make_password(pass_new)
+            
+            user_edit.save()
+            messages.success(request, 'Datos actualizados correctamente.')
+
+            next_url = request.POST.get('next')
+            if next_url and next_url != 'None':
+                return redirect(next_url)
+            
+            if request.user.groups.filter(name='Alumno').exists():
+                return redirect('home')
+                
+            return redirect('user_listall')
+
+        else:
+            prev_url = request.META.get('HTTP_REFERER')
+            if prev_url and 'usuario/editar' in prev_url:
+                prev_url = '/'
+            elif not prev_url:
+                prev_url = '/'
+
+            context = {
+                'perfiles': perfiles,
+                'user_edit': user_edit,
+                'next_url': prev_url
+            }
+            return render(request, 'capstone/usuario/us_addone.html', context)
+
+    except Exception as e:
+        print(f"Error editando usuario: {e}")
+        messages.error(request, 'Error interno al editar usuario')
+        return redirect('/')
             
 # --- Función para ELIMINAR USUARIO (Solo Superuser) ---
 @login_required(login_url="/login/")
