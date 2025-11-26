@@ -1,123 +1,160 @@
 {% extends "layouts/base.html" %}
 
-{% block title %} Nuevo Usuario {% endblock %} 
+{% block title %} 
+    {% if user_edit %}Editar Usuario{% else %}Nuevo Usuario{% endif %} 
+{% endblock %} 
 
-<!-- Specific CSS goes HERE -->
 {% block stylesheets %}{% endblock stylesheets %}
 
-{% block content %}		
-    <!-- [ Main Content ] start -->
+{% block content %}     
     <section class="pcoded-main-container">
         <div class="pcoded-content">
-            <!-- [ breadcrumb ] start -->
             <div class="page-header">
                 <div class="page-block">
                     <div class="row align-items-center">
                         <div class="col-md-12">
                             <div class="page-header-title">
-                                <h5 class="m-b-10">Nuevo Usuario</h5>
+                                <h5 class="m-b-10">
+                                    {% if user_edit %}Editar Perfil: {{ user_edit.username }}{% else %}Nuevo Usuario{% endif %}
+                                </h5>
                             </div>
                             <ul class="breadcrumb">
                                 <li class="breadcrumb-item"><a href="/"><i class="feather icon-home"></i></a></li>
-                                <li class="breadcrumb-item"><a href="#">Capstone</a></li>
-                                <li class="breadcrumb-item"><a href="#!">Nuevo Usuario</a></li>
+                                <li class="breadcrumb-item"><a href="#">Usuarios</a></li>
+                                <li class="breadcrumb-item"><a href="#!">Formulario</a></li>
                             </ul>
                         </div>
                     </div>
                 </div>
             </div>
-            <!-- [ breadcrumb ] end -->
-            <!-- [ Main Content ] start -->
             <div class="row">
-                <!-- [ form-element ] start -->
                 <div class="col-sm-12">
                     <div class="card">
                         <div class="card-header">
-                            <h5>Nuevo Usuario</h5>
+                            <h5>Datos del Usuario</h5>
+                            {% if user_edit and not user.is_superuser and user != user_edit %}
+                                <small class="text-muted d-block">Modo Edición Limitada (Profesor)</small>
+                            {% endif %}
                         </div>
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-md-8">
                                     <form method="POST" id="form_user" enctype="multipart/form-data">
                                         {% csrf_token %}
+                                        
+                                        <input type="hidden" name="next" value="{{ next_url }}">
+
                                         <div class="fieldWrapper">
                                             <label class="my-1 me-2">Username:</label>
-                                            <input type="text" class="form-control" id="username_id" name="username" placeholder="Ingrese username">
-                                            <p id="username_error" style="color: rgb(207, 52, 75); margin-top: 6px; margin-left: 10px; display: none;"><i class="fas fa-exclamation fa-rotate-180 mr-1"></i> El username debe tener al menos 5 caracteres<i class="fas fa-exclamation ml-1"></i></p>
-                                            <input id="username_valid" type="number"  style="display: none;">
+                                            <input type="text" class="form-control" id="username_id" name="username" 
+                                                   value="{{ user_edit.username|default:'' }}" 
+                                                   placeholder="Ingrese username"
+                                                   {% if user_edit and not user.is_superuser %}readonly style="background-color: #e9ecef;"{% endif %}>
+                                            
+                                            <p id="username_error" style="color: rgb(207, 52, 75); margin-top: 6px; margin-left: 10px; display: none;">
+                                                <i class="fas fa-exclamation fa-rotate-180 mr-1"></i> El username debe tener al menos 5 caracteres
+                                            </p>
+                                            <input id="username_valid" type="number"  style="display: none;" value="{% if user_edit %}1{% else %}0{% endif %}">
                                         </div>
-                                        <div class="fieldWrapper">
+
+                                        <div class="fieldWrapper mt-2">
                                             <label class="my-1 me-2">Nombre:</label>
-                                            <input type="text" class="form-control" id="id_nombre" name="nombre" placeholder="Ingrese nombre">
-                                            <p id="name_error" style="color: rgb(207, 52, 75); margin-top: 6px; margin-left: 10px; display: none;"><i class="fas fa-exclamation fa-rotate-180 mr-1"></i> El nombre debe tener al menos 3 caracteres<i class="fas fa-exclamation ml-1"></i></p>
-                                            <input id="name_valid" type="number" style="display: none;">
+                                            <input type="text" class="form-control" id="id_nombre" name="nombre" 
+                                                   value="{{ user_edit.first_name|default:'' }}" placeholder="Ingrese nombre">
+                                            <p id="name_error" style="color: rgb(207, 52, 75); margin-top: 6px; margin-left: 10px; display: none;">
+                                                <i class="fas fa-exclamation fa-rotate-180 mr-1"></i> El nombre debe tener al menos 3 caracteres
+                                            </p>
+                                            <input id="name_valid" type="number" style="display: none;" value="{% if user_edit %}1{% else %}0{% endif %}">
                                         </div>
+
                                         <div class="fieldWrapper mt-2">
                                             <label class="my-1 me-2">Apellidos:</label>
-                                            <input class="form-control" type="text" id="id_app" name="apellidos" placeholder="Ingrese apellidos">
-                                            <p id="app_error" style="color: rgb(207, 52, 75); margin-top: 6px; margin-left: 10px; display: none;"><i class="fas fa-exclamation fa-rotate-180 mr-1"></i> El apellido debe tener al menos 3 caracteres<i class="fas fa-exclamation ml-1"></i></p>
-                                            <input id="app_valid" type="number" style="display: none;">
-                                            
+                                            <input class="form-control" type="text" id="id_app" name="apellidos" 
+                                                   value="{{ user_edit.last_name|default:'' }}" placeholder="Ingrese apellidos">
+                                            <p id="app_error" style="color: rgb(207, 52, 75); margin-top: 6px; margin-left: 10px; display: none;">
+                                                <i class="fas fa-exclamation fa-rotate-180 mr-1"></i> El apellido debe tener al menos 3 caracteres
+                                            </p>
+                                            <input id="app_valid" type="number" style="display: none;" value="{% if user_edit %}1{% else %}0{% endif %}">
                                         </div>
+
                                         <div class="fieldWrapper mt-2">
                                             <label for="rut_id" class="form-label fw-bold">Rut:</label>
-                                            
-                                            <input class="form-control" 
-                                                type="text" 
-                                                id="rut_id" 
-                                                name="rut" 
-                                                placeholder="12.345.678-9"
-                                                maxlength="12"
-                                                oninput="formatearRut(this)">
-
+                                            <input class="form-control" type="text" id="rut_id" name="rut" 
+                                                   value="{{ user_edit.rut|default:'' }}"
+                                                   placeholder="12.345.678-9" maxlength="12" oninput="formatearRut(this)"
+                                                   {% if user_edit and not user.is_superuser and user != user_edit %}readonly style="background-color: #e9ecef;"{% endif %}>
                                             <p id="rut_error" class="text-danger small mt-1" style="display: none;">
-                                                <i class="fas fa-exclamation-circle me-1"></i> 
-                                                El RUT es inválido o muy corto.
+                                                <i class="fas fa-exclamation-circle me-1"></i> El RUT es inválido o muy corto.
                                             </p>
-
-                                            <input id="rut_valid" type="number" style="display: none;">
+                                            <input id="rut_valid" type="number" style="display: none;" value="{% if user_edit %}1{% else %}0{% endif %}">
                                         </div>
+
                                         <div class="fieldWrapper mt-2">
                                             <label class="my-1 me-2">Correo:</label>
-                                            <input class="form-control" type="email" id="id_correo" name="correo" placeholder="Ingrese correo">
-                                            <p id="correo_error" style="color: rgb(207, 52, 75); margin-top: 6px; margin-left: 10px; display: none;"><i class="fas fa-exclamation fa-rotate-180 mr-1"></i> Ingrese un correo valido.<i class="fas fa-exclamation ml-1"></i></p>
-                                            <input id="correo_valid" type="number"  style="display: none;">
+                                            <input class="form-control" type="email" id="id_correo" name="correo" 
+                                                   value="{{ user_edit.email|default:'' }}" placeholder="Ingrese correo">
+                                            <p id="correo_error" style="color: rgb(207, 52, 75); margin-top: 6px; margin-left: 10px; display: none;">
+                                                <i class="fas fa-exclamation fa-rotate-180 mr-1"></i> Ingrese un correo valido.
+                                            </p>
+                                            <input id="correo_valid" type="number"  style="display: none;" value="{% if user_edit %}1{% else %}0{% endif %}">
                                         </div>
+
                                         <div class="fieldWrapper mt-2">
                                             <label class="my-1 me-2">Telefono:</label>
-                                            <input class="form-control" type="number" id="id_telefono" name="telefono" placeholder="999999999">
-                                            <p id="telefono_error" style="color: rgb(207, 52, 75); margin-top: 6px; margin-left: 10px; display: none;"><i class="fas fa-exclamation fa-rotate-180 mr-1"></i> El telefono debe tener 9 digitos<i class="fas fa-exclamation ml-1"></i></p>
-                                            <input id="telefono_valid" type="number" style="display: none;">
+                                            <input class="form-control" type="number" id="id_telefono" name="telefono" 
+                                                   value="{{ user_edit.telefono|default:'' }}" placeholder="999999999"
+                                                   {% if user_edit and not user.is_superuser and user != user_edit %}readonly style="background-color: #e9ecef;"{% endif %}>
+                                            <p id="telefono_error" style="color: rgb(207, 52, 75); margin-top: 6px; margin-left: 10px; display: none;">
+                                                <i class="fas fa-exclamation fa-rotate-180 mr-1"></i> El telefono debe tener 9 digitos
+                                            </p>
+                                            <input id="telefono_valid" type="number" style="display: none;" value="{% if user_edit %}1{% else %}0{% endif %}">
                                         </div>
-                                        <div class="fieldWrapper mt-2">
-                                            <label class="my-1 me-2">Contraseña:</label>
-                                            <input class="form-control" type="password" id="contraseña_id" name="contraseña" placeholder="Ingrese contraseña">
-                                            <p id="contraseña_error" style="color: rgb(207, 52, 75); margin-top: 6px; margin-left: 10px; display: none;"><i class="fas fa-exclamation fa-rotate-180 mr-1"></i> La contraseña debe tener al menos 6 caracteres<i class="fas fa-exclamation ml-1"></i></p>
-                                            <input id="contraseña_valid" type="number" style="display: none;">
-                                        </div>
-                                        <div class="fieldWrapper mt-2">
-                                            <label class="my-1 me-2">Repetir Contraseña:</label>
-                                            <input class="form-control" type="password" id="contraseña2_id" name="contraseña2" placeholder="Repetir contraseña">
-                                            <p id="contraseña2_error" style="color: rgb(207, 52, 75); margin-top: 6px; margin-left: 10px; display: none;"><i class="fas fa-exclamation fa-rotate-180 mr-1"></i> Las contraseñas deben ser iguales<i class="fas fa-exclamation ml-1"></i></p>
-                                            <input id="contraseña2_valid" type="number" style="display: none;">
-                                        </div>
-                                        <div class="fieldWrapper mt-2">
-                                            <label class="my-1 me-2">Perfil:</label>
-                                            <select class="js-example-placeholder-multiple col-sm-12" name="perfil" id="perfil_id" data-placeholder="Seleccione Perfil">
-                                                <option value="">Seleccione Perfil</option>
-                                                {% for p in perfiles %}
-                                                    <option value="{{p.id}}">{{p.name}}</option>
-                                                {% endfor %}
-                                            </select>
-                                            <p id="perfil_error" style="color: rgb(207, 52, 75); margin-top: 6px; margin-left: 10px; display: none;"><i class="fas fa-exclamation fa-rotate-180 mr-1"></i> Debe seleccionar un perfil<i class="fas fa-exclamation ml-1"></i></p>
-                                            <input id="perfil_valid" type="number" style="display: none;">
-                                        </div>
+
+                                        {% if not user_edit or user.is_superuser or request.user == user_edit %}
+                                            <div class="fieldWrapper mt-2">
+                                                <label class="my-1 me-2">Nueva Contraseña {% if user_edit %}(Dejar vacía para mantener){% endif %}:</label>
+                                                <input class="form-control" type="password" id="contraseña_id" name="contraseña" placeholder="Ingrese contraseña">
+                                                <p id="contraseña_error" style="color: rgb(207, 52, 75); margin-top: 6px; margin-left: 10px; display: none;">
+                                                    <i class="fas fa-exclamation fa-rotate-180 mr-1"></i> La contraseña debe tener al menos 6 caracteres
+                                                </p>
+                                                <input id="contraseña_valid" type="number" style="display: none;" value="{% if user_edit %}1{% else %}0{% endif %}">
+                                            </div>
+
+                                            <div class="fieldWrapper mt-2">
+                                                <label class="my-1 me-2">Repetir Contraseña:</label>
+                                                <input class="form-control" type="password" id="contraseña2_id" name="contraseña2" placeholder="Repetir contraseña">
+                                                <p id="contraseña2_error" style="color: rgb(207, 52, 75); margin-top: 6px; margin-left: 10px; display: none;">
+                                                    <i class="fas fa-exclamation fa-rotate-180 mr-1"></i> Las contraseñas deben ser iguales
+                                                </p>
+                                                <input id="contraseña2_valid" type="number" style="display: none;" value="{% if user_edit %}1{% else %}0{% endif %}">
+                                            </div>
+                                        {% else %}
+                                            <input type="hidden" id="contraseña_valid" value="1">
+                                            <input type="hidden" id="contraseña2_valid" value="1">
+                                        {% endif %}
+
+                                        {% if user.is_superuser %}
+                                            <div class="fieldWrapper mt-2">
+                                                <label class="my-1 me-2">Perfil (Rol):</label>
+                                                <select class="form-control" name="perfil" id="perfil_id">
+                                                    <option value="">-- Sin Rol (Usuario Básico) --</option>
+                                                    {% for p in perfiles %}
+                                                        <option value="{{p.id}}" {% if user_edit and p in user_edit.groups.all %}selected{% endif %}>
+                                                            {{p.name}}
+                                                        </option>
+                                                    {% endfor %}
+                                                </select>
+                                                <input id="perfil_valid" type="number" style="display: none;" value="1">
+                                            </div>
+                                        {% else %}
+                                            <input type="hidden" id="perfil_valid" value="1">
+                                        {% endif %}
+                                        
                                         <br>
                                         <div class="form-group nav justify-content-end">
                                             <button class="btn btn-success" type="button" onclick="validar_form()">Guardar</button>
                                             <p>&nbsp&nbsp</p>
-                                            <a class="btn btn-danger mr-1"
-                                                onclick="window.history.go(-1); return false;">Volver</a>
+                                            <a class="btn btn-danger mr-1" href="{{ next_url|default:'/' }}">Volver</a>
                                         </div>
                                     </form>
                                 </div>
@@ -125,320 +162,253 @@
                         </div>
                     </div>
                 </div>
-                <!-- [ form-element ] end -->
+                </div>
             </div>
-            <!-- [ Main Content ] end -->
-        </div>
     </section>
-    <!-- [ Main Content ] end -->
 {% endblock content %}
 
-<!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
-    <!-- bootstrap-tagsinput-latest Js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.bundle.min.js"></script>
     <script src="/static/assets/js/plugins/bootstrap-tagsinput.min.js"></script>
-    <!-- bootstrap-maxlength Js -->
     <script src="/static/assets/js/plugins/bootstrap-maxlength.js"></script>
-    <!-- form-advance custom js -->
     <script src="/static/assets/js/pages/form-advance-custom.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
     <script>
+        const IS_EDIT_MODE = {% if user_edit %}true{% else %}false{% endif %};
+
         function validateUsername(){
-        // Get our input reference.
-        var inputValue = document.getElementById('username_id').value;
-        var input = document.getElementById('username_id');
-        var validar = document.getElementById('username_valid');
-        var inputError = document.getElementById('username_error');
-        // Using test we can check if the text match the pattern
-        if( inputValue.length > 4 ){
-            input.style.border = '1px'
-            input.style.borderColor = ' green'
-            input.style.borderStyle = 'solid'
-            input.style.borderRadius = '4px'
-            inputError.style.display = 'none'
-            validar.value = 1
-            return true;
-        }else{
-            input.style.border = '1px'
-            input.style.borderStyle = 'solid'
-            input.style.borderColor = ' rgb(235, 65, 65)'
-            input.style.borderRadius = '4px'
-            inputError.style.display = 'block'
-            validar.value = 0
-            return false;
+            var input = document.getElementById('username_id');
+            if (input.readOnly) return true;
+
+            var inputValue = input.value;
+            var validar = document.getElementById('username_valid');
+            var inputError = document.getElementById('username_error');
+            
+            if( inputValue.length > 4 ){
+                input.style.border = '1px solid green';
+                inputError.style.display = 'none';
+                validar.value = 1;
+                return true;
+            }else{
+                input.style.border = '1px solid rgb(235, 65, 65)';
+                inputError.style.display = 'block';
+                validar.value = 0;
+                return false;
+            }
         }
-    }
 
         function validateNombre(){
-            // Get our input reference.
             var inputValue = document.getElementById('id_nombre').value;
             var input = document.getElementById('id_nombre');
             var validar = document.getElementById('name_valid');
             var inputError = document.getElementById('name_error');
-            // Using test we can check if the text match the pattern
+            
             if( inputValue.length > 2 ){
-                input.style.border = '1px'
-                input.style.borderColor = ' green'
-                input.style.borderStyle = 'solid'
-                input.style.borderRadius = '4px'
-                inputError.style.display = 'none'
-                validar.value = 1
+                input.style.border = '1px solid green';
+                inputError.style.display = 'none';
+                validar.value = 1;
                 return true;
             }else{
-                input.style.border = '1px'
-                input.style.borderStyle = 'solid'
-                input.style.borderColor = ' rgb(235, 65, 65)'
-                input.style.borderRadius = '4px'
-                inputError.style.display = 'block'
-                validar.value = 0
+                input.style.border = '1px solid rgb(235, 65, 65)';
+                inputError.style.display = 'block';
+                validar.value = 0;
                 return false;
             }
         }
         
         function validateApp(){
-            // Get our input reference.
             var inputValue = document.getElementById('id_app').value;
             var input = document.getElementById('id_app');
             var validar = document.getElementById('app_valid');
             var inputError = document.getElementById('app_error');
-            // Using test we can check if the text match the pattern
+            
             if( inputValue.length > 2 ){
-                input.style.border = '1px'
-                input.style.borderColor = ' green'
-                input.style.borderStyle = 'solid'
-                input.style.borderRadius = '4px'
-                inputError.style.display = 'none'
-                validar.value = 1
+                input.style.border = '1px solid green';
+                inputError.style.display = 'none';
+                validar.value = 1;
                 return true;
             }else{
-                input.style.border = '1px'
-                input.style.borderStyle = 'solid'
-                input.style.borderColor = ' rgb(235, 65, 65)'
-                input.style.borderRadius = '4px'
-                inputError.style.display = 'block'
-                validar.value = 0
+                input.style.border = '1px solid rgb(235, 65, 65)';
+                inputError.style.display = 'block';
+                validar.value = 0;
                 return false;
             }
         }
 
         function validateTelefono(){
-            // Get our input reference.
-            var inputValue = document.getElementById('id_telefono').value;
             var input = document.getElementById('id_telefono');
+            if (input.readOnly) return true;
+
+            var inputValue = input.value;
             var validar = document.getElementById('telefono_valid');
             var inputError = document.getElementById('telefono_error');
-            // Using test we can check if the text match the pattern
+            
             if( inputValue.length > 8 ){
-                input.style.border = '1px'
-                input.style.borderColor = ' green'
-                input.style.borderStyle = 'solid'
-                input.style.borderRadius = '4px'
-                inputError.style.display = 'none'
-                validar.value = 1
+                input.style.border = '1px solid green';
+                inputError.style.display = 'none';
+                validar.value = 1;
                 return true;
             }else{
-                input.style.border = '1px'
-                input.style.borderStyle = 'solid'
-                input.style.borderColor = ' rgb(235, 65, 65)'
-                input.style.borderRadius = '4px'
-                inputError.style.display = 'block'
-                validar.value = 0
+                input.style.border = '1px solid rgb(235, 65, 65)';
+                inputError.style.display = 'block';
+                validar.value = 0;
                 return false;
             }
         }
 
         function validateCorreo(){
-            // Get our input reference.
             var emailField = document.getElementById('id_correo').value;
             var validar = document.getElementById('correo_valid');
             var inputError = document.getElementById('correo_error');
-            // Define our regular expression.
-            var validEmail =  /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+            var validEmail = /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
             var inputEmail = document.getElementById('id_correo');
-            // Using test we can check if the text match the pattern
+            
             if( validEmail.test(emailField) ){
-                inputEmail.style.border = '1px'
-                inputEmail.style.borderColor = ' green'
-                inputEmail.style.borderStyle = 'solid'
-                inputEmail.style.borderRadius = '4px'
-                inputError.style.display = 'none'
-                validar.value = 1
+                inputEmail.style.border = '1px solid green';
+                inputError.style.display = 'none';
+                validar.value = 1;
                 return true;
             }else{
-                inputEmail.style.border = '1px'
-                inputEmail.style.borderStyle = 'solid'
-                inputEmail.style.borderColor = ' rgb(235, 65, 65)'
-                inputEmail.style.borderRadius = '4px'
-                inputError.style.display = 'block'
-                validar.value = 0
+                inputEmail.style.border = '1px solid rgb(235, 65, 65)';
+                inputError.style.display = 'block';
+                validar.value = 0;
                 return false;
             }
         }
 
         function validateContraseña(){
-            // Get our input reference.
-            var inputValue = document.getElementById('contraseña_id').value;
+            var inputPass = document.getElementById('contraseña_id');
+            if (!inputPass) return true;
+
+            var inputValue = inputPass.value;
             var validar = document.getElementById('contraseña_valid');
             var inputError = document.getElementById('contraseña_error');
-            var inputEmail = document.getElementById('contraseña_id');
-            // Using test we can check if the text match the pattern
-            if( inputValue.length >  5 ){
-                inputEmail.style.border = '1px'
-                inputEmail.style.borderColor = ' green'
-                inputEmail.style.borderStyle = 'solid'
-                inputEmail.style.borderRadius = '4px'
-                inputError.style.display = 'none'
-                validar.value = 1
+            
+            if( inputValue.length === 0 ) {
+                if( IS_EDIT_MODE ) {
+                    inputPass.style.border = '1px solid #ced4da';
+                    inputError.style.display = 'none';
+                    validar.value = 1;
+                    return true;
+                } else {
+                    inputPass.style.border = '1px solid rgb(235, 65, 65)';
+                    inputError.style.display = 'block';
+                    validar.value = 0;
+                    return false;
+                }
+            }
+
+            if( inputValue.length > 5 ){
+                inputPass.style.border = '1px solid green';
+                inputError.style.display = 'none';
+                validar.value = 1;
                 return true;
             }else{
-                inputEmail.style.border = '1px'
-                inputEmail.style.borderStyle = 'solid'
-                inputEmail.style.borderColor = ' rgb(235, 65, 65)'
-                inputEmail.style.borderRadius = '4px'
-                inputError.style.display = 'block'
-                validar.value = 0
+                inputPass.style.border = '1px solid rgb(235, 65, 65)';
+                inputError.style.display = 'block';
+                validar.value = 0;
                 return false;
             }
         }
 
         function validateRepetirContraseña(){
-            // Get our input reference.
-            var inputValue = document.getElementById('contraseña2_id').value;
-            var inputValue2 = document.getElementById('contraseña_id').value;
+            var inputPass2 = document.getElementById('contraseña2_id');
+            if (!inputPass2) return true;
+
+            var inputValue2 = inputPass2.value;
+            var inputValue = document.getElementById('contraseña_id').value;
             var validar = document.getElementById('contraseña2_valid');
             var inputError = document.getElementById('contraseña2_error');
-            var inputEmail = document.getElementById('contraseña2_id');
-            // Using test we can check if the text match the pattern
-            if( inputValue2.length != 0 ){
+            
+            if( inputValue.length === 0 && document.getElementById('contraseña_valid').value == "1") {
+                inputPass2.style.border = '1px solid #ced4da';
+                inputError.style.display = 'none';
+                validar.value = 1;
+                return true;
+            }
 
-                if( inputValue ==  inputValue2 ){
-                    inputEmail.style.border = '1px'
-                    inputEmail.style.borderColor = ' green'
-                    inputEmail.style.borderStyle = 'solid'
-                    inputEmail.style.borderRadius = '4px'
-                    inputError.style.display = 'none'
-                    validar.value = 1
+            if( inputValue2.length != 0 ){
+                if( inputValue == inputValue2 ){
+                    inputPass2.style.border = '1px solid green';
+                    inputError.style.display = 'none';
+                    validar.value = 1;
                     return true;
                 }else{
-                    inputEmail.style.border = '1px'
-                    inputEmail.style.borderStyle = 'solid'
-                    inputEmail.style.borderColor = ' rgb(235, 65, 65)'
-                    inputEmail.style.borderRadius = '4px'
-                    inputError.style.display = 'block'
-                    validar.value = 0
+                    inputPass2.style.border = '1px solid rgb(235, 65, 65)';
+                    inputError.style.display = 'block';
+                    validar.value = 0;
                     return false;
                 }
             }else{
-                inputEmail.style.border = '1px'
-                inputEmail.style.borderStyle = 'solid'
-                inputEmail.style.borderColor = ' rgb(235, 65, 65)'
-                inputEmail.style.borderRadius = '4px'
-                inputError.style.display = 'block'
-                validar.value = 0
+                inputPass2.style.border = '1px solid rgb(235, 65, 65)';
+                inputError.style.display = 'block';
+                validar.value = 0;
                 return false;
             }
         }
 
         function validatePerfil(){
-            // Get our input reference.
-            var inputValue = document.getElementById('perfil_id').value;
-            var validar = document.getElementById('perfil_valid');
-            var inputError = document.getElementById('perfil_error');
-            var inputEmail = document.getElementById('perfil_id');
-            // Using test we can check if the text match the pattern
-            if( inputValue != '' ){
-                inputEmail.style.border = '1px'
-                inputEmail.style.borderColor = ' green'
-                inputEmail.style.borderStyle = 'solid'
-                inputEmail.style.borderRadius = '4px'
-                inputError.style.display = 'none'
-                validar.value = 1
-                return true;
-            }else{
-                inputEmail.style.border = '1px'
-                inputEmail.style.borderStyle = 'solid'
-                inputEmail.style.borderColor = ' rgb(235, 65, 65)'
-                inputEmail.style.borderRadius = '4px'
-                inputError.style.display = 'block'
-                validar.value = 0
+            var inputPerfil = document.getElementById('perfil_id');
+            if (!inputPerfil) return true;
+            document.getElementById('perfil_valid').value = 1; 
+            return true;
+        }
+
+        function validar_form(){
+            validateUsername();
+            validateNombre();
+            validateApp();
+            validateTelefono();
+            validateCorreo();
+            validateContraseña();
+            validateRepetirContraseña();
+            validatePerfil();
+
+            var validar_username = document.getElementById('username_valid').value;
+            var validar_name = document.getElementById('name_valid').value;
+            var validar_app = document.getElementById('app_valid').value;
+            var validar_telefono = document.getElementById('telefono_valid').value;
+            var validar_correo = document.getElementById('correo_valid').value;
+            
+            var el_pass = document.getElementById('contraseña_valid');
+            var validar_contraseña = el_pass ? el_pass.value : 1;
+            var el_pass2 = document.getElementById('contraseña2_valid');
+            var validar_contraseña2 = el_pass2 ? el_pass2.value : 1;
+
+            var listado_errores = [];
+            if (validar_username == 0) listado_errores.push("Usuario");
+            if (validar_name == 0) listado_errores.push("Nombre");
+            if (validar_app == 0) listado_errores.push("Apellido");
+            if (validar_telefono == 0) listado_errores.push("Teléfono");
+            if (validar_correo == 0) listado_errores.push("Correo");
+            if (validar_contraseña == 0) listado_errores.push("Contraseña");
+            if (validar_contraseña2 == 0) listado_errores.push("Repetir Contraseña");
+
+            if (listado_errores.length > 0) {
+                Swal.fire({
+                    title: 'Error!',
+                    text: "Revise los campos: " + listado_errores.join(", "),
+                    icon: 'error'
+                });
                 return false;
+            } else {
+                document.getElementById("form_user").submit();
             }
         }
 
-        
-    function validar_form(){
-        validar_username = validateUsername()
-        validar_name = validateNombre()
-        validar_app = validateApp()
-        validar_telefono = validateTelefono()
-        validar_correo = validateCorreo()
-        validar_contraseña = validateContraseña()
-        validar_contraseña2 = validateRepetirContraseña()
-        validar_perfil = validatePerfil()
-
-        var listado_errores = []
-        if (validar_username == 0) {
-            listado_errores.push(0)
-        }
-        if (validar_name == 0) {
-            listado_errores.push(0)
-        }
-        if (validar_app == 0) {
-            listado_errores.push(0)
-        }
-        if (validar_telefono == 0) {
-            listado_errores.push(0)
-        }
-        if (validar_correo == 0) {
-            listado_errores.push(0)
-        }
-        if (validar_contraseña == 0) {
-            listado_errores.push(0)
-        }
-        if (validar_perfil == 0) {
-            listado_errores.push(0)
-        }
-
-
-        if (listado_errores.length > 0) {
-            Swal.fire({
-                title: 'Error!',
-                text: "El formulario contiene " + listado_errores.length +" errores, corregir antes de cargar.",
-                icon: 'error'
-            })
-            return false
-        }else{
-            let form = document.getElementById("form_user");
-            form.submit()
-        }
-    }
-
         function formatearRut(input) {
- 
-        let rut = input.value.replace(/[^0-9kK]/g, '');
-
-        if (rut.length === 0) {
-            input.value = '';
-            return;
+            if (input.readOnly) return;
+            let rut = input.value.replace(/[^0-9kK]/g, '');
+            if (rut.length === 0) { input.value = ''; return; }
+            if (rut.length === 1) { input.value = rut; return; }
+            let cuerpo = rut.slice(0, -1);
+            let dv = rut.slice(-1).toUpperCase(); 
+            input.value = cuerpo.replace(/\B(?=(\d{3})+(?!\d))/g, ".") + "-" + dv;
+            
+            const errorMsg = document.getElementById('rut_error');
+            if(rut.length < 8) errorMsg.style.display = 'block'; 
+            else errorMsg.style.display = 'none'; 
         }
-
-        if (rut.length === 1) {
-            input.value = rut;
-            return;
-        }
-
-        let cuerpo = rut.slice(0, -1);
-        let dv = rut.slice(-1).toUpperCase(); 
-        
-        input.value = cuerpo.replace(/\B(?=(\d{3})+(?!\d))/g, ".") + "-" + dv;
-
-        //Validación de largo para mostrar tu error
-        const errorMsg = document.getElementById('rut_error');
-        if(rut.length < 8) {
-            errorMsg.style.display = 'block'; // Muestra el error si es muy corto
-        } else {
-            errorMsg.style.display = 'none';  // Oculta el error
-        }
-    }
     </script>
 {% endblock javascripts %}

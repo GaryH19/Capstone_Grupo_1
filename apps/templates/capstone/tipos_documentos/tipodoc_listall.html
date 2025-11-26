@@ -1,22 +1,17 @@
-
 {% extends "layouts/base.html" %}
 
 {% block title %} Tipos de Documentos {% endblock %} 
 
-<!-- Specific CSS goes HERE -->
 {% block stylesheets %}
 
-    <!-- data tables css -->
     <link rel="stylesheet" href="/static/assets/css/plugins/dataTables.bootstrap4.min.css">
     {% load i18n %}
     {% load l10n %}
 {% endblock stylesheets %}
 
-{% block content %}	
-    <!-- [ Main Content ] start --> 
+{% block content %} 
     <section class="pcoded-main-container">
         <div class="pcoded-content">
-            <!-- [ breadcrumb ] start -->
             <div class="page-header">
                 <div class="page-block">
                     <div class="row align-items-center">
@@ -35,10 +30,7 @@
                 </div>
 
             </div>
-            <!-- [ breadcrumb ] end -->
-            <!-- [ Main Content ] start -->
             <div class="row">
-                <!-- HTML5 Export Buttons table start -->
                 <div class="col-sm-12">
                     <div class="card">
                         <div class="d-flex justify-content-between">
@@ -46,7 +38,7 @@
                                 <h5>Opciones de exportación</h5>
                             </div>
                             <div class=" mb-2 mb-md-0" style="margin-right: 50px;margin-top: 20px;">
-                                <button class="btn btn-primary d-inline-flex align-items-center" data-toggle="modal" data-target="#ModalAgregarTipoDoc" onclick="cambiar_action_form('crear','0')"><i class="fas fa-user-plus"></i>
+                                <button class="btn btn-primary d-inline-flex align-items-center" data-toggle="modal" data-target="#ModalAgregarTipoDoc" onclick="cambiar_action_form('crear','0')"><i class="fas fa-plus"></i>
                                     &nbsp&nbsp Nuevo
                                 </button>
                             </div>
@@ -56,7 +48,6 @@
                                 <table id="basic-btn" class="table table-striped table-bordered nowrap">
                                     <thead>
                                         <tr>
-                                            
                                             <th>NOMBRE</th>
                                             <th>ESTADO</th>
                                             <th>ACCIONES</th>
@@ -65,7 +56,6 @@
                                     <tbody>
                                         {% for objeto in tipos %}
                                             <tr>
-                                                <!-- <td class="col-1"><span class="fw-normal">{{ objeto.TD_NID }}</span></td> -->
                                                 <td><span class="fw-normal">{{ objeto.TD_NOMBRE }}</span></td>
                                                 {% if objeto.TD_ESTADO %}
                                                     <td><i class="fas fa-check" style="color: #63E6BE;"></i></td>
@@ -74,14 +64,18 @@
                                                 {% endif %}
                                                 <td>
                                                     <a href="#" 
-                                                        class="btn btn-sm btn-primary p-1" 
-                                                        title="Editar"
-                                                        data-toggle="modal" 
-                                                        data-target="#ModalAgregarTipoDoc" 
-                                                        onclick="cambiar_action_form('actualizar','{{objeto.TD_NID}}', '{{ objeto.TD_NOMBRE }}')">
+                                                       class="btn btn-sm btn-primary p-1" 
+                                                       title="Editar"
+                                                       data-toggle="modal" 
+                                                       data-target="#ModalAgregarTipoDoc" 
+                                                       onclick="cambiar_action_form('actualizar','{{objeto.TD_NID}}', '{{ objeto.TD_NOMBRE }}')">
                                                             <i class="fas fa-edit"></i>
-                                                        </a>
-                                                    <a href="#" class="btn btn-sm btn-danger p-1" title="Eliminar Documento">
+                                                    </a>
+                                                    
+                                                    <a href="#" 
+                                                       class="btn btn-sm btn-danger p-1" 
+                                                       title="Eliminar Tipo Documento"
+                                                       onclick="confirmarEliminar('{% url 'tipodoc_delete' TD_NID=objeto.TD_NID %}', '{{ objeto.TD_NOMBRE }}'); return false;">
                                                         <i class="fas fa-trash"></i>
                                                     </a>
                                                 </td>
@@ -94,13 +88,9 @@
                     </div>
                 </div>
             </div>
-            <!-- [ Main Content ] end -->
-        </div>
+            </div>
     </section>
-    <!-- [ Main Content ] end -->
-     
-<!-- Modal Content agregar producto-->
-<div class="modal fade" id="ModalAgregarTipoDoc" role="dialog" aria-labelledby="ModalAgregarTipoDocLabel" aria-hidden="true">
+    <div class="modal fade" id="ModalAgregarTipoDoc" role="dialog" aria-labelledby="ModalAgregarTipoDocLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered ">
         <div class="modal-content">
             <div class="modal-header">
@@ -125,14 +115,10 @@
         </div>
     </div>
 </div>
-<!-- End of Modal Content -->
-
 {% endblock content %}
 
-<!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
 
-    <!-- datatable Js -->
     <script src="/static/assets/js/plugins/jquery.dataTables.min.js"></script>
     <script src="/static/assets/js/plugins/dataTables.bootstrap4.min.js"></script>
     <script src="/static/assets/js/plugins/buttons.colVis.min.js"></script>
@@ -143,17 +129,19 @@
     <script src="/static/assets/js/plugins/buttons.html5.min.js"></script>
     <script src="/static/assets/js/plugins/buttons.bootstrap4.min.js"></script>
     <script src="/static/assets/js/pages/data-export-custom.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script>
         function cambiar_action_form(accion, id, nombre){
-            console.log('CAMBIAAAAAAAAAAAR');
-            console.log(accion);
-            
             form = document.getElementById('form_tipo_doc')
             if (accion == 'crear') {
+                document.getElementById('nombre_id').value = ""; // Limpiar el input al crear
+                document.getElementById('ModalAgregarTipoDocTitle').innerText = "Agregar Tipo Documento";
                 form.setAttribute('action','/create_tipo_doc')
             }else{
-                console.log('NO CAMBIAA');
                 document.getElementById('nombre_id').value = nombre
+                document.getElementById('ModalAgregarTipoDocTitle').innerText = "Editar Tipo Documento";
                 form.setAttribute('action','/tipodoc_update/'+id)
             }
         }
@@ -161,7 +149,6 @@
         function verificar(){
             nombre = document.getElementById('nombre_id').value
             if (nombre.length < 1) {
-               
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
@@ -170,12 +157,27 @@
                 })
                 return false 
             }
-
             form = document.getElementById('form_tipo_doc')
             form.submit()
-
         }
 
+        // --- FUNCIÓN PARA ELIMINAR ---
+        function confirmarEliminar(url, nombreDoc) {
+            Swal.fire({
+                title: '¿Eliminar Tipo?',
+                text: "Estás a punto de eliminar el tipo: '" + nombreDoc + "'.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = url;
+                }
+            });
+        }
     </script>
 
 {% endblock javascripts %}

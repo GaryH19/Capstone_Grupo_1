@@ -14,6 +14,7 @@ urlpatterns = [
     path('create_emp', login_required(views.create_emp), name='create_emp'),
     path('emp_update/<int:EMP_NID>', login_required(views.emp_update), name='emp_update'),
     path('emp_deactivate/<int:EMP_NID>', login_required(views.emp_deactivate), name='emp_deactivate'),
+    path('empresa/eliminar/<int:EMP_NID>/', login_required(views.emp_delete), name='emp_delete'),
 
 
     ## TIPO DOCUMENTOS ##
@@ -21,6 +22,7 @@ urlpatterns = [
     path('create_tipo_doc', login_required(views.create_tipo_doc), name='create_tipo_doc'),
     path('tipodoc_update/<int:TD_NID>', login_required(views.tipodoc_update), name='tipodoc_update'),
     path('tipodoc_deactivate/<int:TD_NID>', login_required(views.tipodoc_deactivate), name='tipodoc_deactivate'),
+    path('tipodoc/eliminar/<int:TD_NID>/', login_required(views.tipodoc_delete), name='tipodoc_delete'),
 
     ## PROYECTOS ##
     path('pro_listall', login_required(views.pro_listall), name='pro_listall'),
@@ -44,6 +46,8 @@ urlpatterns = [
     ## USUARIOS ##
     path('usuarios/', login_required(views.user_listall), name='user_listall'),
     path('usuario/nuevo/', login_required(views.create_user), name='create_user'),
+    path('usuario/editar/<int:user_id>/', login_required(views.update_user), name='update_user'),
+    path('usuario/eliminar/<int:user_id>/', login_required(views.delete_user), name='delete_user'),
     
     # --- URLS DE APROBACIÓN AÑADIDAS ---
     path('documento/aprobar/<int:DOC_NID>/', login_required(views.aprobar_documento), name='aprobar_documento'),

@@ -124,14 +124,18 @@ def pages(request):
 @group_required('Profesor') 
 def user_listall(request):
     try:
-        usuarios = User.objects.all().order_by('id')
+        if request.user.is_superuser:
+            usuarios = User.objects.all().order_by('id')
+        else:
+            usuarios = User.objects.filter(groups__name='Alumno').order_by('id')
+
         context = {
-            'usuarios': usuarios
+            'usuarios': usuarios,
+            'is_superuser': request.user.is_superuser
         }
-        # CORRECCIÓN: Agregado 'capstone/' al principio
         return render(request, 'capstone/usuario/us_listall.html', context)
     except Exception as e:
-        print(f"Error detallado: {e}") # Esto te ayuda a ver el error real en la terminal
+        print(f"Error detallado: {e}")
         messages.error(request,'Error al cargar listado de usuarios')
         return redirect('/')
 
@@ -139,8 +143,8 @@ def user_listall(request):
 @group_required('Profesor')
 def create_user(request):
     try:
-        perfiles = Group.objects.all()
-        
+        perfiles = Group.objects.all() if request.user.is_superuser else None
+
         if request.method == "POST":
             username = request.POST.get('username')
             nombre = request.POST.get('nombre')
@@ -149,7 +153,8 @@ def create_user(request):
             rut = request.POST.get('rut')
             telefono = request.POST.get('telefono')
             password = request.POST.get('contraseña')
-            perfil_id = request.POST.get('perfil')
+            
+            perfil_id = request.POST.get('perfil') if request.user.is_superuser else None
 
             if User.objects.filter(username=username).exists():
                 messages.error(request, 'El nombre de usuario ya existe.')
@@ -165,29 +170,56 @@ def create_user(request):
                     is_active=True
                 )
                 
-                if perfil_id:
-                    grupo = Group.objects.get(id=perfil_id)
-                    user.groups.add(grupo)
-                
+                if request.user.is_superuser:
+                    if perfil_id:
+                        grupo = Group.objects.get(id=perfil_id)
+                        user.groups.add(grupo)
+                else:
+                    try:
+                        grupo_alumno = Group.objects.get(name='Alumno')
+                        user.groups.add(grupo_alumno)
+                    except Group.DoesNotExist:
+                        pass
+
                 messages.success(request, 'Usuario creado correctamente.')
                 return redirect('user_listall')
 
             context = {'perfiles': perfiles}
-            # CORRECCIÓN: Agregado 'capstone/'
             return render(request, 'capstone/usuario/us_addone.html', context)
             
         else:
-            context = {
-                'perfiles': perfiles
-            }
-            # CORRECCIÓN: Agregado 'capstone/'
+            context = {'perfiles': perfiles}
             return render(request, 'capstone/usuario/us_addone.html', context)
             
     except Exception as e:
         print(f"Error creando usuario: {e}")
         messages.error(request, f'Error al cargar formulario: {e}')
         return redirect('user_listall')
+    
+            
+# --- Función para ELIMINAR USUARIO (Solo Superuser) ---
+@login_required(login_url="/login/")
+def delete_user(request, user_id):
+    try:
+        if not request.user.is_superuser:
+            messages.error(request, 'No tienes permisos para eliminar usuarios.')
+            return redirect('user_listall')
 
+        user_to_delete = get_object_or_404(User, pk=user_id)
+        
+        if user_to_delete == request.user:
+            messages.error(request, 'No puedes eliminar tu propio usuario.')
+            return redirect('user_listall')
+
+        user_to_delete.delete()
+        messages.success(request, 'Usuario eliminado correctamente.')
+        return redirect('user_listall')
+
+    except Exception as e:
+        print(f"Error eliminando usuario: {e}")
+        messages.error(request, 'Error al eliminar el usuario.')
+        return redirect('user_listall')
+    
 #############################
 ######### EMPRESA ###########
 #############################
@@ -253,7 +285,27 @@ def emp_deactivate(request,EMP_NID):
         print(e)
         messages.error(request,'Error al cambiar estado de empresa')
         return redirect('emp_listall')
+    
+@login_required(login_url="/login/")
+def emp_delete(request, EMP_NID):
+    try:
+        # 1. Seguridad: Solo Superuser
+        if not request.user.is_superuser:
+            messages.error(request, 'No tienes permisos para eliminar empresas.')
+            return redirect('emp_listall')
 
+        # 2. Buscar y borrar
+        empresa = get_object_or_404(EMPRESA, EMP_NID=EMP_NID)
+        empresa.delete()
+        
+        messages.success(request, 'Empresa eliminada correctamente.')
+        return redirect('emp_listall')
+
+    except Exception as e:
+        print(f"Error eliminando empresa: {e}")
+        messages.error(request, 'Error al eliminar la empresa (puede tener proyectos asociados).')
+        return redirect('emp_listall')
+    
 #################################
 ###### TIPOS DE DOCUMENTOS ######
 #################################
@@ -311,6 +363,23 @@ def tipodoc_deactivate(request,TD_NID):
         print(e)
         messages.error(request,'Error al cambiar estado')
         return redirect('tipodoc_listall')
+
+@login_required(login_url="/login/")
+def tipodoc_delete(request, TD_NID):
+    try:
+        # Buscamos el objeto
+        tipo_doc = get_object_or_404(TIPO_DOCUMENTO, TD_NID=TD_NID)
+        
+        # Intentamos eliminar
+        tipo_doc.delete()
+        messages.success(request, 'Tipo de documento eliminado correctamente.')
+        
+    except Exception as e:
+        # Esto captura errores si el tipo de documento está en uso (Foreign Keys)
+        print(f"Error eliminando tipo doc: {e}")
+        messages.error(request, 'No se puede eliminar: Este tipo de documento está en uso en algún proyecto.')
+        
+    return redirect('tipodoc_listall')
 
 ############################
 ######## PROYECTO ##########
