@@ -1,12 +1,20 @@
-# En apps/home/forms.py
-
 from faulthandler import disable
 from pydoc import text
 from random import choices
-from tkinter import Widget
+
 from django import forms
 from django.contrib.auth.models import *
 from apps.home.models import *
+
+# Esta clase personalizada obliga a cambiar el nombre visual
+class AlumnoModelChoiceField(forms.ModelMultipleChoiceField):
+    def label_from_instance(self, obj):
+        # Imprimimos en consola para verificar que está entrando aquí (mira tu terminal)
+        print(f"Procesando usuario: {obj.username} - Nombre: {obj.first_name} {obj.last_name}")
+        
+        if obj.first_name and obj.last_name:
+            return f"{obj.first_name} {obj.last_name}"
+        return obj.username
 
 class formDOCUMENTO(forms.ModelForm):
     class Meta:
@@ -36,11 +44,11 @@ class formEMPRESA(forms.ModelForm):
 
 class formPROYECTO(forms.ModelForm):
     
-    # CAMBIO AQUI: Usamos SelectMultiple en lugar de CheckboxSelectMultiple
-    alumnos = forms.ModelMultipleChoiceField(
-        queryset=User.objects.none(),
+    # AQUI EL CAMBIO: Usamos la clase nueva 'AlumnoModelChoiceField'
+    alumnos = AlumnoModelChoiceField(
+        queryset=User.objects.none(), # Se llena en el __init__
         widget=forms.SelectMultiple(attrs={
-            'class': 'form-control js-example-placeholder-multiple', # Esta clase activa el diseño bonito
+            'class': 'form-control js-example-placeholder-multiple', 
             'multiple': 'multiple',
             'data-placeholder': 'Seleccione alumnos para el proyecto'
         }), 
@@ -60,7 +68,7 @@ class formPROYECTO(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         try:
-            # Busqueda inteligente de grupo (mayuscula/minuscula)
+            # Buscamos el grupo y llenamos la lista
             alumno_group = Group.objects.get(name__iexact='alumno')
             self.fields['alumnos'].queryset = alumno_group.user_set.all().order_by('first_name', 'last_name')
         except Group.DoesNotExist:

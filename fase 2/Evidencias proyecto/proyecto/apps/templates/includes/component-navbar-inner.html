@@ -1,4 +1,4 @@
-
+{% load auth_extras %}
     <ul class="nav pcoded-inner-navbar ">
         <li class="nav-item pcoded-menu-caption">
             <label>Capstone</label>
@@ -8,10 +8,13 @@
             <ul class="pcoded-submenu">
                 <li><a href="/">Home</a></li>
                 <li><a href="{% url 'pro_listall'%}">Proyectos</a></li>
-                <li><a href="/">Documentos</a></li>
-                <li><a href="{% url 'tipodoc_listall' %}">Tipos de Documentos</a></li>
-                <li><a href="/">Usuarios</a></li>
-                <li><a href="{% url 'emp_listall' %}">Empresas</a></li>
+                <li><a href="{% url 'doc_listall' %}">Documentos</a></li>
+                {% if request.user|has_group:'Profesor' %}
+                    <li><a href="{% url 'tipodoc_listall' %}">Tipos de Documentos</a></li>
+                    <li><a href="{% url 'user_listall' %}">Usuarios</a></li>
+                    <li><a href="{% url 'emp_listall' %}">Empresas</a></li>
+                {% endif %}
+                
             </ul>
         </li>
     </ul>

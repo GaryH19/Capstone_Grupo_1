@@ -1,286 +1,281 @@
 {% extends "layouts/base.html" %}
 
-{% block title %} 
-    {% if form.instance.pk %}
-        Editar Proyecto
-    {% else %}
-        Crear Proyecto
-    {% endif %}
-{% endblock %} 
+{% block title %} {% if form.instance.pk %}Editar{% else %}Crear{% endif %} Proyecto {% endblock %}
 
-{% block stylesheets %}{% endblock stylesheets %}
-
-{% block content %}     
-    <section class="pcoded-main-container">
-        <div class="pcoded-content">
-            <div class="page-header">
-                <div class="page-block">
-                    <div class="row align-items-center">
-                        <div class="col-md-12">
-                            <div class="page-header-title">
-                                <h5 class="m-b-10">
-                                    {% if form.instance.pk %}
-                                        Editar Proyecto
-                                    {% else %}
-                                        Crear Proyecto
-                                    {% endif %}
-                                </h5>
-                            </div>
-                            <ul class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="/"><i class="feather icon-home"></i></a></li>
-                                <li class="breadcrumb-item"><a href="{% url 'pro_listall' %}">Proyectos</a></li>
-                                <li class="breadcrumb-item"><a href="#!">
-                                    {% if form.instance.pk %}Editar{% else %}Crear{% endif %}
-                                </a></li>
-                            </ul>
+{% block content %}
+<div class="pcoded-main-container">
+    <div class="pcoded-content">
+        <div class="page-header">
+            <div class="page-block">
+                <div class="row align-items-center">
+                    <div class="col-md-12">
+                        <div class="page-header-title">
+                            <h5 class="m-b-10">{% if form.instance.pk %}Editar{% else %}Crear{% endif %} Proyecto</h5>
                         </div>
+                        <ul class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="/"><i class="feather icon-home"></i></a></li>
+                            <li class="breadcrumb-item"><a href="{% url 'pro_listall' %}">Proyectos</a></li>
+                            <li class="breadcrumb-item"><a href="#!">{% if form.instance.pk %}Editar{% else %}Crear{% endif %}</a></li>
+                        </ul>
                     </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-sm-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5>
-                                {% if form.instance.pk %}
-                                    Editando: {{ form.instance.PRO_CNOMBRE }}
-                                {% else %}
-                                    Crear Nuevo Proyecto
-                                {% endif %}
-                            </h5>
-                        </div>
-                        <div class="card-body">
+        </div>
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-body">
+                        <form method="POST" id="projectForm">
+                            {% csrf_token %}
+                            
+                            <h5>Ingrese datos Proyecto</h5>
+                            <hr>
                             <div class="row">
                                 <div class="col-md-8">
-                                    <form method="POST" id="validation-form123">
-                                        {% csrf_token %}
-                                        {{ form.non_field_errors }}
-                                        
-                                        <h5>1. Ingrese datos del Proyecto</h5>
-                                        <hr>
-
-                                        <div class="fieldWrapper">
-                                            {{ form.PRO_CNOMBRE.errors }}
-                                            <label class="my-1 me-2" for="{{ form.PRO_CNOMBRE.id_for_label }}">Ingrese Nombre:</label>
-                                            {{ form.PRO_CNOMBRE }}
-                                        </div>
-                                        <div class="fieldWrapper">
-                                            {{ form.EMP_NID.errors }}
-                                            <label class="my-1 me-2" for="{{ form.EMP_NID.id_for_label }}">Seleccione Empresa:</label>
-                                            {{ form.EMP_NID }}
-                                        </div>
-                                        <br>
-
-                                        <hr>
-                                        <h5>2. Asignar Alumnos</h5>
-                                        <div class="fieldWrapper">
-                                            <label class="my-1 me-2" for="{{ form.alumnos.id_for_label }}">Seleccione los alumnos que participarán:</label>
-                                            
-                                            {{ form.alumnos }}
-                                            
-                                            <small class="form-text text-muted">
-                                                {% if form.instance.pk %}
-                                                    Haga clic en la barra para añadir. Haga clic en la "x" del nombre para quitar.
-                                                {% else %}
-                                                    Puede seleccionar múltiples alumnos.
-                                                {% endif %}
-                                            </small>
-                                            {{ form.alumnos.errors }}
-                                        </div>
-                                        <br>
-
-                                        {% if not form.instance.pk %}
-                                            <hr>
-                                            <h5>3. Fases del proyecto</h5>
-                                            
-                                            <div id="contenedor_fases">
-                                                
-                                                <div style="border: 1px solid black; padding: 30px; border-radius: 20px;">
-                                                    <h6>Fase 1</h6>
-                                                    <div>
-                                                        <div class="fieldWrapper">
-                                                            <label class="my-1 me-2" for="nombre_fase_1">Ingrese Nombre para la fase:</label>
-                                                            <input type="text" class="form-control" name="nombre_fase_1" id="nombre_fase_1">
-                                                        </div>
-                                                        <div class="fieldWrapper">
-                                                            <label class="my-1 me-2" for="descripcion_fase_1">Ingrese Descripción para la fase:</label>
-                                                            <input type="text" class="form-control" name="descripcion_fase_1" id="descripcion_fase_1">
-                                                        </div>
-                                                        <div class="d-flex mt-3">
-                                                            <div class="fieldWrapper col-6">
-                                                                <label class="my-1 me-2" for="fecha_inicio_fase_1">Fecha inicio:</label>
-                                                                <input type="date" class="form-control" name="fecha_inicio_fase_1" id="fecha_inicio_fase_1">
-                                                            </div>
-                                                            <div class="fieldWrapper col-6">
-                                                                <label class="my-1 me-2" for="fecha_termino_fase_1">Fecha termino:</label>
-                                                                <input type="date" class="form-control" name="fecha_termino_fase_1" id="fecha_termino_fase_1">
-                                                            </div>
-                                                        </div>
-                                                        <div class=" mt-3">
-                                                            <label class="my-1 me-2" for="fecha_termino_fase_1">Seleccione documentos para esta fase:</label>
-                                                            <select name="documentos_fase_1[]" id="documentos_fase_1" class="js-example-placeholder-multiple col-sm-12" multiple="multiple" data-placeholder="Seleccione Opciones">
-                                                                {% for doc in documentos %}
-                                                                    <option value="{{doc.TD_NID}}">{{doc.TD_NOMBRE}}</option>
-                                                                {% endfor %}
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                
-                                                <div style="border: 1px solid black; padding: 30px; border-radius: 20px; margin-top: 10px;">
-                                                    <h6>Fase 2</h6>
-                                                    <div>
-                                                        <div class="fieldWrapper">
-                                                            <label class="my-1 me-2" for="nombre_fase_2">Ingrese Nombre para la fase:</label>
-                                                            <input type="text" class="form-control" name="nombre_fase_2">
-                                                        </div>
-                                                        <div class="fieldWrapper">
-                                                            <label class="my-1 me-2" for="descripcion_fase_2">Ingrese Descripción para la fase:</label>
-                                                            <input type="text" class="form-control" name="descripcion_fase_2">
-                                                        </div>
-                                                        <div class="d-flex mt-3">
-                                                            <div class="fieldWrapper col-6">
-                                                                <label class="my-1 me-2" for="fecha_inicio_fase_2">Fecha inicio:</label>
-                                                                <input type="date" class="form-control" name="fecha_inicio_fase_2">
-                                                            </div>
-                                                            <div class="fieldWrapper col-6">
-                                                                <label class="my-1 me-2" for="fecha_termino_fase_2">Fecha termino:</label>
-                                                                <input type="date" class="form-control" name="fecha_termino_fase_2">
-                                                            </div>
-                                                        </div>
-                                                        <div class=" mt-3">
-                                                            <label class="my-1 me-2" for="fecha_termino_fase_2">Seleccione documentos para esta fase:</label>
-                                                            <select name="documentos_fase_2[]" id="documentos_fase_2" class="js-example-placeholder-multiple col-sm-12" multiple="multiple" data-placeholder="Seleccione Opciones">
-                                                                {% for doc in documentos %}
-                                                                    <option value="{{doc.TD_NID}}">{{doc.TD_NOMBRE}}</option>
-                                                                {% endfor %}
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                
-                                                <div style="border: 1px solid black; padding: 30px; border-radius: 20px; margin-top: 10px;">
-                                                    <h6>Fase 3</h6>
-                                                    <div>
-                                                        <div class="fieldWrapper">
-                                                            <label class="my-1 me-2" for="nombre_fase_3">Ingrese Nombre para la fase:</label>
-                                                            <input type="text" class="form-control" name="nombre_fase_3">
-                                                        </div>
-                                                        <div class="fieldWrapper">
-                                                            <label class="my-1 me-2" for="descripcion_fase_3">Ingrese Descripción para la fase:</label>
-                                                            <input type="text" class="form-control" name="descripcion_fase_3">
-                                                        </div>
-                                                        <div class="d-flex mt-3">
-                                                            <div class="fieldWrapper col-6">
-                                                                <label class="my-1 me-2" for="fecha_inicio_fase_3">Fecha inicio:</label>
-                                                                <input type="date" class="form-control" name="fecha_inicio_fase_3">
-                                                            </div>
-                                                            <div class="fieldWrapper col-6">
-                                                                <label class="my-1 me-2" for="fecha_termino_fase_3">Fecha termino:</label>
-                                                                <input type="date" class="form-control" name="fecha_termino_fase_3">
-                                                            </div>
-                                                        </div>
-                                                        <div class=" mt-3">
-                                                            <label class="my-1 me-2" for="fecha_termino_fase_3">Seleccione documentos para esta fase:</label>
-                                                            <select name="documentos_fase_3[]" id="documentos_fase_3" class="js-example-placeholder-multiple col-sm-12" multiple data-placeholder="Seleccione Opciones">
-                                                                {% for doc in documentos %}
-                                                                    <option value="{{doc.TD_NID}}">{{doc.TD_NOMBRE}}</option>
-                                                                {% endfor %}
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            
-                                            <input type="number" id="cant_fases" name="cant_fases" value="3" hidden>
-                                            <div id="nuevas_fases"></div>
-                                            
-                                            <div class="mt-3 mb-4 text-center">
-                                                <button class="btn btn-info " type="button" onclick="add_fase()">Agregar nueva fase</button>
-                                                <button class="btn btn-danger " type="button" onclick="delete_fase()">Eliminar fase</button>
-                                            </div>
-                                        {% endif %} 
-                                        <div class="form-group nav justify-content-end mt-5">
-                                            <button class="btn btn-success mr-4" type="submit">Guardar</button>
-                                            <a class="btn btn-danger mr-1" href="{% url 'pro_listall' %}">Volver</a>
-                                        </div>
-                                    </form>
+                                    <div class="fieldWrapper">
+                                        <label class="my-1 me-2">Ingrese Nombre:</label>
+                                        {{ form.PRO_CNOMBRE }}
+                                    </div>
+                                    <div class="fieldWrapper mt-2">
+                                        <label class="my-1 me-2">Seleccione Empresa:</label>
+                                        {{ form.EMP_NID }}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                            <br>
+
+                            <h5>Asignar Alumnos</h5>
+                            <hr>
+                            <div class="fieldWrapper">
+                                <label class="my-1 me-2">Seleccione los alumnos que participarán:</label>
+                                {{ form.alumnos }}
+                                <small class="text-muted">Haga clic en la barra para añadir. Haga clic en la 'x' del nombre para quitar.</small>
+                            </div>
+                            <br>
+
+                            <h5>Fases del proyecto</h5>
+                            <hr>
+
+                            <div id="contenedor_fases">
+                                
+                                {% if form.instance.pk %}
+                                    {% for item in fases_existentes %}
+                                        <div style="border: 1px solid black; padding: 30px; border-radius: 20px; margin-top: 10px;" id="bloque_fase_{{ forloop.counter }}">
+                                            <div class="d-flex justify-content-between">
+                                                <h6>Fase {{ forloop.counter }} (Existente)</h6>
+                                                <button type="button" class="btn btn-danger btn-sm" onclick="borrarFaseExistente({{ forloop.counter }}, {{ item.obj.FA_NID }})">Eliminar</button>
+                                            </div>
+                                            
+                                            <input type="hidden" name="fase_id_{{ forloop.counter }}" value="{{ item.obj.FA_NID }}">
+
+                                            <div>
+                                                <div class="fieldWrapper">
+                                                    <label class="my-1 me-2">Ingrese Nombre para la fase:</label>
+                                                    <input type="text" class="form-control" name="nombre_fase_{{ forloop.counter }}" value="{{ item.obj.FA_CNOMBRE }}" required>
+                                                </div>
+                                                <div class="fieldWrapper">
+                                                    <label class="my-1 me-2">Ingrese Descripción para la fase:</label>
+                                                    <input type="text" class="form-control" name="descripcion_fase_{{ forloop.counter }}" value="{{ item.obj.FA_CDESCRICPCION }}">
+                                                </div>
+                                                <div class="d-flex mt-3">
+                                                    <div class="fieldWrapper col-6">
+                                                        <label class="my-1 me-2">Fecha inicio:</label>
+                                                        <input type="date" class="form-control" name="fecha_inicio_fase_{{ forloop.counter }}" value="{{ item.obj.PRO_FFECHAINCIO|date:'Y-m-d' }}" required>
+                                                    </div>
+                                                    <div class="fieldWrapper col-6">
+                                                        <label class="my-1 me-2">Fecha termino:</label>
+                                                        <input type="date" class="form-control" name="fecha_termino_fase_{{ forloop.counter }}" value="{{ item.obj.PRO_FFECHATERMINO|date:'Y-m-d' }}" required>
+                                                    </div>
+                                                </div>
+                                                <div class="mt-3">
+                                                    <label class="my-1 me-2">Seleccione documentos para esta fase:</label>
+                                                    <select name="documentos_fase_{{ forloop.counter }}[]" class="form-control js-example-placeholder-multiple" multiple="multiple" style="width: 100%;">
+                                                        {% for doc in documentos %}
+                                                            <option value="{{doc.TD_NID}}" {% if doc.TD_NID in item.docs_ids %}selected{% endif %}>
+                                                                {{doc.TD_NOMBRE}}
+                                                            </option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                
+                                {% else %}
+                                    <div style="border: 1px solid black; padding: 30px; border-radius: 20px; margin-top: 10px;" id="bloque_fase_1">
+                                        <h6>Fase 1</h6>
+                                        <div>
+                                            <div class="fieldWrapper">
+                                                <label class="my-1 me-2">Ingrese Nombre para la fase:</label>
+                                                <input type="text" class="form-control" name="nombre_fase_1" required>
+                                            </div>
+                                            <div class="fieldWrapper">
+                                                <label class="my-1 me-2">Ingrese Descripción para la fase:</label>
+                                                <input type="text" class="form-control" name="descripcion_fase_1">
+                                            </div>
+                                            <div class="d-flex mt-3">
+                                                <div class="fieldWrapper col-6">
+                                                    <label class="my-1 me-2">Fecha inicio:</label>
+                                                    <input type="date" class="form-control" name="fecha_inicio_fase_1" required>
+                                                </div>
+                                                <div class="fieldWrapper col-6">
+                                                    <label class="my-1 me-2">Fecha termino:</label>
+                                                    <input type="date" class="form-control" name="fecha_termino_fase_1" required>
+                                                </div>
+                                            </div>
+                                            <div class="mt-3">
+                                                <label class="my-1 me-2">Seleccione documentos para esta fase:</label>
+                                                <select name="documentos_fase_1[]" class="form-control js-example-placeholder-multiple" multiple="multiple" style="width: 100%;">
+                                                    {% for doc in documentos %}
+                                                        <option value="{{doc.TD_NID}}">{{doc.TD_NOMBRE}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <input type="hidden" name="ids_fases_a_borrar" id="ids_fases_a_borrar" value="">
+                            
+                            <input type="hidden" name="total_indices_js" id="total_indices_js" 
+                                   value="{% if ultimo_indice %}{{ ultimo_indice }}{% else %}1{% endif %}">
+
+                            <input type="hidden" name="cant_fases" id="cant_fases" 
+                                   value="{% if ultimo_indice %}{{ ultimo_indice }}{% else %}1{% endif %}">
+
+                            <div class="mt-3 mb-4 text-center">
+                                <button class="btn btn-info" type="button" onclick="agregarNuevaFase()">Agregar nueva fase</button>
+                                <button class="btn btn-danger" type="button" onclick="borrarUltimaFaseVisual()">Eliminar fase</button>
+                            </div>
+
+                            <div class="form-group nav justify-content-end mt-5">
+                                <button class="btn btn-success mr-4" type="submit">Guardar</button>
+                                <a class="btn btn-danger mr-1" href="{% url 'pro_listall' %}">Volver</a>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
-            </div>
-    </section>
-    {% endblock content %}
+        </div>
+    </div>
+</div>
+{% endblock content %}
 
 {% block javascripts %}
-    
-    <script>
-        function add_fase(){
-            cant_fases = document.getElementById('cant_fases')
-            nueva_cantidad = parseInt(cant_fases.value)  + 1
-            // (Tu código 'nueva_fase' original está bien, lo he omitido aquí por brevedad)
-            nueva_fase = ` <div  style="border: 1px solid black; padding: 30px; border-radius: 20px; margin-top: 10px;">
-                    <h6>Fase ${nueva_cantidad}</h6>
-                    <div>
-                        <div class="fieldWrapper">
-                            <label class="my-1 me-2" for="nombre_fase_${nueva_cantidad}">Ingrese Nombre para la fase:</label>
-                            <input type="text" class="form-control" name="nombre_fase_${nueva_cantidad}">
-                        </div>
-                        <div class="fieldWrapper">
-                            <label class="my-1 me-2" for="descripcion_fase_${nueva_cantidad}">Ingrese Descripción para la fase:</label>
-                            <input type="text" class="form-control" name="descripcion_fase_${nueva_cantidad}">
-                        </div>
-                        <div class="d-flex mt-3">
-                            <div class="fieldWrapper col-6">
-                                <label class="my-1 me-2" for="fecha_inicio_fase_${nueva_cantidad}">Fecha inicio:</label>
-                                <input type="date" class="form-control" name="fecha_inicio_fase_${nueva_cantidad}">
-                            </div>
-                            <div class="fieldWrapper col-6">
-                                <label class="my-1 me-2" for="fecha_termino_fase_${nueva_cantidad}">Fecha termino:</label>
-                                <input type="date" class="form-control" name="fecha_termino_fase_${nueva_cantidad}">
-                            </div>
-                        </div>
-                        <div class=" mt-3">
-                            <label class="my-1 me-2" for="fecha_termino_fase_${nueva_cantidad}">Seleccione documentos para esta fase:</label>
-                            <select name="documentos_fase_${nueva_cantidad}[]" id="documentos_fase_${nueva_cantidad}" class="js-example-placeholder-multiple col-sm-12" multiple="multiple" data-placeholder="Seleccione Opciones">
-                                {% for doc in documentos %}
-                                    <option value="{{doc.TD_NID}}">{{doc.TD_NOMBRE}}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
+<script>
+    // 1. Inicializar Select2
+    $(document).ready(function() {
+        $('.js-example-placeholder-multiple').select2({
+            placeholder: "Seleccione documentos",
+            allowClear: true,
+            width: '100%'
+        });
+    });
 
-                    </div>
-                </div> `
-            $('#contenedor_fases').append(nueva_fase);
-            $(`#documentos_fase_${nueva_cantidad}`).select2() // Asumiendo que usas select2
-            cant_fases.value = nueva_cantidad
-        }
+    // 2. Función Agregar Fase
+    function agregarNuevaFase() {
+        let inputTotal = document.getElementById('total_indices_js');
+        let inputCant = document.getElementById('cant_fases');
         
-        // --- FUNCIÓN DELETE_FASE CORREGIDA ---
-        function delete_fase() {
-            let cant_fases_element = document.getElementById('cant_fases');
-            let current_count = parseInt(cant_fases_element.value);
-            const contenedor_fases = document.getElementById('contenedor_fases');
+        let nuevoIndice = parseInt(inputTotal.value) + 1;
+        
+        // Actualizamos los contadores
+        inputTotal.value = nuevoIndice;
+        inputCant.value = nuevoIndice;
+
+        // HTML de la fase nueva (Diseño original)
+        let html = `
+        <div style="border: 1px solid black; padding: 30px; border-radius: 20px; margin-top: 10px;" id="bloque_fase_${nuevoIndice}">
+            <h6>Fase ${nuevoIndice} (Nueva)</h6>
+            <div>
+                <div class="fieldWrapper">
+                    <label class="my-1 me-2">Ingrese Nombre para la fase:</label>
+                    <input type="text" class="form-control" name="nombre_fase_${nuevoIndice}" required>
+                </div>
+                <div class="fieldWrapper">
+                    <label class="my-1 me-2">Ingrese Descripción para la fase:</label>
+                    <input type="text" class="form-control" name="descripcion_fase_${nuevoIndice}">
+                </div>
+                <div class="d-flex mt-3">
+                    <div class="fieldWrapper col-6">
+                        <label class="my-1 me-2">Fecha inicio:</label>
+                        <input type="date" class="form-control" name="fecha_inicio_fase_${nuevoIndice}" required>
+                    </div>
+                    <div class="fieldWrapper col-6">
+                        <label class="my-1 me-2">Fecha termino:</label>
+                        <input type="date" class="form-control" name="fecha_termino_fase_${nuevoIndice}" required>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <label class="my-1 me-2">Seleccione documentos para esta fase:</label>
+                    <select name="documentos_fase_${nuevoIndice}[]" class="form-control js-example-placeholder-multiple-new-${nuevoIndice}" multiple="multiple" style="width: 100%;">
+                        {% for doc in documentos %}
+                            <option value="{{doc.TD_NID}}">{{doc.TD_NOMBRE}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>`;
+
+        $('#contenedor_fases').append(html);
+
+        // Inicializar Select2 en la nueva fase
+        $(`.js-example-placeholder-multiple-new-${nuevoIndice}`).select2({
+            placeholder: "Seleccione documentos",
+            allowClear: true,
+            width: '100%'
+        });
+    }
+
+    // 3. Borrar Última Fase (Funcionalidad del botón inferior "Eliminar fase")
+    function borrarUltimaFaseVisual() {
+        let contenedor = document.getElementById('contenedor_fases');
+        // Obtenemos todos los bloques visibles
+        let bloques = contenedor.querySelectorAll('div[id^="bloque_fase_"]:not([style*="display: none"])');
+        
+        if (bloques.length > 1) {
+            let ultimoBloque = bloques[bloques.length - 1];
+            let idBloque = ultimoBloque.id;
             
-            // Busca todos los bloques de fase
-            const bloques_fases = contenedor_fases.querySelectorAll(':scope > div[style*="border: 1px solid black"]');
-
-            // --- ESTA ES LA PROTECCIÓN ---
-            // Solo permite borrar si hay MÁS DE UNA fase
-            if (bloques_fases.length > 1) {
-                const ultimo_bloque = bloques_fases[bloques_fases.length - 1];
-                ultimo_bloque.remove();
-
-                if (current_count > 1) { // Asegura que el contador también se detenga en 1
-                    cant_fases_element.value = current_count - 1;
-                }
+            // Si es una fase existente (tiene input hidden con fase_id)
+            if (ultimoBloque.querySelector('input[name^="fase_id_"]')) {
+                let inputId = ultimoBloque.querySelector('input[name^="fase_id_"]');
+                let idBD = inputId.value;
+                let indice = idBloque.split('_')[2];
+                borrarFaseExistente(indice, idBD); 
             } else {
-                // Si solo queda 1, muestra una alerta y no hace nada
-                alert("No se puede eliminar la fase inicial. Todo proyecto debe tener al menos una fase.");
+                
+                ultimoBloque.remove();
+                
             }
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: '¡Alto ahí!',
+                text: 'Debe quedar al menos una fase en el proyecto. No puedes iniciar un proyecto sin fases.',
+                confirmButtonColor: '#d33',
+                confirmButtonText: 'Entendido',
+                backdrop: true, 
+                allowOutsideClick: false 
+            });
         }
-    </script>
+    }
+
+    // 4. Borrar Fase Existente (Lógica interna para marcar borrado)
+    function borrarFaseExistente(indice, idBD) {
+        if (confirm('¿Eliminar esta fase existente? Se borrará al guardar.')) {
+            $(`#bloque_fase_${indice}`).hide(); // Ocultar
+            // Desactivar inputs para que no se validen
+            $(`#bloque_fase_${indice} :input`).prop('disabled', true);
+
+            // Agregar a lista de borrado
+            let inputBorrar = $('#ids_fases_a_borrar');
+            let lista = inputBorrar.val() ? inputBorrar.val().split(',') : [];
+            lista.push(idBD);
+            inputBorrar.val(lista.join(','));
+        }
+    }
+</script>
 {% endblock javascripts %}

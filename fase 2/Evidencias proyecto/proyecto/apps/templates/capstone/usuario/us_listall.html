@@ -1,0 +1,198 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Usuarios {% endblock %} 
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="/static/assets/css/plugins/dataTables.bootstrap4.min.css">
+{% endblock stylesheets %}
+
+{% block content %} 
+    <section class="pcoded-main-container">
+        <div class="pcoded-content">
+            <div class="page-header">
+                <div class="page-block">
+                    <div class="row align-items-center">
+                        <div class="col-md-12">
+                            <div class="page-header-title">
+                                <h5 class="m-b-10">Gestión de Usuarios</h5>
+                            </div>
+                            <ul class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="/"><i class="feather icon-home"></i></a></li>
+                                <li class="breadcrumb-item"><a href="#">Usuarios</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="card">
+                        <div class="d-flex justify-content-between">
+                            <div class="card-header table-card-header">
+                                <h5>Listado de Usuarios</h5>
+                            </div>
+                            <div class=" mb-2 mb-md-0" style="margin-right: 50px;margin-top: 20px;">
+                                <a href="{% url 'create_user' %}" class="btn btn-primary d-inline-flex align-items-center">
+                                    <i class="fas fa-user-plus"></i> &nbsp&nbsp Nuevo
+                                </a>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="dt-responsive table-responsive">
+                                <table id="basic-btn" class="table table-striped table-bordered nowrap">
+                                    <thead>
+                                        <tr>
+                                            <th>Usuario</th>
+                                            <th>Nombre Completo</th>
+                                            <th>Perfil</th> 
+                                            <th>Correo</th>
+                                            <th>Rut</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for objeto in usuarios %}
+                                            <tr>
+                                                <td><span class="fw-bold">{{ objeto.username }}</span></td>
+                                                <td>{{ objeto.first_name }} {{ objeto.last_name }}</td>
+                                                
+                                                <td>
+                                                    {% if objeto.groups.all %}
+                                                        {% for group in objeto.groups.all %}
+                                                            {% if group.name == 'Profesor' %}
+                                                                <span class="badge badge-primary">{{ group.name }}</span>
+                                                            {% elif group.name == 'Alumno' %}
+                                                                <span class="badge badge-success">{{ group.name }}</span>
+                                                            {% else %}
+                                                                <span class="badge badge-secondary">{{ group.name }}</span>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    {% else %}
+                                                        {% if objeto.is_superuser %}
+                                                            <span class="badge badge-danger">SuperAdmin</span>
+                                                        {% else %}
+                                                            <span class="badge badge-warning text-white">Sin Rol</span>
+                                                        {% endif %}
+                                                    {% endif %}
+                                                </td>
+
+                                                <td>{{ objeto.email }}</td>
+                                                <td>{{ objeto.rut }}</td>
+                                                <td>
+                                                    <a href="{% url 'update_user' user_id=objeto.id %}" class="btn btn-sm btn-primary p-1" title="Editar">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                    
+                                                    <button type="button" class="btn btn-sm btn-info p-1" title="Ver Detalle"
+                                                        onclick="verUsuario(
+                                                            '{{ objeto.username }}',
+                                                            '{{ objeto.first_name }}',
+                                                            '{{ objeto.last_name }}',
+                                                            '{{ objeto.email }}',
+                                                            '{{ objeto.rut }}',
+                                                            '{{ objeto.telefono }}',
+                                                            '{% for g in objeto.groups.all %}{{ g.name }} {% endfor %}'
+                                                        )">
+                                                        <i class="far fa-eye"></i>
+                                                    </button>
+
+                                                    {% if user.is_superuser %}
+                                                        <button type="button" class="btn btn-sm btn-danger p-1" title="Eliminar"
+                                                            onclick="confirmarEliminar('{% url 'delete_user' user_id=objeto.id %}', '{{ objeto.username }}')">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <div id="modalVerUsuario" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-info">
+                    <h5 class="modal-title text-white"><i class="fas fa-user-circle mr-2"></i>Ficha de Usuario</h5>
+                    <button type="button" class="close text-white" data-dismiss="modal"><span>&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center mb-4">
+                        <h4 id="view_nombre_completo" class="font-weight-bold text-dark mb-0"></h4>
+                        <span id="view_perfil" class="badge badge-pill badge-secondary px-3 py-2 mt-2"></span>
+                    </div>
+                    <div class="row">
+                        <div class="col-6 mb-3"><small>USERNAME</small><h6 id="view_username" class="font-weight-bold"></h6></div>
+                        <div class="col-6 mb-3"><small>RUT</small><h6 id="view_rut" class="font-weight-bold"></h6></div>
+                        <div class="col-12"><hr></div>
+                        <div class="col-6 mb-3"><small>CORREO</small><p id="view_correo" class="mb-0"></p></div>
+                        <div class="col-6 mb-3"><small>TELÉFONO</small><p id="view_telefono" class="mb-0"></p></div>
+                    </div>
+                </div>
+                <div class="modal-footer"><button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button></div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+
+{% block javascripts %}
+    <script src="/static/assets/js/plugins/jquery.dataTables.min.js"></script>
+    <script src="/static/assets/js/plugins/dataTables.bootstrap4.min.js"></script>
+    <script src="/static/assets/js/plugins/buttons.colVis.min.js"></script>
+    <script src="/static/assets/js/plugins/buttons.print.min.js"></script>
+    <script src="/static/assets/js/plugins/pdfmake.min.js"></script>
+    <script src="/static/assets/js/plugins/jszip.min.js"></script>
+    <script src="/static/assets/js/plugins/dataTables.buttons.min.js"></script>
+    <script src="/static/assets/js/plugins/buttons.html5.min.js"></script>
+    <script src="/static/assets/js/plugins/buttons.bootstrap4.min.js"></script>
+    <script src="/static/assets/js/pages/data-export-custom.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        function verUsuario(username, nombre, apellido, correo, rut, telefono, perfil) {
+            document.getElementById('view_username').textContent = username || '-';
+            document.getElementById('view_nombre_completo').textContent = (nombre + ' ' + apellido).trim() || 'Sin Nombre';
+            document.getElementById('view_correo').textContent = correo || 'No registrado';
+            document.getElementById('view_rut').textContent = rut || 'No registrado';
+            document.getElementById('view_telefono').textContent = telefono || 'No registrado';
+            
+            var badge = document.getElementById('view_perfil');
+            // Limpieza básica del string de perfil
+            perfil = perfil.trim(); 
+            if(!perfil) perfil = "Sin Rol";
+            
+            badge.textContent = perfil;
+            
+            // Colores dinámicos para el modal
+            badge.className = 'badge badge-pill px-3 py-2 mt-2 ';
+            if(perfil.includes('Profesor')) badge.classList.add('badge-primary');
+            else if(perfil.includes('Alumno')) badge.classList.add('badge-success');
+            else badge.classList.add('badge-secondary');
+            
+            $('#modalVerUsuario').modal('show');
+        }
+
+        function confirmarEliminar(url, username) {
+            Swal.fire({
+                title: '¿Eliminar Usuario?',
+                text: "Estás a punto de eliminar a " + username,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                confirmButtonText: 'Sí, eliminar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = url;
+                }
+            });
+        }
+    </script>
+{% endblock javascripts %}

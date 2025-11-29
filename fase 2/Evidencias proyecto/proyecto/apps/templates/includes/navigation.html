@@ -1,57 +1,147 @@
-	<!-- [ Header ] start -->
-	<header class="navbar pcoded-header navbar-expand-lg navbar-light headerpos-fixed header-blue">
-			
-        <div class="m-header">
-            <a class="mobile-menu" id="mobile-collapse" href="#!"><span></span></a>
-            <a href="/" class="b-brand">
-                <!-- ========   change your logo hear   ============ -->
-                <img src="/static/assets/images/DOCUFLOW.png" alt="" class="logo" style="width: 170px; height: 160px; margin-top: 10px;">
-                <img src="/static/assets/images/logo-icon.png" alt="" class="logo-thumb">
-                
-            </a>
-            <a href="#!" class="mob-toggler">
-                <i class="feather icon-more-vertical"></i>
-            </a>
-        </div>
-        <div class="collapse navbar-collapse">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item">
-                    <a href="#!" class="pop-search"><i class="feather icon-search"></i></a>
-                    <div class="search-bar">
-                        <input type="text" class="form-control border-0 shadow-none" placeholder="Search here">
-                        <button type="button" class="close" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
+<!-- [ Header ] start -->
+<style>
+    /* Reglas solo para celulares/tablets (pantalla menor a 991px) */
+    @media only screen and (max-width: 991px) {
+        
+        /* 1. La barra superior se mantiene AZUL */
+        .navbar.pcoded-header.header-blue {
+            background: linear-gradient(to right, #4680ff, #11cdef) !important;
+            color: #fff !important; /* Iconos de la barra principal blancos */
+        }
+
+        /* 2. Los botones de menú (hamburguesa y 3 puntos) BLANCOS */
+        .mobile-menu span, 
+        .mobile-menu span:after, 
+        .mobile-menu span:before,
+        .mob-toggler i {
+            background-color: #fff !important;
+            color: #fff !important;
+        }
+
+        /* --- AQUÍ ESTÁ EL ARREGLO --- */
+        
+        /* 3. Cuando se abre el menú (el fondo blanco), forzar letras GRISES */
+        .navbar-collapse {
+            background-color: #ffffff !important;
+            box-shadow: 0 1px 10px 0 rgba(69,90,100,0.2);
+        }
+
+        /* Texto de enlaces dentro del menú desplegado -> GRIS OSCURO */
+        .navbar-collapse .navbar-nav li a,
+        .navbar-collapse .navbar-nav li span,
+        .navbar-collapse .navbar-nav li i {
+            color: #444444 !important;
+        }
+
+        /* 4. Arreglar el input de búsqueda para que se vea en fondo blanco */
+        .main-search .input-group {
+            background: #f4f7fa !important; /* Gris claro */
+        }
+        .main-search .input-group input {
+            color: #333 !important; /* Texto negro al escribir */
+        }
+        .main-search .input-group .search-btn i {
+            color: #333 !important; /* Lupa oscura */
+        }
+    }
+</style>
+
+<header class="navbar pcoded-header navbar-expand-lg navbar-light headerpos-fixed header-blue">
+    <div class="m-header">
+        <a class="mobile-menu" id="mobile-collapse" href="#!"><span></span></a>
+        <a href="/" class="b-brand">
+            <img src="/static/assets/images/DOCUFLOW.png" alt="" class="logo" style="width: 170px; height: 160px; margin-top: 10px;">
+            <img src="/static/assets/images/logo-icon.png" alt="" class="logo-thumb">
+        </a>
+        <a href="#!" class="mob-toggler">
+            <i class="feather icon-more-vertical"></i>
+        </a>
+    </div>
+
+    <div class="collapse navbar-collapse">
+        
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <div class="main-search open">
+                    <div class="input-group">
+                        <input type="text" id="global_search_input" class="form-control" 
+                               placeholder="Ir a..." 
+                               style="width: 300px; background: rgba(255,255,255,0.2); color: white; border: none;"
+                               autocomplete="off">
+                        <span class="input-group-append search-btn btn btn-primary">
+                            <i class="feather icon-search input-group-text"></i>
+                        </span>
                     </div>
-                </li>
-                <li class="nav-item">
-                    <a href="#!" class="full-screen" onclick="javascript:toggleFullScreen()"><i class="feather icon-maximize"></i></a>
-                </li>
-            </ul>
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item d-flex align-items-center">
-        
-                    <span class="text-white font-weight-bold mr-3" style="font-size: 14px;">
-                        <i class="feather icon-user"></i> 
-                        {% if request.user.first_name %}
-                            {{ request.user.first_name }} {{ request.user.last_name }}
-                        {% else %}
-                            {{ request.user.username }}
-                        {% endif %}
-                    </span>
+                    
+                    <datalist id="navegacion-rapida">
+                        <option value="Proyectos">Gestión de Proyectos</option>
+                        <option value="Usuarios">Gestión de Usuarios</option>
+                        <option value="Empresas">Gestión de Empresas</option>
+                        <option value="Documentos">Gestión de Documentos</option>
+                    </datalist>
+                </div>
+            </li>
+        </ul>
 
-                    <form method="post" action="{% url 'logout' %}" style="display: inline;">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-outline-light btn-sm m-0" title="Cerrar Sesión" style="border: none;">
-                            <i class="feather icon-log-out"></i> Salir
-                        </button>
-                    </form>
+        <ul class="navbar-nav ml-auto">
+            <li>
+                <div class="dropdown drp-user">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        <i class="feather icon-user"></i>
+                        <span class="font-weight-bold mx-2">
+                            {% if request.user.first_name %}
+                                {{ request.user.first_name }} {{ request.user.last_name }}
+                            {% else %}
+                                {{ request.user.username }}
+                            {% endif %}
+                        </span>
+                        <i class="feather icon-chevron-down"></i>
+                    </a>
 
-                </li>
-            </ul>
-        </div>
-        
-    
+                    <div class="dropdown-menu dropdown-menu-right profile-notification">
+                        <div class="pro-head">
+                            <span>Mi Cuenta</span>
+                        </div>
+                        <ul class="pro-body">
+                            <li>
+                                <a href="{% url 'update_user' user_id=request.user.id %}" class="dropdown-item">
+                                    <i class="feather icon-edit"></i> Editar mi Perfil
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="dropdown-item" onclick="document.getElementById('logout-form-nav').submit(); return false;">
+                                    <i class="feather icon-log-out"></i> Cerrar Sesión
+                                </a>
+                                <form id="logout-form-nav" method="post" action="{% url 'logout' %}" style="display: none;">
+                                    {% csrf_token %}
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
 </header>
+<script>
+    const inputSearch = document.getElementById('global_search_input');
+    
+    inputSearch.removeAttribute('list');
+
+    inputSearch.addEventListener('input', function() {
+        var val = this.value.toLowerCase();
+        
+        if(val.length > 0) {
+            this.setAttribute('list', 'navegacion-rapida');
+        } else {
+            this.removeAttribute('list');
+        }
+
+        if(val === 'usuarios' || val === 'gestión de usuarios') window.location.href = "{% url 'user_listall' %}";
+        if(val === 'proyectos' || val === 'gestión de proyectos') window.location.href = "{% url 'pro_listall' %}";
+        if(val === 'empresas' || val === 'gestión de empresas') window.location.href = "{% url 'emp_listall' %}";
+        if(val === 'documentos' || val === 'gestión de documentos') window.location.href = "{% url 'doc_listall' %}";
+    });
+</script>
 <!-- [ Header ] end -->
 

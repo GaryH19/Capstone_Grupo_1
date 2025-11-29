@@ -14,6 +14,7 @@ urlpatterns = [
     path('create_emp', login_required(views.create_emp), name='create_emp'),
     path('emp_update/<int:EMP_NID>', login_required(views.emp_update), name='emp_update'),
     path('emp_deactivate/<int:EMP_NID>', login_required(views.emp_deactivate), name='emp_deactivate'),
+    path('empresa/eliminar/<int:EMP_NID>/', login_required(views.emp_delete), name='emp_delete'),
 
 
     ## TIPO DOCUMENTOS ##
@@ -21,6 +22,7 @@ urlpatterns = [
     path('create_tipo_doc', login_required(views.create_tipo_doc), name='create_tipo_doc'),
     path('tipodoc_update/<int:TD_NID>', login_required(views.tipodoc_update), name='tipodoc_update'),
     path('tipodoc_deactivate/<int:TD_NID>', login_required(views.tipodoc_deactivate), name='tipodoc_deactivate'),
+    path('tipodoc/eliminar/<int:TD_NID>/', login_required(views.tipodoc_delete), name='tipodoc_delete'),
 
     ## PROYECTOS ##
     path('pro_listall', login_required(views.pro_listall), name='pro_listall'),
@@ -28,18 +30,31 @@ urlpatterns = [
     path('pro_update/<int:PRO_NID>', login_required(views.pro_update), name='pro_update'),
     path('pro_listone/<int:PRO_NID>', login_required(views.pro_listone), name='pro_listone'),
     path('fase_listone/<int:FA_NID>', login_required(views.fase_listone), name='fase_listone'),
+    path('fase/editar/<int:FA_NID>/', login_required(views.fase_update), name='fase_update'),
+    path('fase/eliminar/<int:FA_NID>/', login_required(views.fase_delete), name='fase_delete'),
     path('pro_deactivate/<int:PRO_NID>', login_required(views.pro_deactivate), name='pro_deactivate'),
     path('pro_delete/<int:PRO_NID>', login_required(views.pro_delete), name='pro_delete'),
     
     ## DOCUMENTOS ##
+    path('documentos/', login_required(views.doc_listall), name='doc_listall'),
+    path('documento/nuevo_guia/', login_required(views.create_doc_guia), name='create_doc_guia'),
     path('documento/crear', login_required(views.create_doc), name='create_doc'),
     path('documento/editar/<int:DOC_NID>/', login_required(views.doc_update), name='doc_update'),
     path('documento/eliminar/<int:DOC_NID>/', login_required(views.doc_delete), name='doc_delete'),
+    path('documento/descargar/<int:DOC_NID>/', views.descargar_archivo, name='doc_download'),
+    
+    ## USUARIOS ##
+    path('usuarios/', login_required(views.user_listall), name='user_listall'),
+    path('usuario/nuevo/', login_required(views.create_user), name='create_user'),
+    path('usuario/editar/<int:user_id>/', login_required(views.update_user), name='update_user'),
+    path('usuario/eliminar/<int:user_id>/', login_required(views.delete_user), name='delete_user'),
     
     # --- URLS DE APROBACIÓN AÑADIDAS ---
     path('documento/aprobar/<int:DOC_NID>/', login_required(views.aprobar_documento), name='aprobar_documento'),
     path('documento/rechazar/<int:DOC_NID>/', login_required(views.rechazar_documento), name='rechazar_documento'),
     # ------------------------------------
+    
+    ## 
 
     # Matches any html file
     re_path(r'^.*\.*', views.pages, name='pages'),

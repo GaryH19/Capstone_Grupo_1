@@ -42,13 +42,15 @@
                     <div class="card">
                         <div class="d-flex justify-content-between">
                             <div class="card-header table-card-header">
-                                <h5>Opciones de exportación</h5>
+                                <h5>Lista de Empresas</h5>
                             </div>
+                            {% if user.is_superuser %}
                             <div class=" mb-2 mb-md-0" style="margin-right: 50px;margin-top: 20px;">
                                 <a href="{% url 'create_emp' %}" class="btn  btn-primary d-inline-flex align-items-center"><i class="fas fa-user-plus"></i>
                                     &nbsp&nbsp Nuevo
                                 </a>
                             </div>
+                            {% endif %}
                         </div>
                         <div class="card-body">
                             <div class="dt-responsive table-responsive">
@@ -59,8 +61,10 @@
                                             <th>NOMBRE</th>
                                             <th>RUT</th>
                                             <th>COMUNA</th>
-                                            <th>ESTADO</th>
-                                            <th>ACCIONES</th>
+                                            <!-- <th>ESTADO</th> -->
+                                            {% if user.is_superuser %}
+                                                <th>ACCIONES</th>
+                                            {% endif %}
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -70,16 +74,25 @@
                                                 <td><span class="fw-normal">{{ objeto.EM_CNOMBRE }}</span></td>
                                                 <td><span class="fw-normal">{{ objeto.EM_RUT }}</span></td>
                                                 <td><span class="fw-normal">{{ objeto.COM_NID }}</span></td>
-                                                {% if objeto.EMP_ESTADO %}
+                                                <!-- {% if objeto.EMP_ESTADO %}
                                                     <td class="col-1"><i class="fas fa-check" style="color: #63E6BE;"></i></td>
                                                 {% else %}
                                                     <td class="col-1"><i class="fas fa-times" style="color: #fa0000;"></i></td>
+                                                {% endif %} -->
+                                                {% if user.is_superuser %}
+                                                    <td>
+                                                        <a href="{% url 'emp_update' objeto.EMP_NID %}" class="btn btn-sm btn-primary p-1" title="Editar Empresa">
+                                                            <i class="fas fa-edit"></i>
+                                                        </a>
+                                                        
+                                                        <a href="#" 
+                                                        class="btn btn-sm btn-danger p-1" 
+                                                        title="Eliminar Empresa"
+                                                        onclick="confirmarEliminar('{% url 'emp_delete' EMP_NID=objeto.EMP_NID %}', '{{ objeto.EM_CNOMBRE }}'); return false;">
+                                                            <i class="fas fa-trash"></i>
+                                                        </a>
+                                                    </td>
                                                 {% endif %}
-                                                <td>
-                                                    <a href="{% url 'emp_update' objeto.EMP_NID %}"><i class="fas fa-edit" style="color: #0e58d8;"></i></a>
-                                                    <a href="{% url 'emp_deactivate' objeto.EMP_NID %}"><i class="fas fa-ban" style="color: #fa0000;"></i></a>
-                                                    
-                                                </td>
                                             </tr>
                                         {% endfor %}
                                     </tbody>
@@ -110,24 +123,22 @@
     <script src="/static/assets/js/plugins/buttons.bootstrap4.min.js"></script>
     <script src="/static/assets/js/pages/data-export-custom.js"></script>
     <script>
-        $('.concli_disable').on("click", function(){
-            const urlToNavigate = $(this).data('href');  // Obtiene la URL desde el atributo data-href
+        function confirmarEliminar(url, nombreEmpresa) {
             Swal.fire({
-                title: '¿Estás seguro que deseas inhabilitar este contrato de cliente?',
-                text:'Una vez inhabilitado no se podrá modificar',
+                title: '¿Eliminar Empresa?',
+                text: "Estás a punto de eliminar a " + nombreEmpresa + ". Esto podría afectar a los proyectos asociados.",
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#299B0B',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Confirmar',
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sí, eliminar',
                 cancelButtonText: 'Cancelar'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    window.location.href = urlToNavigate;  // Si el usuario confirma, navega a la URL
+                    window.location.href = url;
                 }
             });
-        });
-
+        }
     </script>
 
 {% endblock javascripts %}
