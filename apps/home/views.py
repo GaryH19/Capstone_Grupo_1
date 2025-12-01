@@ -20,6 +20,8 @@ from django.utils.text import slugify
 from django.utils.encoding import escape_uri_path
 from .models import DOCUMENTO
 
+from django.contrib.auth import update_session_auth_hash
+
 # --- FUNCIÓN DE SEGURIDAD ---
 def group_required(*group_names):
     def decorator(view_func):
@@ -222,6 +224,7 @@ def update_user(request, user_id):
         
         if request.method == "POST":
             
+            # 1. Actualizar datos básicos
             user_edit.first_name = request.POST.get('nombre')
             user_edit.last_name = request.POST.get('apellidos')
             user_edit.email = request.POST.get('correo')
@@ -239,14 +242,30 @@ def update_user(request, user_id):
                     grupo = Group.objects.get(id=perfil_id)
                     user_edit.groups.add(grupo)
             
-            if es_superuser or es_propietario:
-                pass_new = request.POST.get('contraseña')
-                if pass_new: 
-                    user_edit.password = make_password(pass_new)
-            
-            user_edit.save()
-            messages.success(request, 'Datos actualizados correctamente.')
+            # 2. Lógica de Cambio de Contraseña
+            pass_new = request.POST.get('contraseña')
+            cambio_clave = False
 
+            if (es_superuser or es_propietario) and pass_new:
+                # Usamos set_password que es lo estándar
+                user_edit.set_password(pass_new)
+                user_edit.es_clave_temporal = False
+                cambio_clave = True
+            
+            # 3. Guardamos TODO (Datos + Nueva Clave si hubo)
+            user_edit.save()
+
+            # 4. Mensajes y Mantener Sesión
+            if cambio_clave:
+                # Si soy yo mismo quien cambió la clave, actualizo mi sesión para no salirme
+                if request.user == user_edit:
+                    update_session_auth_hash(request, user_edit)
+                
+                messages.success(request, '¡Cambio de Contraseña Correcto!')
+            else:
+                messages.success(request, 'Datos actualizados correctamente.')
+
+            # 5. Redirecciones
             next_url = request.POST.get('next')
             if next_url and next_url != 'None':
                 return redirect(next_url)
@@ -257,6 +276,7 @@ def update_user(request, user_id):
             return redirect('user_listall')
 
         else:
+            # Lógica GET (Mostrar formulario)
             prev_url = request.META.get('HTTP_REFERER')
             if prev_url and 'usuario/editar' in prev_url:
                 prev_url = '/'

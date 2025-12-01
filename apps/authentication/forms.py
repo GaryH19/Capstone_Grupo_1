@@ -53,3 +53,15 @@ class SignUpForm(UserCreationForm):
     class Meta:
         model = User
         fields = ('username', 'email', 'password1', 'password2')
+
+
+# apps/authentication/forms.py
+
+class ForgotPasswordForm(forms.Form):
+    username = forms.CharField(
+        widget=forms.TextInput(
+            attrs={
+                "placeholder": "Ingrese su nombre de usuario",
+                "class": "form-control"
+            }
+        ))

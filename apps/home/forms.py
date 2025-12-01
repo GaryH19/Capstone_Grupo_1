@@ -6,10 +6,9 @@ from django import forms
 from django.contrib.auth.models import *
 from apps.home.models import *
 
-# Esta clase personalizada obliga a cambiar el nombre visual
+
 class AlumnoModelChoiceField(forms.ModelMultipleChoiceField):
     def label_from_instance(self, obj):
-        # Imprimimos en consola para verificar que está entrando aquí (mira tu terminal)
         print(f"Procesando usuario: {obj.username} - Nombre: {obj.first_name} {obj.last_name}")
         
         if obj.first_name and obj.last_name:

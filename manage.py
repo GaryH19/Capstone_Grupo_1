@@ -1,23 +1,11 @@
 import os
 import sys
 
+import oracledb
 try:
-    import oracledb
-    
-    try:
-        oracledb.init_oracle_client(lib_dir=None)
-    except Exception:
-        pass
-
-    if not hasattr(oracledb, 'Binary'):
-        oracledb.Binary = bytes
-
-    if hasattr(oracledb, 'install_as_magic_module'):
-        oracledb.install_as_magic_module()
-    else:
-        sys.modules["cx_Oracle"] = oracledb
-except ImportError:
-    pass 
+    oracledb.init_oracle_client() 
+except Exception:
+    pass
 
 def main():
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings')

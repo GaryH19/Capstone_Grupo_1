@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 
 User.add_to_class('rut', models.CharField('Rut',max_length=12, null= True, unique=True, blank=True))
 User.add_to_class('telefono', models.CharField('Telefono',max_length=12, null= True, unique=True, blank=True))
+User.add_to_class('es_clave_temporal', models.BooleanField(default=False))
 # Create your models here.
 
 class REGION(models.Model):

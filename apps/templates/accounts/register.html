@@ -1,6 +1,6 @@
 {% extends "layouts/base-fullscreen.html" %}
 
-{% block title %} Login {% endblock %}
+{% block title %} Registro {% endblock %}
 
 {% block content %} 
 
@@ -10,29 +10,30 @@
                 <div class="col-md-12">
 
                     <div class="card-body">
-
+                        
                         <img src="/static/assets/images/DOCUFLOW-LOGIN-REGISTRO.png" alt="" class="img-fluid mb-3" >
+
+                        {% if msg and not success %}
+                            <div class="alert alert-danger text-left">
+                                <i class="feather icon-alert-triangle mr-2"></i> {{ msg | safe }}
+                            </div>
+                        {% endif %}
 
                         {% if not success %}
 
-                            <h4 class="mb-3 f-w-400">
-                                <a target="_blank">Crea tu Cuenta</a>
-                            </h4>
+                            <h4 class="mb-3 f-w-400">Crea tu Cuenta</h4>
                             <p class="subtitle">Ingresa tus datos para empezar a usar DocuFlow.</p>
                             
-                            <p> <br /> </p>     
-                            
                             <form role="form" method="post" action="">
-
                                 {% csrf_token %}  
-                                                                                
+                                
                                 <div class="input-group mb-3">
                                     <div class="input-group-prepend">
                                         <span class="input-group-text"><i class="feather icon-user"></i></span>
                                     </div>
                                     {{ form.username }}
-                                </div>  
-                                <span class="text-error">{{ form.username.errors }}</span>
+                                </div>
+                                <span class="text-danger">{{ form.username.errors }}</span>
 
                                 <div class="input-group mb-3">
                                     <div class="input-group-prepend">
@@ -40,7 +41,58 @@
                                     </div>
                                     {{ form.email }}
                                 </div>
-                                <span class="text-error">{{ form.email.errors }}</span>
+                                <span class="text-danger">{{ form.email.errors }}</span>
+
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="feather icon-user-check"></i></span>
+                                    </div>
+                                    <input type="text" name="first_name" class="form-control" 
+                                           placeholder="Nombre" 
+                                           value="{{ data.first_name|default:'' }}" 
+                                           required>
+                                </div>
+
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="feather icon-users"></i></span>
+                                    </div>
+                                    <input type="text" name="last_name" class="form-control" 
+                                           placeholder="Apellido" 
+                                           value="{{ data.last_name|default:'' }}" 
+                                           required>
+                                </div>
+
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="feather icon-credit-card"></i></span>
+                                    </div>
+                                    <input type="text" name="rut" class="form-control" 
+                                           placeholder="12.345.678-9" 
+                                           maxlength="12" 
+                                           oninput="formatearRut(this)" 
+                                           value="{{ data.rut|default:'' }}" 
+                                           required>
+                                </div>
+                                <p id="rut_error" class="text-danger small mt-1" style="display: none; text-align: left; padding-left: 5px;">
+                                    <i class="fas fa-exclamation-circle me-1"></i> RUT inválido o muy corto.
+                                </p>
+
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="feather icon-phone"></i></span>
+                                    </div>
+                                    
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" style="background-color: #f1f3f4; font-weight: bold; color: #555;">+56</span>
+                                    </div>
+
+                                    <input type="text" name="phone" class="form-control" 
+                                        placeholder="912345678" 
+                                        maxlength="9" 
+                                        oninput="validarTelefono(this)" 
+                                        value="{{ data.phone|default:'' }}">
+                                </div>
 
                                 <div class="input-group mb-4">
                                     <div class="input-group-prepend">
@@ -48,7 +100,7 @@
                                     </div>
                                     {{ form.password1 }}
                                 </div>
-                                <span class="text-error">{{ form.password1.errors }}</span>
+                                <span class="text-danger">{{ form.password1.errors }}</span>
 
                                 <div class="input-group mb-4">
                                     <div class="input-group-prepend">
@@ -56,44 +108,43 @@
                                     </div>
                                     {{ form.password2 }}
                                 </div>
-                                <span class="text-error">{{ form.password2.errors }}</span>
+                                <span class="text-danger">{{ form.password2.errors }}</span>
 
                                 <div class="form-group text-left mt-2">
                                     <div class="checkbox checkbox-primary d-inline">
-                                        <input type="checkbox" name="checkbox-fill-2" id="checkbox-fill-2">
-                                        <label for="checkbox-fill-2" class="cr">Aceptar <a href="{% url 'login' %}"><u> Terminos y Condiciones</u></a>.</label>
+                                        <input type="checkbox" name="checkbox-fill-2" id="checkbox-fill-2" required>
+                                        <label for="checkbox-fill-2" class="cr">Aceptar <a href="#"><u>Terminos y Condiciones</u></a>.</label>
                                     </div>
                                 </div>
+
                                 <button type="submit" name="register" class="btn btn-primary btn-block mb-4">Registrarse</button>
                             
                             </form>
 
-                            <p class="mb-0 text-muted">Ya Tienes una Cuenta? <a href="{% url 'login' %}" class="f-w-400">Inicia Sesión</a></p>
+                            <p class="mb-0 text-muted">¿Ya tienes cuenta? <a href="{% url 'login' %}" class="f-w-400">Inicia Sesión</a></p>
 
                         {% else %}
 
-                            <h4 class="mb-3 f-w-400">
-                                <a target="_blank">¡Cuenta Creada!</a>
-                            </h4>
+                            <h4 class="mb-3 f-w-400">¡Cuenta Creada!</h4>
                             
-                            <p class="subtitle">
-                                Tu cuenta ha sido registrada con éxito.<br>
-                                ¡Bienvenido a DocuFlow!
-                            </p>                            
+                            <div class="alert alert-success">
+                                <i class="feather icon-check-circle mr-2"></i> {{ msg | safe }}
+                            </div>
+                                                  
                             <p> <br /> </p> 
 
                             <a href="{% url 'login' %}" class="btn btn-primary btn-block mb-4">
-                                Iniciar Sesión
+                                Ir al Login
                             </a>
 
                         {% endif %} 
+                        
                         <p class="mb-2 text-muted">
                             <br />
                             &copy; Derechos reservados por DocuFlow
                         </p>
 
                     </div>
-
                 </div>
             </div>
         </div>
@@ -102,7 +153,49 @@
 {% endblock content %}
 
 {% block javascripts %}
-
     <script src="/static/assets/js/waves.min.js"></script>
 
+    <script>
+        function formatearRut(input) {
+            // Evita que se ejecute si es solo lectura
+            if (input.readOnly) return;
+
+            // Elimina cualquier caracter que no sea número o K
+            let rut = input.value.replace(/[^0-9kK]/g, '');
+            
+            if (rut.length === 0) { 
+                input.value = ''; 
+                return; 
+            }
+            
+            // Si es el primer número, lo deja tal cual
+            if (rut.length === 1) { 
+                input.value = rut; 
+                return; 
+            }
+
+            // Separa cuerpo y dígito verificador
+            let cuerpo = rut.slice(0, -1);
+            let dv = rut.slice(-1).toUpperCase(); 
+
+            // Formatea el cuerpo con puntos y agrega el DV con guión
+            input.value = cuerpo.replace(/\B(?=(\d{3})+(?!\d))/g, ".") + "-" + dv;
+            
+            // Control visual del error (Opcional, busca el <p id="rut_error">)
+            const errorMsg = document.getElementById('rut_error');
+            if(errorMsg) {
+                if(rut.length < 8) errorMsg.style.display = 'block'; 
+                else errorMsg.style.display = 'none'; 
+            }
+        }
+        function validarTelefono(input) {
+            // 1. Elimina cualquier caracter que NO sea número
+            input.value = input.value.replace(/[^0-9]/g, '');
+
+            // 2. Si intenta escribir más de 9, lo corta
+            if (input.value.length > 9) {
+                input.value = input.value.slice(0, 9);
+            }
+        }
+    </script>
 {% endblock javascripts %}
