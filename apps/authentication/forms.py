@@ -55,7 +55,6 @@ class SignUpForm(UserCreationForm):
         fields = ('username', 'email', 'password1', 'password2')
 
 
-# apps/authentication/forms.py
 
 class ForgotPasswordForm(forms.Form):
     username = forms.CharField(
@@ -64,4 +63,6 @@ class ForgotPasswordForm(forms.Form):
                 "placeholder": "Ingrese su nombre de usuario",
                 "class": "form-control"
             }
-        ))
+        ),
+        label="Nombre de Usuario"
+    )

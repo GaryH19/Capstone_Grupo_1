@@ -168,13 +168,29 @@ DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 
 
-# core/settings.py
 
-# Usamos la consola para ver los correos mientras desarrollamos
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-EMAIL_HOST = 'localhost'
-EMAIL_PORT = 1025
-EMAIL_HOST_USER = ''
-EMAIL_HOST_PASSWORD = ''
-EMAIL_USE_TLS = False
-DEFAULT_FROM_EMAIL = 'Soporte DocuFlow <soporte@docuflow.cl>'
+
+# Control de contraseñas en entorno de desarrollo
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# EMAIL_HOST = 'localhost'
+# EMAIL_PORT = 1025
+# EMAIL_HOST_USER = ''
+# EMAIL_HOST_PASSWORD = ''
+# EMAIL_USE_TLS = False
+# DEFAULT_FROM_EMAIL = 'Soporte DocuFlow <soporte@docuflow.cl>'
+
+
+# --- CONFIGURACIÓN DE CORREO (GMAIL) ---
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
+# Tu dirección de correo real (quien envía el mensaje)
+EMAIL_HOST_USER = 'garyhernandezblanco19@gmail.com' 
+
+# La "Contraseña de Aplicación" de 16 letras (NO tu clave normal)
+EMAIL_HOST_PASSWORD = 'llsh ucvs uvet oayy' 
+
+# El remitente que verán los usuarios
+DEFAULT_FROM_EMAIL = 'Soporte DocuFlow garyhernandezblanco19@gmail.com'

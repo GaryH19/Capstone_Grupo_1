@@ -8,8 +8,10 @@ from django.core.mail import send_mail
 from django.utils.crypto import get_random_string
 from django.conf import settings
 from .forms import ForgotPasswordForm
-
+from django.core.mail import send_mail
 from django.contrib import messages
+
+
 
 def login_view(request):
     form = LoginForm(request.POST or None)
@@ -107,6 +109,9 @@ def register_user(request):
     # 3. RENDER FINAL
     return render(request, "accounts/register.html", {"form": form, "msg": msg, "success": success, "data": post_data})
 
+        ############################
+        ### OLVIDO DE CONTRASEÑA ###
+        ############################
 def forgot_password_view(request):
     form = ForgotPasswordForm(request.POST or None)
     msg = None
@@ -117,52 +122,57 @@ def forgot_password_view(request):
             username = form.cleaned_data.get("username")
             
             try:
-                # 1. Buscamos al usuario
+                # 1. Buscamos al usuario en la base de datos
                 user = User.objects.get(username=username)
                 
-                # 2. Verificamos que tenga email
+                # 2. Verificamos que tenga un correo registrado
                 if not user.email:
-                    msg = "Este usuario no tiene un correo registrado."
+                    msg = "Este usuario existe, pero no tiene un correo vinculado para enviar la clave."
                 else:
-                    # 3. Generamos un PIN numérico de 6 dígitos
+                    # 3. Generamos una clave temporal de 6 números
                     nueva_clave = get_random_string(length=6, allowed_chars='0123456789')
                     
-                    # 4. CAMBIAMOS la contraseña del usuario por este PIN
+                    # 4. Actualizamos el usuario
                     user.set_password(nueva_clave)
-                    user.es_clave_temporal = True
+                    user.es_clave_temporal = True  # Activamos la alerta amarilla
                     user.save()
 
-                    # 5. Enviamos el correo
+                    # 5. Preparamos el correo
                     asunto = 'Recuperación de Contraseña - DocuFlow'
                     mensaje = f"""
                     Hola {user.first_name},
 
-                    Has solicitado recuperar tu contraseña.
+                    Has solicitado recuperar tu acceso a DocuFlow.
                     
                     Tu nueva contraseña temporal es: {nueva_clave}
 
-                    Por favor, inicia sesión con este número y te recomendamos cambiar tu clave luego.
+                    1. Ingresa al sistema con esta clave.
+                    2. El sistema te pedirá cambiarla por seguridad.
+                    
+                    Saludos,
+                    El equipo de DocuFlow.
                     """
                     
+                    # 6. ENVIAMOS EL CORREO REAL
                     send_mail(
                         asunto,
                         mensaje,
-                        settings.DEFAULT_FROM_EMAIL,
-                        [user.email],
+                        settings.DEFAULT_FROM_EMAIL, # Remitente (tu correo)
+                        [user.email],                # Destinatario (el correo del usuario)
                         fail_silently=False,
                     )
 
-                    msg = f"Se ha enviado una clave temporal al correo: {user.email}"
+                    # Ocultamos parte del correo por seguridad visual
+                    email_oculto = user.email.replace(user.email.split('@')[0][3:], '****')
+                    msg = f"Hemos enviado una clave temporal al correo {email_oculto}"
                     success = True
-                    # Limpiamos el form
-                    form = ForgotPasswordForm()
+                    form = ForgotPasswordForm() # Limpiamos formulario
 
             except User.DoesNotExist:
-                msg = "El nombre de usuario no existe."
+                msg = "El nombre de usuario ingresado no existe."
             except Exception as e:
-                msg = f"Error al enviar correo: {str(e)}"
-
-        else:
-            msg = "Formulario inválido"
+                # Esto atrapa errores de conexión con Gmail (ej: mala contraseña)
+                print(f"Error SMTP: {e}")
+                msg = "Hubo un error técnico al enviar el correo. Contacte al administrador."
 
     return render(request, "accounts/forgot_password.html", {"form": form, "msg": msg, "success": success})
