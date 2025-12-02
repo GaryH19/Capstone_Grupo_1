@@ -54,9 +54,6 @@ urlpatterns = [
     path('documento/rechazar/<int:DOC_NID>/', login_required(views.rechazar_documento), name='rechazar_documento'),
     # ------------------------------------
     
-    ## 
-
-    # Matches any html file
     re_path(r'^.*\.*', views.pages, name='pages'),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

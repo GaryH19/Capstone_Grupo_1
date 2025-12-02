@@ -20,6 +20,8 @@ from django.utils.text import slugify
 from django.utils.encoding import escape_uri_path
 from .models import DOCUMENTO
 
+from django.contrib.auth import update_session_auth_hash
+
 # --- FUNCIÓN DE SEGURIDAD ---
 def group_required(*group_names):
     def decorator(view_func):
@@ -84,17 +86,17 @@ def index(request):
 
         # Creamos el contexto
         context = {
-            'segment': 'index', # Para que el menú se marque como "home"
+            'segment': 'index',
             'proyectos': listado_proyectos,
             'is_profesor': is_profesor,
-            'total_proyectos': len(listado_proyectos) # Un extra para un contador
+            'total_proyectos': len(listado_proyectos)
         }
         
         html_template = loader.get_template('gradient/index.html')
         return HttpResponse(html_template.render(context, request))
 
     except Exception as e:
-        # Si algo falla, carga la página de index simple
+        # Si algo falla, carga la página de index
         print(f"Error cargando dashboard index: {e}")
         context = {'segment': 'index'}
         html_template = loader.get_template('gradient/index.html')
@@ -222,6 +224,7 @@ def update_user(request, user_id):
         
         if request.method == "POST":
             
+            # Actualizar datos
             user_edit.first_name = request.POST.get('nombre')
             user_edit.last_name = request.POST.get('apellidos')
             user_edit.email = request.POST.get('correo')
@@ -239,13 +242,27 @@ def update_user(request, user_id):
                     grupo = Group.objects.get(id=perfil_id)
                     user_edit.groups.add(grupo)
             
-            if es_superuser or es_propietario:
-                pass_new = request.POST.get('contraseña')
-                if pass_new: 
-                    user_edit.password = make_password(pass_new)
+            # Cambio de Contraseña
+            pass_new = request.POST.get('contraseña')
+            cambio_clave = False
+
+            if (es_superuser or es_propietario) and pass_new:
+                # Usamos set_password que es lo estándar
+                user_edit.set_password(pass_new)
+                user_edit.es_clave_temporal = False
+                cambio_clave = True
             
+            # Guardar 
             user_edit.save()
-            messages.success(request, 'Datos actualizados correctamente.')
+
+            # Mensajes y Mantener Sesión iniciada
+            if cambio_clave:
+                if request.user == user_edit:
+                    update_session_auth_hash(request, user_edit)
+                
+                messages.success(request, '¡Cambio de Contraseña Correcto!')
+            else:
+                messages.success(request, 'Datos actualizados correctamente.')
 
             next_url = request.POST.get('next')
             if next_url and next_url != 'None':
@@ -367,12 +384,10 @@ def emp_deactivate(request,EMP_NID):
 @login_required(login_url="/login/")
 def emp_delete(request, EMP_NID):
     try:
-        # 1. Seguridad: Solo Superuser
         if not request.user.is_superuser:
             messages.error(request, 'No tienes permisos para eliminar empresas.')
             return redirect('emp_listall')
 
-        # 2. Buscar y borrar
         empresa = get_object_or_404(EMPRESA, EMP_NID=EMP_NID)
         empresa.delete()
         
@@ -445,15 +460,12 @@ def tipodoc_deactivate(request,TD_NID):
 @login_required(login_url="/login/")
 def tipodoc_delete(request, TD_NID):
     try:
-        # Buscamos el objeto
         tipo_doc = get_object_or_404(TIPO_DOCUMENTO, TD_NID=TD_NID)
         
-        # Intentamos eliminar
         tipo_doc.delete()
         messages.success(request, 'Tipo de documento eliminado correctamente.')
         
     except Exception as e:
-        # Esto captura errores si el tipo de documento está en uso (Foreign Keys)
         print(f"Error eliminando tipo doc: {e}")
         messages.error(request, 'No se puede eliminar: Este tipo de documento está en uso en algún proyecto.')
         
@@ -513,13 +525,11 @@ def create_pro(request):
         if request.method == "POST":
             form = formPROYECTO(request.POST)
             if form.is_valid():
-                # 1. Guardar Proyecto
                 proyecto = form.save(commit=False)
                 proyecto.profesor = request.user 
                 proyecto.save()
-                form.save_m2m() # Alumnos
+                form.save_m2m()
 
-                # 2. Crear Fases (Lógica Original de Creación)
                 cant_fases = int(request.POST.get('cant_fases', 0))
                 
                 for i in range(1, cant_fases + 1):
@@ -547,7 +557,6 @@ def create_pro(request):
                 messages.success(request, 'Proyecto creado correctamente')
                 return redirect('pro_listall')
         
-        # GET: Mostrar formulario vacío
         form = formPROYECTO()
         documentos = TIPO_DOCUMENTO.objects.all()
         context = { 'form': form, 'documentos': documentos }
@@ -568,19 +577,15 @@ def pro_update(request, PRO_NID):
             return redirect('pro_listall')
 
         if request.method == "POST":
-            # 1. Guardar datos del Proyecto
             form = formPROYECTO(request.POST, instance=pro)
             if form.is_valid():
                 form.save()
             
-            # 2. Procesar Eliminaciones (Fases marcadas para borrar)
             ids_a_borrar = request.POST.get('ids_fases_a_borrar', '')
             if ids_a_borrar:
                 lista_ids = ids_a_borrar.split(',')
                 FASE_PROYECTO.objects.filter(FA_NID__in=lista_ids, PRO_NID=pro).delete()
 
-            # 3. Procesar Fases (Aquí está la magia: Editar + Crear)
-            # Obtenemos el número total de bloques que hay en el HTML
             try:
                 total_indices = int(request.POST.get('total_indices_js', 0))
             except ValueError:
@@ -588,17 +593,13 @@ def pro_update(request, PRO_NID):
 
             contador_orden = 1 
 
-            # Recorremos desde el 1 hasta el último índice que generó el JS
             for i in range(1, total_indices + 1):
                 prefix = f'fase_{i}'
                 
-                # Verificamos si el campo "nombre" de esa fase existe en el POST
-                # (Si no existe, es porque el usuario eliminó ese bloque visualmente o saltó el índice)
                 nombre_key = f'nombre_fase_{i}'
                 
                 if nombre_key in request.POST:
-                    # Datos del formulario
-                    fase_id = request.POST.get(f'fase_id_{i}') # ID oculto (Solo las viejas lo tienen)
+                    fase_id = request.POST.get(f'fase_id_{i}')
                     nombre = request.POST.get(f'nombre_fase_{i}')
                     desc = request.POST.get(f'descripcion_fase_{i}')
                     inicio = request.POST.get(f'fecha_inicio_fase_{i}')
@@ -609,7 +610,6 @@ def pro_update(request, PRO_NID):
                         fase_obj = None
                         
                         if fase_id:
-                            # --- CASO A: TIENE ID -> EDITAR FASE EXISTENTE ---
                             try:
                                 fase_obj = FASE_PROYECTO.objects.get(FA_NID=fase_id, PRO_NID=pro)
                                 fase_obj.FA_CNOMBRE = nombre
@@ -621,7 +621,6 @@ def pro_update(request, PRO_NID):
                             except FASE_PROYECTO.DoesNotExist:
                                 continue
                         else:
-                            # --- CASO B: NO TIENE ID -> CREAR FASE NUEVA ---
                             fase_obj = FASE_PROYECTO.objects.create(
                                 FA_CNOMBRE=nombre,
                                 FA_NNUMERO_FASE=contador_orden,
@@ -631,7 +630,6 @@ def pro_update(request, PRO_NID):
                                 PRO_NID=pro
                             )
                         
-                        # --- ACTUALIZAR DOCUMENTOS ---
                         if fase_obj:
                             FASE_TIPO_DOCUMENTO.objects.filter(FA_NID=fase_obj).delete()
                             for doc_id in docs_ids:
@@ -646,7 +644,6 @@ def pro_update(request, PRO_NID):
             return redirect('pro_listall')
 
         else:
-            # GET: Cargar datos
             form = formPROYECTO(instance=pro)
             documentos = TIPO_DOCUMENTO.objects.all()
             
@@ -660,7 +657,6 @@ def pro_update(request, PRO_NID):
                     'docs_ids': list(docs_asignados)
                 })
 
-            # IMPORTANTE: Enviamos el 'ultimo_indice' para que el JS sepa dónde continuar
             context = {
                 'form': form,
                 'documentos': documentos,
@@ -759,7 +755,6 @@ def fase_listone(request, FA_NID):
             doc_comentario = None
             documento_encontrado = None
 
-            # Busca el último documento cargado para este tipo de doc en esta fase
             doc_link = doc_cargados.filter(DOC_NID__TD_NID=tipo_doc).order_by('-DOC_NID__DOC_FECHA_MODIFICACION').first()
             
             if doc_link:
@@ -816,13 +811,11 @@ def fase_update(request, FA_NID):
     try:
         fase = get_object_or_404(FASE_PROYECTO, FA_NID=FA_NID)
         
-        # Verificar que el usuario sea el dueño del proyecto
         if fase.PRO_NID.profesor != request.user and not request.user.is_superuser:
             messages.error(request, 'No tienes permiso para editar esta fase.')
             return redirect('pro_listone', PRO_NID=fase.PRO_NID.PRO_NID)
 
         if request.method == "POST":
-            # Actualizar datos básicos
             fase.FA_CNOMBRE = request.POST.get('nombre_fase')
             fase.FA_CDESCRICPCION = request.POST.get('desc_fase')
             fase.PRO_FFECHAINCIO = request.POST.get('fecha_inicio')
@@ -833,8 +826,6 @@ def fase_update(request, FA_NID):
             return redirect('pro_listone', PRO_NID=fase.PRO_NID.PRO_NID)
 
         else:
-            # GET: Mostrar formulario de edición
-            # Necesitamos un template simple para editar la fase
             context = {'fase': fase}
             return render(request, 'capstone/proyecto/fa_edit.html', context)
 
@@ -849,12 +840,10 @@ def fase_delete(request, FA_NID):
         fase = get_object_or_404(FASE_PROYECTO, FA_NID=FA_NID)
         id_proyecto = fase.PRO_NID.PRO_NID
         
-        # Verificar permisos
         if fase.PRO_NID.profesor != request.user and not request.user.is_superuser:
             messages.error(request, 'No tienes permiso para eliminar esta fase.')
             return redirect('pro_listone', PRO_NID=id_proyecto)
             
-        # Verificar que no sea la única fase (Regla de negocio opcional pero recomendada)
         total_fases = FASE_PROYECTO.objects.filter(PRO_NID=fase.PRO_NID).count()
         if total_fases <= 1:
             messages.error(request, 'No puedes eliminar la única fase del proyecto.')
@@ -875,7 +864,6 @@ def fase_delete(request, FA_NID):
 @login_required(login_url="/login/")
 def doc_listall(request):
     try:
-        # Mostramos SOLO los documentos marcados como GUÍA
         docs = DOCUMENTO.objects.filter(DOC_ES_GUIA=True).order_by('-DOC_FFECHACREACION')
         
         is_profesor = request.user.groups.filter(name__iexact='profesor').exists() or request.user.is_superuser
@@ -903,8 +891,6 @@ def create_doc_guia(request):
                 messages.error(request, "Faltan datos.")
                 return redirect('create_doc_guia')
 
-            # Guardamos como GUÍA (DOC_ES_GUIA=True)
-            # No lo vinculamos a ninguna fase (FASE_DOCUMENTO)
             DOCUMENTO.objects.create(
                 DOC_NOMBRE=nombre_doc,
                 DOC_CONTENIDO=archivo,
@@ -918,7 +904,6 @@ def create_doc_guia(request):
             return redirect('doc_listall')
 
         else:
-            # GET: Solo necesitamos los tipos de documento
             tipos = TIPO_DOCUMENTO.objects.all()
             context = { 'tipos': tipos }
             return render(request, 'capstone/documento/doc_addone.html', context)
@@ -931,12 +916,10 @@ def create_doc_guia(request):
 def create_doc(request):
     try:
         if request.method == "POST":
-            # 1. Obtener datos clave del formulario (Ocultos en el HTML)
             id_fase = request.POST.get('FA_NID')
             id_tipo_doc = request.POST.get('TD_NID')
             redirect_to = request.POST.get('next', '')
 
-            # Validación
             if not id_fase or not id_tipo_doc:
                 messages.error(request, 'Error: Faltan datos de Fase o Tipo.')
                 return redirect(redirect_to or 'pro_listall')
@@ -944,40 +927,34 @@ def create_doc(request):
             fase = get_object_or_404(FASE_PROYECTO, FA_NID=id_fase)
             tipo = get_object_or_404(TIPO_DOCUMENTO, TD_NID=id_tipo_doc)
 
-            # 2. Buscar si YA EXISTE un documento de este tipo en esta fase (Para reemplazarlo)
             link_existente = FASE_DOCUMENTO.objects.filter(FA_NID=fase, DOC_NID__TD_NID=tipo).first()
 
             if link_existente:
-                # --- CASO A: RE-SUBIR (Actualizar existente) ---
                 doc = link_existente.DOC_NID
                 form = formDOCUMENTO(request.POST, request.FILES, instance=doc)
                 if form.is_valid():
                     d = form.save(commit=False)
-                    d.DOC_APROBADO = None # ¡IMPORTANTE! Resetea a "En Revisión" (Gris)
-                    d.DOC_COMENTARIO = "" # Limpia comentarios de rechazo viejos
+                    d.DOC_APROBADO = None
+                    d.DOC_COMENTARIO = "" 
                     d.save()
                     messages.success(request, 'Documento actualizado y enviado a revisión.')
                 else:
                     messages.error(request, f'Error al actualizar: {form.errors}')
 
             else:
-                # --- CASO B: NUEVO (Crear de cero) ---
                 form = formDOCUMENTO(request.POST, request.FILES)
                 if form.is_valid():
-                    # Guardar documento
                     d = form.save(commit=False)
-                    d.TD_NID = tipo # Asignar el tipo
-                    d.DOC_APROBADO = None # Estado "En Revisión"
+                    d.TD_NID = tipo
+                    d.DOC_APROBADO = None 
                     d.save()
 
-                    # ¡VITAL! Crear el vínculo con la fase
                     FASE_DOCUMENTO.objects.create(FA_NID=fase, DOC_NID=d)
                     
                     messages.success(request, 'Documento cargado exitosamente.')
                 else:
                     messages.error(request, f'Error al cargar: {form.errors}')
 
-            # Redirección inteligente (vuelve a la misma fase)
             if redirect_to:
                 return HttpResponseRedirect(redirect_to)
             return redirect('fase_listone', FA_NID=id_fase)
@@ -995,10 +972,8 @@ def doc_update(request, DOC_NID):
     try:
         doc = get_object_or_404(DOCUMENTO, DOC_NID=DOC_NID)
         
-        # --- LÓGICA DE PERMISOS ---
         fase_doc = FASE_DOCUMENTO.objects.filter(DOC_NID=doc).first()
         
-        # CASO 1: Es un documento de proyecto (alumno)
         if fase_doc:
             if fase_doc.FA_NID.PRO_NID.profesor != request.user and not request.user.is_superuser:
                 messages.error(request, 'No tienes permiso para modificar este documento de alumno.')
@@ -1006,38 +981,29 @@ def doc_update(request, DOC_NID):
             redirect_target = 'fase_listone'
             redirect_args = {'FA_NID': fase_doc.FA_NID.FA_NID}
             
-        # CASO 2: Es un documento Guía / Plantilla (Sin fase)
         elif doc.DOC_ES_GUIA:
-            # Como ya tienes el decorador @group_required('Profesor'), ya sabemos que puede editar
             redirect_target = 'doc_listall'
             redirect_args = {}
             
         else:
-            # Caso raro: documento huérfano que no es guía
             messages.error(request, 'El documento no tiene contexto válido.')
             return redirect('doc_listall')
 
-        # --- PROCESO DE GUARDADO ---
         if request.method == "POST":
             form = formDOCUMENTO(request.POST, request.FILES, instance=doc)
             if form.is_valid():
                 form.save()
                 messages.success(request, 'Documento actualizado correctamente.')
                 
-                # Redirección dinámica según el tipo
                 return redirect(redirect_target, **redirect_args)
             else:
                 messages.error(request, 'Error al actualizar documento')
-                # Si falla, intentamos volver a donde corresponda
                 if fase_doc:
                      return redirect('fase_listone', FA_NID=fase_doc.FA_NID.FA_NID)
                 return redirect('doc_listall')
                 
         else:
-            # GET: Cargar formulario
             form = formDOCUMENTO(instance=doc)
-            # Reutilizamos el template de agregar, pero le pasamos el contexto necesario
-            # Si usas selectores de tipos, asegúrate de pasarlos si el template lo exige
             tipos = TIPO_DOCUMENTO.objects.all() 
             context = { 'form': form, 'tipos': tipos } 
             return render(request, 'capstone/documento/doc_addone.html', context)
@@ -1052,31 +1018,26 @@ def doc_delete(request, DOC_NID):
     try:
         doc = get_object_or_404(DOCUMENTO, DOC_NID=DOC_NID)
         
-        # --- LÓGICA DE PERMISOS Y REDIRECCIÓN ---
         fase_doc = FASE_DOCUMENTO.objects.filter(DOC_NID=doc).first()
         
-        # CASO 1: Es documento de Proyecto
         if fase_doc:
             if fase_doc.FA_NID.PRO_NID.profesor != request.user and not request.user.is_superuser:
                 messages.error(request, 'No tienes permiso para eliminar este documento.')
                 return redirect('pro_listall')
             
             fase_id = fase_doc.FA_NID.FA_NID
-            fase_doc.delete() # Borramos la relación primero
-            doc.delete()      # Borramos el archivo
+            fase_doc.delete()
+            doc.delete()
             
             messages.success(request, 'Documento eliminado del proyecto.')
             return redirect('fase_listone', FA_NID=fase_id)
 
-        # CASO 2: Es documento Guía / Plantilla
         elif doc.DOC_ES_GUIA:
-            # El decorador ya validó que es Profesor
             doc.delete()
             messages.success(request, 'Plantilla eliminada correctamente.')
             return redirect('doc_listall')
             
         else:
-            # Documento huérfano desconocido
             doc.delete()
             messages.warning(request, 'Documento eliminado (sin asociación encontrada).')
             return redirect('doc_listall')
@@ -1132,19 +1093,15 @@ login_required(login_url="/login/")
 def create_doc_general(request):
     try:
         if request.method == "POST":
-            # 1. Obtener datos
             nombre_doc = request.POST.get('DOC_NOMBRE')
             id_fase = request.POST.get('fase_select')
             id_tipo = request.POST.get('tipo_select')
             archivo = request.FILES.get('DOC_CONTENIDO')
 
-            # Validación básica
             if not id_fase or not id_tipo or not archivo:
                 messages.error(request, "Error: Faltan datos obligatorios (Fase, Tipo o Archivo).")
-                # Volvemos a cargar la página (GET) para no perderse
                 return redirect('create_doc_general')
 
-            # 2. Guardar Documento
             nuevo_doc = DOCUMENTO.objects.create(
                 DOC_NOMBRE=nombre_doc,
                 DOC_CONTENIDO=archivo,
@@ -1153,7 +1110,6 @@ def create_doc_general(request):
                 DOC_COMENTARIO="Cargado por Profesor (Documento Guía)"
             )
 
-            # 3. Vincular a Fase
             FASE_DOCUMENTO.objects.create(
                 FA_NID_id=id_fase,
                 DOC_NID=nuevo_doc
@@ -1163,13 +1119,10 @@ def create_doc_general(request):
             return redirect('doc_listall')
 
         else:
-            # GET: Cargar datos para los selectores
             proyectos = PROYECTO.objects.filter(profesor=request.user)
             tipos = TIPO_DOCUMENTO.objects.all()
             
-            # Serializamos las fases para JavaScript (solo ID, Nombre y ID de Proyecto)
             fases_data = list(FASE_PROYECTO.objects.filter(PRO_NID__in=proyectos).values('FA_NID', 'FA_CNOMBRE', 'PRO_NID', 'FA_NNUMERO_FASE'))
-            # Convertimos a JSON string
             fases_json = json.dumps(fases_data)
 
             context = {

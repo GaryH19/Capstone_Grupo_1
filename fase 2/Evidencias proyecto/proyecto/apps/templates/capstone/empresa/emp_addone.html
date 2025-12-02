@@ -2,14 +2,11 @@
 
 {% block title %} Crear empresa {% endblock %} 
 
-<!-- Specific CSS goes HERE -->
 {% block stylesheets %}{% endblock stylesheets %}
 
 {% block content %}		
-    <!-- [ Main Content ] start -->
     <section class="pcoded-main-container">
         <div class="pcoded-content">
-            <!-- [ breadcrumb ] start -->
             <div class="page-header">
                 <div class="page-block">
                     <div class="row align-items-center">
@@ -26,10 +23,7 @@
                     </div>
                 </div>
             </div>
-            <!-- [ breadcrumb ] end -->
-            <!-- [ Main Content ] start -->
             <div class="row">
-                <!-- [ form-element ] start -->
                 <div class="col-sm-12">
                     <div class="card">
                         <div class="card-header">
@@ -70,22 +64,15 @@
                         </div>
                     </div>
                 </div>
-                <!-- [ form-element ] end -->
             </div>
-            <!-- [ Main Content ] end -->
         </div>
     </section>
-    <!-- [ Main Content ] end -->
 {% endblock content %}
 
-<!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
-    <!-- bootstrap-tagsinput-latest Js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.bundle.min.js"></script>
     <script src="/static/assets/js/plugins/bootstrap-tagsinput.min.js"></script>
-    <!-- bootstrap-maxlength Js -->
     <script src="/static/assets/js/plugins/bootstrap-maxlength.js"></script>
-    <!-- form-advance custom js -->
     <script src="/static/assets/js/pages/form-advance-custom.js"></script>
     <script>
         $("#id_cliente").on("change", function(){

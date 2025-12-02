@@ -165,13 +165,11 @@
             document.getElementById('view_telefono').textContent = telefono || 'No registrado';
             
             var badge = document.getElementById('view_perfil');
-            // Limpieza básica del string de perfil
             perfil = perfil.trim(); 
             if(!perfil) perfil = "Sin Rol";
             
             badge.textContent = perfil;
             
-            // Colores dinámicos para el modal
             badge.className = 'badge badge-pill px-3 py-2 mt-2 ';
             if(perfil.includes('Profesor')) badge.classList.add('badge-primary');
             else if(perfil.includes('Alumno')) badge.classList.add('badge-success');

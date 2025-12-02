@@ -4,14 +4,13 @@
 
 {% block stylesheets %}
 <style>
-    /* Estilos para las tarjetas de proyecto */
     .project-card {
         transition: all 0.3s ease;
         border-radius: 10px;
         box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         background: #fff;
         margin-bottom: 30px;
-        border-top: 4px solid #007bff; /* Un toque de color primario */
+        border-top: 4px solid #007bff;
     }
     .project-card:hover {
         transform: translateY(-5px);
@@ -27,13 +26,12 @@
         font-size: 1.15rem;
         font-weight: 600;
         color: #333;
-        /* Limita el texto a 2 líneas */
         overflow: hidden;
         text-overflow: ellipsis;
         display: -webkit-box;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
-        min-height: 44px; /* (font-size * line-height * 2) */
+        min-height: 44px;
     }
     .project-card .card-meta {
         font-size: 0.85rem;
@@ -62,11 +60,11 @@
         overflow: hidden;
     }
     .progress-bar {
-        background-color: #007bff; /* Azul */
+        background-color: #007bff;
         transition: width 0.5s ease;
     }
     .progress-bar.completed {
-        background-color: #2dce89; /* Verde */
+        background-color: #2dce89;
     }
 </style>
 {% endblock stylesheets %}
@@ -75,21 +73,6 @@
     
     <section class="pcoded-main-container">
         <div class="pcoded-content">
-            <!-- <div class="page-header">
-                <div class="page-block">
-                    <div class="row align-items-center">
-                        <div class="col-md-12">
-                            <div class="page-header-title">
-                                <h5 class="m-b-10">Mi Dashboard</h5>
-                            </div>
-                            <ul class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="/"><i class="feather icon-home"></i></a></li>
-                                <li class="breadcrumb-item"><a href="#!">Mis Proyectos</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div> -->
             <div class="row">
                 
                 <div class="col-12">

@@ -6,7 +6,7 @@ import oracledb
 from boto3.s3.transfer import TransferConfig
 
 
-# INICIALIZACIÓN DEL CLIENTE ORACLE
+# Iniciar oracledb en modo compatibilidad cx_Oracle
 try:
     oracledb.version = "8.3.0"
     sys.modules["cx_Oracle"] = oracledb
@@ -24,7 +24,7 @@ SECRET_KEY = config('SECRET_KEY', default='S#perS3crEt_1122')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=True, cast=bool)
 
-# --- 2. HOSTS PERMITIDOS ---
+# --- HOSTS PERMITIDOS ---
 ALLOWED_HOSTS = [
     'localhost', 
     '127.0.0.1', 
@@ -134,7 +134,6 @@ STATIC_URL = '/static/'
 MEDIA_URL ='/media/'
 MEDIA_ROOT = os.path.join(CORE_DIR, 'media')
 
-# Extra places for collectstatic to find static files.
 STATICFILES_DIRS = (os.path.join(CORE_DIR, 'apps/static'),
                     )
 
@@ -152,9 +151,7 @@ STATICFILES_DIRS = (os.path.join(CORE_DIR, 'apps/static'),
 # AWS_S3_VERIFY = True 
 # DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
-# settings.py
-
-# Credenciales de Oracle Cloud BUCKET para almacenamiento de medios
+# Credenciales de Oracle Cloud BUCKET para almacenamiento de medios(AWS)
 AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY')
 AWS_STORAGE_BUCKET_NAME = config('AWS_STORAGE_BUCKET_NAME')
@@ -164,3 +161,29 @@ AWS_S3_FILE_OVERWRITE = False
 AWS_DEFAULT_ACL = None
 AWS_S3_VERIFY = True 
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+
+
+
+
+
+# Control de contraseñas en entorno de desarrollo (local)
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# EMAIL_HOST = 'localhost'
+# EMAIL_PORT = 1025
+# EMAIL_HOST_USER = ''
+# EMAIL_HOST_PASSWORD = ''
+# EMAIL_USE_TLS = False
+# DEFAULT_FROM_EMAIL = 'Soporte DocuFlow <soporte@docuflow.cl>'
+
+
+# control de recuperación de contraseñas en entorno de producción (oracle)
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
+EMAIL_HOST_USER = 'garyhernandezblanco19@gmail.com' 
+EMAIL_HOST_PASSWORD = 'llsh ucvs uvet oayy' 
+
+DEFAULT_FROM_EMAIL = 'Soporte DocuFlow garyhernandezblanco19@gmail.com'

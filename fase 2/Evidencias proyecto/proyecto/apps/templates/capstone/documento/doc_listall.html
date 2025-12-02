@@ -42,7 +42,6 @@
                                     <thead>
                                         <tr>
                                             <th>Nombre</th>
-                                            <!-- <th>Tipo</th> -->
                                             <th>Fecha Carga</th>
                                             <th>Descargar Archivo</th>
                                             {% if is_profesor %}
@@ -54,7 +53,6 @@
                                         {% for doc in docs %}
                                             <tr>
                                                 <td>{{ doc.DOC_NOMBRE }}</td>
-                                                <!-- <td>{{ doc.TD_NID.TD_NOMBRE }}</td> -->
                                                 <td>{{ doc.DOC_FFECHACREACION|date:"d/m/Y" }}</td>
                                                 <td>
                                                     {% if doc.DOC_CONTENIDO %}
@@ -104,13 +102,12 @@
                 text: "El documento será eliminado permanentemente. ¡Esta acción no se puede deshacer!",
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#d33', // Rojo para confirmar borrado
-                cancelButtonColor: '#3085d6', // Azul para cancelar
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
                 confirmButtonText: 'Sí, eliminarlo',
                 cancelButtonText: 'Cancelar'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // Si el usuario confirma, redirigimos a la URL de Django
                     window.location.href = urlEliminar;
                 }
             })

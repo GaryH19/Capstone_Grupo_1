@@ -1,48 +1,27 @@
-<!-- [ Header ] start -->
 <style>
-    /* Reglas solo para celulares/tablets (pantalla menor a 991px) */
+    .user-lastname-short {
+        display: none; 
+    }
     @media only screen and (max-width: 991px) {
-        
-        /* 1. La barra superior se mantiene AZUL */
-        .navbar.pcoded-header.header-blue {
-            background: linear-gradient(to right, #4680ff, #11cdef) !important;
-            color: #fff !important; /* Iconos de la barra principal blancos */
+        .user-lastname-full {
+            display: none !important;
         }
-
-        /* 2. Los botones de menú (hamburguesa y 3 puntos) BLANCOS */
-        .mobile-menu span, 
-        .mobile-menu span:after, 
-        .mobile-menu span:before,
-        .mob-toggler i {
-            background-color: #fff !important;
-            color: #fff !important;
+        .user-lastname-short {
+            display: inline !important;
         }
-
-        /* --- AQUÍ ESTÁ EL ARREGLO --- */
-        
-        /* 3. Cuando se abre el menú (el fondo blanco), forzar letras GRISES */
-        .navbar-collapse {
-            background-color: #ffffff !important;
-            box-shadow: 0 1px 10px 0 rgba(69,90,100,0.2);
+    }
+    @media only screen and (max-width: 575px) {
+        .user-text-container {
+            display: none !important; 
         }
-
-        /* Texto de enlaces dentro del menú desplegado -> GRIS OSCURO */
-        .navbar-collapse .navbar-nav li a,
-        .navbar-collapse .navbar-nav li span,
-        .navbar-collapse .navbar-nav li i {
-            color: #444444 !important;
+        .drp-user .icon-chevron-down {
+            margin-left: 5px !important;
+            font-size: 14px;
         }
-
-        /* 4. Arreglar el input de búsqueda para que se vea en fondo blanco */
-        .main-search .input-group {
-            background: #f4f7fa !important; /* Gris claro */
-        }
-        .main-search .input-group input {
-            color: #333 !important; /* Texto negro al escribir */
-        }
-        .main-search .input-group .search-btn i {
-            color: #333 !important; /* Lupa oscura */
-        }
+    }
+    .drp-user .dropdown-toggle::after {
+        display: none !important;
+        content: none !important;
     }
 </style>
 
@@ -72,7 +51,6 @@
                             <i class="feather icon-search input-group-text"></i>
                         </span>
                     </div>
-                    
                     <datalist id="navegacion-rapida">
                         <option value="Proyectos">Gestión de Proyectos</option>
                         <option value="Usuarios">Gestión de Usuarios</option>
@@ -88,13 +66,19 @@
                 <div class="dropdown drp-user">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                         <i class="feather icon-user"></i>
-                        <span class="font-weight-bold mx-2">
+                        
+                        <span class="font-weight-bold mx-2 user-text-container">
                             {% if request.user.first_name %}
-                                {{ request.user.first_name }} {{ request.user.last_name }}
+                                {{ request.user.first_name }}
+                                
+                                <span class="user-lastname-full">&nbsp;{{ request.user.last_name }}</span>
+                                
+                                <span class="user-lastname-short">&nbsp;{{ request.user.last_name|slice:":1" }}.</span>
                             {% else %}
                                 {{ request.user.username }}
                             {% endif %}
                         </span>
+
                         <i class="feather icon-chevron-down"></i>
                     </a>
 
@@ -125,23 +109,17 @@
 </header>
 <script>
     const inputSearch = document.getElementById('global_search_input');
-    
     inputSearch.removeAttribute('list');
-
     inputSearch.addEventListener('input', function() {
         var val = this.value.toLowerCase();
-        
         if(val.length > 0) {
             this.setAttribute('list', 'navegacion-rapida');
         } else {
             this.removeAttribute('list');
         }
-
         if(val === 'usuarios' || val === 'gestión de usuarios') window.location.href = "{% url 'user_listall' %}";
         if(val === 'proyectos' || val === 'gestión de proyectos') window.location.href = "{% url 'pro_listall' %}";
         if(val === 'empresas' || val === 'gestión de empresas') window.location.href = "{% url 'emp_listall' %}";
         if(val === 'documentos' || val === 'gestión de documentos') window.location.href = "{% url 'doc_listall' %}";
     });
 </script>
-<!-- [ Header ] end -->
-
