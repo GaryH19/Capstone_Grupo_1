@@ -10,6 +10,7 @@ from django.conf import settings
 from django.utils.html import strip_tags
 from .forms import ForgotPasswordForm
 from django.contrib import messages
+from django.contrib.auth import update_session_auth_hash
 
 
 
@@ -24,8 +25,8 @@ def login_view(request):
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
-                if getattr(user, 'es_clave_temporal', False):
-                    messages.warning(request, '⚠️ Estás usando una contraseña temporal. Por seguridad, ve a tu perfil y cámbiala ahora.')
+                # if getattr(user, 'es_clave_temporal', False):
+                #     messages.warning(request, '⚠️ Estás usando una contraseña temporal. Por seguridad, ve a tu perfil y cámbiala ahora.')
                 return redirect("/")
             else:
                 msg = 'Usuario o contraseña son invalidas, intente nuevamente.'
@@ -180,3 +181,41 @@ def forgot_password_view(request):
                 msg = "Error técnico al enviar el correo. Intente más tarde."
 
     return render(request, "accounts/forgot_password.html", {"form": form, "msg": msg, "success": success})
+
+
+        ###################################
+        ### OBLIGA CAMBIO DE CONTRASEÑA ###
+        ###################################
+
+def force_change_password_view(request):
+    # Seguridad: Si el usuario NO tiene clave temporal, lo echamos al inicio
+    if not getattr(request.user, 'es_clave_temporal', False):
+        return redirect('/')
+
+    msg = None
+    
+    if request.method == "POST":
+        pass1 = request.POST.get('password')
+        pass2 = request.POST.get('password_confirm')
+
+        if not pass1 or not pass2:
+            msg = "Debes completar ambos campos."
+        elif pass1 != pass2:
+            msg = "Las contraseñas no coinciden."
+        elif len(pass1) < 6:
+            msg = "La contraseña debe tener al menos 6 caracteres."
+        else:
+            # 1. Cambiar la contraseña
+            request.user.set_password(pass1)
+            
+            # 2. Quitar la marca de temporal
+            request.user.es_clave_temporal = False
+            request.user.save()
+
+            # 3. Mantener la sesión activa
+            update_session_auth_hash(request, request.user)
+
+            messages.success(request, '¡Contraseña actualizada correctamente! Bienvenido.')
+            return redirect('/') # Redirigir al Dashboard
+
+    return render(request, "accounts/force_change_password.html", {"msg": msg})
