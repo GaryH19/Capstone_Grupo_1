@@ -157,10 +157,8 @@
 
     <script>
         function formatearRut(input) {
-            // Evita que se ejecute si es solo lectura
             if (input.readOnly) return;
 
-            // Elimina cualquier caracter que no sea número o K
             let rut = input.value.replace(/[^0-9kK]/g, '');
             
             if (rut.length === 0) { 
@@ -168,20 +166,16 @@
                 return; 
             }
             
-            // Si es el primer número, lo deja tal cual
             if (rut.length === 1) { 
                 input.value = rut; 
                 return; 
             }
 
-            // Separa cuerpo y dígito verificador
             let cuerpo = rut.slice(0, -1);
             let dv = rut.slice(-1).toUpperCase(); 
 
-            // Formatea el cuerpo con puntos y agrega el DV con guión
             input.value = cuerpo.replace(/\B(?=(\d{3})+(?!\d))/g, ".") + "-" + dv;
             
-            // Control visual del error (Opcional, busca el <p id="rut_error">)
             const errorMsg = document.getElementById('rut_error');
             if(errorMsg) {
                 if(rut.length < 8) errorMsg.style.display = 'block'; 
@@ -189,10 +183,8 @@
             }
         }
         function validarTelefono(input) {
-            // 1. Elimina cualquier caracter que NO sea número
             input.value = input.value.replace(/[^0-9]/g, '');
 
-            // 2. Si intenta escribir más de 9, lo corta
             if (input.value.length > 9) {
                 input.value = input.value.slice(0, 9);
             }

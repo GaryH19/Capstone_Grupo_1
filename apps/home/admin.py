@@ -15,20 +15,17 @@ admin.site.register(FASE_TIPO_DOCUMENTO)
 admin.site.register(DOCUMENTO)
 admin.site.register(FASE_DOCUMENTO)
 
-# Des-registramos el User por defecto
+
 try:
     admin.site.unregister(User)
 except admin.sites.NotRegistered:
     pass
 
 class CustomUserAdmin(UserAdmin):
-    # Qué columnas ver
     list_display = ('username', 'email', 'first_name', 'last_name', 'ver_grupos', 'is_staff')
     
-    # Filtros laterales
     list_filter = ('groups', 'is_staff', 'is_active')
     
-    # Aquí definimos las 4 acciones que aparecerán en el menú desplegable
     actions = [
         'asignar_grupo_alumno', 
         'quitar_grupo_alumno',
@@ -36,7 +33,6 @@ class CustomUserAdmin(UserAdmin):
         'quitar_grupo_profesor'
     ]
 
-    # --- Columna para ver grupos actuales ---
     def ver_grupos(self, obj):
         grupos = ", ".join([g.name for g in obj.groups.all()])
         return grupos if grupos else "-"
@@ -76,5 +72,4 @@ class CustomUserAdmin(UserAdmin):
             usuario.groups.remove(grupo)
         self.message_user(request, f"Usuarios eliminados del grupo 'Profesor'.", level='warning')
 
-# Registramos de nuevo el usuario con la nueva configuración
 admin.site.register(User, CustomUserAdmin)

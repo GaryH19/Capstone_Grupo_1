@@ -19,7 +19,7 @@ class REGION(models.Model):
 
 class COMUNA(models.Model):
     COM_NID = models.BigAutoField(("ID"), primary_key=True)
-    RE_NID = models.ForeignKey(REGION,verbose_name="Id Region",on_delete=models.PROTECT)#campo obligatorio
+    RE_NID = models.ForeignKey(REGION,verbose_name="Id Region",on_delete=models.PROTECT)
     COM_CNOMBRE = models.CharField(("Nombre"),max_length=128)
     COM_CCODIGO = models.CharField(("Código"),max_length=64)
 
@@ -64,7 +64,6 @@ class PROYECTO(models.Model):
         on_delete=models.PROTECT,
         verbose_name="Profesor Guía",
         related_name="proyectos_creados",
-        # Limita las opciones en el admin a usuarios del grupo "Profesor"
         limit_choices_to={'groups__name': "Profesor"}, 
         null=True, blank=True
     )
@@ -72,7 +71,6 @@ class PROYECTO(models.Model):
         User,
         verbose_name="Alumnos Asignados",
         related_name="proyectos_asignados",
-        # Limita las opciones a usuarios del grupo "Alumno"
         limit_choices_to={'groups__name': "Alumno"},
         blank=True
     )
@@ -89,7 +87,6 @@ class FASE_PROYECTO(models.Model):
     FA_CDESCRICPCION =models.CharField(("Descripcion"),max_length=1028)
     PRO_FFECHAINCIO = models.DateTimeField()
     PRO_FFECHATERMINO = models.DateTimeField()
-    # Usar CASCADE aquí es útil para que al borrar el proyecto, se borren las fases
     PRO_NID = models.ForeignKey(PROYECTO,verbose_name="Id Proyecto",on_delete=models.CASCADE)
     FA_COMPLETADO = models.BooleanField(default=False)
 
@@ -99,10 +96,8 @@ class FASE_PROYECTO(models.Model):
     def __str__(self):
         return self.FA_CNOMBRE
  
-#ESTAS TABLA SERA PARA SABER CUALES SON LOS DOCUMENTOS SOLICITADOS POR CADA FASE
 class FASE_TIPO_DOCUMENTO(models.Model):
     FTD_NID = models.BigAutoField(("ID"), primary_key=True)
-    # Usar CASCADE aquí es útil para que al borrar la fase, se borren los requerimientos
     FA_NID = models.ForeignKey(FASE_PROYECTO,verbose_name="Id Fase proyecto",on_delete=models.CASCADE)
     TD_NID = models.ForeignKey(TIPO_DOCUMENTO,verbose_name="Id Tipo Documento",on_delete=models.PROTECT)
 
@@ -129,10 +124,8 @@ class DOCUMENTO(models.Model):
     def __str__(self):
         return self.DOC_NOMBRE
  
-#ESTAS TABLA SERA PARA CONECTAR LOS DOCUMENTOS CON LAS FASES
 class FASE_DOCUMENTO(models.Model):
     FTD_NID = models.BigAutoField(("ID"), primary_key=True)
-    # Usar CASCADE aquí es útil para que al borrar la fase, se borren los links a documentos
     FA_NID = models.ForeignKey(FASE_PROYECTO,verbose_name="Id Fase proyecto",on_delete=models.CASCADE)
     DOC_NID = models.ForeignKey(DOCUMENTO,verbose_name="Documento",on_delete=models.PROTECT)
 

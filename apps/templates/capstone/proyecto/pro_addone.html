@@ -165,7 +165,6 @@
 
 {% block javascripts %}
 <script>
-    // 1. Inicializar Select2
     $(document).ready(function() {
         $('.js-example-placeholder-multiple').select2({
             placeholder: "Seleccione documentos",
@@ -174,18 +173,15 @@
         });
     });
 
-    // 2. Función Agregar Fase
     function agregarNuevaFase() {
         let inputTotal = document.getElementById('total_indices_js');
         let inputCant = document.getElementById('cant_fases');
         
         let nuevoIndice = parseInt(inputTotal.value) + 1;
         
-        // Actualizamos los contadores
         inputTotal.value = nuevoIndice;
         inputCant.value = nuevoIndice;
 
-        // HTML de la fase nueva (Diseño original)
         let html = `
         <div style="border: 1px solid black; padding: 30px; border-radius: 20px; margin-top: 10px;" id="bloque_fase_${nuevoIndice}">
             <h6>Fase ${nuevoIndice} (Nueva)</h6>
@@ -221,7 +217,6 @@
 
         $('#contenedor_fases').append(html);
 
-        // Inicializar Select2 en la nueva fase
         $(`.js-example-placeholder-multiple-new-${nuevoIndice}`).select2({
             placeholder: "Seleccione documentos",
             allowClear: true,
@@ -229,17 +224,14 @@
         });
     }
 
-    // 3. Borrar Última Fase (Funcionalidad del botón inferior "Eliminar fase")
     function borrarUltimaFaseVisual() {
         let contenedor = document.getElementById('contenedor_fases');
-        // Obtenemos todos los bloques visibles
         let bloques = contenedor.querySelectorAll('div[id^="bloque_fase_"]:not([style*="display: none"])');
         
         if (bloques.length > 1) {
             let ultimoBloque = bloques[bloques.length - 1];
             let idBloque = ultimoBloque.id;
             
-            // Si es una fase existente (tiene input hidden con fase_id)
             if (ultimoBloque.querySelector('input[name^="fase_id_"]')) {
                 let inputId = ultimoBloque.querySelector('input[name^="fase_id_"]');
                 let idBD = inputId.value;
@@ -263,14 +255,11 @@
         }
     }
 
-    // 4. Borrar Fase Existente (Lógica interna para marcar borrado)
     function borrarFaseExistente(indice, idBD) {
         if (confirm('¿Eliminar esta fase existente? Se borrará al guardar.')) {
-            $(`#bloque_fase_${indice}`).hide(); // Ocultar
-            // Desactivar inputs para que no se validen
+            $(`#bloque_fase_${indice}`).hide();
             $(`#bloque_fase_${indice} :input`).prop('disabled', true);
 
-            // Agregar a lista de borrado
             let inputBorrar = $('#ids_fases_a_borrar');
             let lista = inputBorrar.val() ? inputBorrar.val().split(',') : [];
             lista.push(idBD);

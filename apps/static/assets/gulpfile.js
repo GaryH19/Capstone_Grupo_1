@@ -1,11 +1,3 @@
-/*
-
-=========================================================
-* AppSeed - Simple SCSS compiler via Gulp
-=========================================================
-
-*/
-
 var autoprefixer = require('gulp-autoprefixer');
 var browserSync = require('browser-sync').create();
 var cleanCss = require('gulp-clean-css');
@@ -16,7 +8,6 @@ var wait = require('gulp-wait');
 var sourcemaps = require('gulp-sourcemaps');
 var rename = require("gulp-rename");
 
-// Define COMMON paths
 
 const paths = {
     src: {
@@ -28,7 +19,6 @@ const paths = {
     }
 };
 
-// Compile SCSS
 gulp.task('scss', function() {
     return gulp.src([paths.src.scss + '/style.scss'])
         .pipe(wait(500))
@@ -42,18 +32,15 @@ gulp.task('scss', function() {
         .pipe(browserSync.stream());
 });
 
-// Minify CSS
 gulp.task('minify:css', function() {
     return gulp.src([
             paths.src.css + '/style.css'
         ])
         .pipe(cleanCss())
         .pipe(rename(function(path) {
-            // Updates the object in-place
             path.extname = ".min.css";
         }))
         .pipe(gulp.dest(paths.src.css))
 });
 
-// Default Task: Compile SCSS and minify the result
 gulp.task('default', gulp.series('scss', 'minify:css'));

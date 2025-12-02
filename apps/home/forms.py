@@ -43,9 +43,8 @@ class formEMPRESA(forms.ModelForm):
 
 class formPROYECTO(forms.ModelForm):
     
-    # AQUI EL CAMBIO: Usamos la clase nueva 'AlumnoModelChoiceField'
     alumnos = AlumnoModelChoiceField(
-        queryset=User.objects.none(), # Se llena en el __init__
+        queryset=User.objects.none(),
         widget=forms.SelectMultiple(attrs={
             'class': 'form-control js-example-placeholder-multiple', 
             'multiple': 'multiple',
@@ -67,7 +66,6 @@ class formPROYECTO(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         try:
-            # Buscamos el grupo y llenamos la lista
             alumno_group = Group.objects.get(name__iexact='alumno')
             self.fields['alumnos'].queryset = alumno_group.user_set.all().order_by('first_name', 'last_name')
         except Group.DoesNotExist:
