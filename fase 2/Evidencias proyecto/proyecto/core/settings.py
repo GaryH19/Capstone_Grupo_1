@@ -24,7 +24,6 @@ SECRET_KEY = config('SECRET_KEY', default='S#perS3crEt_1122')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=True, cast=bool)
 
-# --- HOSTS PERMITIDOS ---
 ALLOWED_HOSTS = [
     'localhost', 
     '127.0.0.1', 
