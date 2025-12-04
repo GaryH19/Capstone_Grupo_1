@@ -108,8 +108,27 @@
     <script src="/static/assets/js/plugins/buttons.html5.min.js"></script>
     <script src="/static/assets/js/plugins/buttons.bootstrap4.min.js"></script>
     <!-- <script src="/static/assets/js/pages/data-export-custom.js"></script> -->
-    
+    <script src="/static/assets/js/plugins/jquery.dataTables.min.js"></script>
+    <script src="/static/assets/js/plugins/dataTables.bootstrap4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script>
+
+        $(document).ready(function() {
+            // Inicializamos la tabla
+            $('#basic-btn').DataTable({
+                // ESTA LÍNEA "dom" ES LA CLAVE PARA QUE APAREZCA EL BUSCADOR
+                // l = longitud (10, 25...), f = filtro (buscador), tr = tabla, p = paginación
+                "dom": "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>" +
+                       "<'row'<'col-sm-12'tr>>" +
+                       "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.10.21/i18n/Spanish.json"
+                }
+            });
+        });
+
+
         $('.concli_disable').on("click", function(){
             return false;
         });
