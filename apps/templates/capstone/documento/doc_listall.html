@@ -42,7 +42,9 @@
                                     <thead>
                                         <tr>
                                             <th>Nombre</th>
-                                            <th>Fecha Carga</th>
+                                            {% if is_profesor %}
+                                                <th>Fecha Carga</th>
+                                            {% endif %}
                                             <th>Descargar Archivo</th>
                                             {% if is_profesor %}
                                             <th>Acciones</th>
@@ -53,7 +55,9 @@
                                         {% for doc in docs %}
                                             <tr>
                                                 <td>{{ doc.DOC_NOMBRE }}</td>
-                                                <td>{{ doc.DOC_FFECHACREACION|date:"d/m/Y" }}</td>
+                                                {% if is_profesor %}
+                                                    <td>{{ doc.DOC_FFECHACREACION|date:"d/m/Y" }}</td>
+                                                {% endif %}
                                                 <td>
                                                     {% if doc.DOC_CONTENIDO %}
                                                        <a href="{% url 'doc_download' doc.DOC_NID %}">
