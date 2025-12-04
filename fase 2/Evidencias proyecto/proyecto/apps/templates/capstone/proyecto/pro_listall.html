@@ -32,7 +32,7 @@
                     <div class="card">
                         <div class="d-flex justify-content-between">
                             <div class="card-header table-card-header">
-                                <h5>Opciones de exportación</h5>
+                                <h5>Proyectos</h5>
                             </div>
                             
                             {% if is_profesor %}
@@ -107,9 +107,32 @@
     <script src="/static/assets/js/plugins/dataTables.buttons.min.js"></script>
     <script src="/static/assets/js/plugins/buttons.html5.min.js"></script>
     <script src="/static/assets/js/plugins/buttons.bootstrap4.min.js"></script>
-    <script src="/static/assets/js/pages/data-export-custom.js"></script>
-    
+    <!-- <script src="/static/assets/js/pages/data-export-custom.js"></script> -->
+    <script src="/static/assets/js/plugins/jquery.dataTables.min.js"></script>
+    <script src="/static/assets/js/plugins/dataTables.bootstrap4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        .dataTables_filter {
+            text-align: left !important;
+        }
+    </style>
+
     <script>
+
+        $(document).ready(function() {
+            $('#basic-btn').DataTable({                
+                "dom": "<'row'<'col-sm-12'f>>" +
+                       "<'row'<'col-sm-12'tr>>" +
+                       "<'row'<'col-sm-12 col-md-5'l><'col-sm-12 col-md-7'p>>",
+                
+                "pageLength": 10,
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.10.21/i18n/Spanish.json"
+                }
+            });
+        });
+
+
         $('.concli_disable').on("click", function(){
             return false;
         });
